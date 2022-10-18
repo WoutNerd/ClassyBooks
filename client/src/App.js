@@ -1,12 +1,12 @@
 import './App.css';
 import Navbar from './Navbar';
-import llnLk from './main';
+import userTypeChose from './main';
 
 function App() {
   return (
     <div className="App">
       <Navbar />
-      <llnLk />
+      <userTypeChose />
     </div>
   );
 }

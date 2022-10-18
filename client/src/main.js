@@ -1,7 +1,8 @@
 const userTypeChose = () => {
     return ( 
         <nav className="userTypeChose">
-            <p className="leerkracht"></p>
+            <p className="leerkracht">Leerkracht</p>
+            <p className="leerling">Leerling</p>
         </nav>
      );
 }
