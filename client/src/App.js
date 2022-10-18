@@ -1,12 +1,14 @@
 import './App.css';
 import Navbar from './Navbar';
-import userTypeChose from './main';
+import UserTypeChose from './userTypeChose';
 
 function App() {
   return (
     <div className="App">
       <Navbar />
-      <userTypeChose />
+      <div className="page">
+        <UserTypeChose />
+      </div>
     </div>
   );
 }

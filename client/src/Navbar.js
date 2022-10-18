@@ -1,9 +1,11 @@
+import "./App.css";
+
 const Navbar = () => {
     return ( 
         <nav className="navbar">
             <h1>Bibflix</h1>
-            <a href="/">Home</a>
-            <a href="/about">Over ons</a>
+            <a className="link" href="/">Home</a>
+            <a className="link" href="/about">Over ons</a>
         </nav>
      );
 }
