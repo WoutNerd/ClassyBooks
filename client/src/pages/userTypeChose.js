@@ -2,10 +2,12 @@ const UserTypeChose = () => {
 
     const leerkracht = () => {
         console.log('leerkracht');
+        
     }
 
     const leerling = () => {
         console.log('leerling');
+        <link  href="./about" />
     }
 
     return ( 

@@ -1,6 +1,6 @@
 import './App.css';
 import Navbar from './Navbar';
-import UserTypeChose from './userTypeChose';
+import UserTypeChose from './pages/userTypeChose';
 
 function App() {
   return (
