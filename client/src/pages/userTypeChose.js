@@ -1,3 +1,6 @@
+import {Link} from "react-router-dom"
+import "../App.css"
+
 const UserTypeChose = () => {
 
     const leerkracht = () => {
@@ -7,13 +10,13 @@ const UserTypeChose = () => {
 
     const leerling = () => {
         console.log('leerling');
-        <link  href="./about" />
+        <Link to="/leerling" />
     }
 
     return ( 
         <div className="userTypeChose">
-            <button onClick={ leerkracht }>Leerkracht</button>
-            <button onClick={ leerling }>Leerling</button>
+            <Link to="/leerkracht" className="button">Leerkracht</Link>
+            <Link to="/leerling" className="button">Leerling</Link>
         </div>
      );
 }

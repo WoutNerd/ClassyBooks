@@ -2,7 +2,7 @@ import "../App.css";
 
 const NoPage = () => {
     return ( 
-        <><p>De pagina die je zoekt is niet gevonden.</p><p>Mogelijk is deze pagina verplaatst of verwijderd.</p></>
+        <h1>Deze pagina is niet gevonden.<br/> Hij is mogelijk verplaatst of nog in aanbouw.</h1>
      );
 }
  

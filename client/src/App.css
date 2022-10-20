@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  
 }
 
 .App-logo {
@@ -37,7 +38,8 @@
   }
 }
 
-.leerkracht {
+.button {
+	margin: 10%;
 	background-color:#44c767;
 	border-radius:13px;
 	border:3px solid #000000;
@@ -49,44 +51,14 @@
 	padding:16px 31px;
 	text-decoration:none;
 }
-.leerkracht:hover {
+.button:hover {
 	background-color:#5cbf2a;
 }
-.leerkracht:active {
+.button:active {
 	position:relative;
 	top:1px;
 }
 
-button {
-  margin: 50px;
-	background-color:#44c767;
-	border-radius:13px;
-	border:3px solid #000000;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:17px;
-	padding:16px 31px;
-	text-decoration:none;
-}
-button:hover {
-	background-color:#5cbf2a;
-}
-button:active {
-	position:relative;
-	top:1px;
-}
-
-a:link {
-	margin-left: 1%;
-	color:yellow ;
-}
-
-.link:visited {
-	color: purple;
-}
-
-h1 {
-	font-size: 250%;
+.link {
+	margin: 0.5%;
 }
