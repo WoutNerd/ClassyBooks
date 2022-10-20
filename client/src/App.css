@@ -57,7 +57,7 @@
 	top:1px;
 }
 
-.leerling {
+button {
   margin: 50px;
 	background-color:#44c767;
 	border-radius:13px;
@@ -70,10 +70,23 @@
 	padding:16px 31px;
 	text-decoration:none;
 }
-.leerling:hover {
+button:hover {
 	background-color:#5cbf2a;
 }
-.leerling:active {
+button:active {
 	position:relative;
 	top:1px;
+}
+
+a:link {
+	margin-left: 1%;
+	color:yellow ;
+}
+
+.link:visited {
+	color: purple;
+}
+
+h1 {
+	font-size: 250%;
 }
