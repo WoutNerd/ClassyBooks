@@ -11,6 +11,7 @@ import App from './App';
 import UserTypeChose from './pages/userTypeChose';
 import NoPage from './pages/NoPage';
 import Leerling from './pages/leerling';
+import Leerkracht from './pages/leerkracht';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,7 +19,7 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<UserTypeChose />} />
-        <Route path='about' element={<NoPage />} />
+        <Route path='leerkracht' element={<Leerkracht />} />
         <Route path='leerling' element={<Leerling />} />
         <Route path='*' element={<NoPage/>} />
       </Route>

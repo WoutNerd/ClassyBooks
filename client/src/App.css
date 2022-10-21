@@ -38,6 +38,20 @@
   }
 }
 
+input {
+  margin:0.5%;
+  padding: 2px;
+  font-size: 16px;
+  border-width: 4px;
+  border-color: #44c767;
+  background-color: #ffffff;
+  color: #000000;
+  border-style: solid;
+  border-radius: 6px;
+  box-shadow: 0px 0px 5px rgba(66,66,66,.75);
+  text-shadow: 0px 0px 5px rgba(66,66,66,.75);
+}
+
 .button {
 	margin: 10%;
 	background-color:#44c767;
@@ -62,3 +76,4 @@
 .link {
 	margin: 0.5%;
 }
+
