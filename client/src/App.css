@@ -38,7 +38,7 @@
   }
 }
 
-input {
+input.login {
   margin:0.5%;
   padding: 2px;
   font-size: 16px;
@@ -77,3 +77,51 @@ input {
 	margin: 0.5%;
 }
 
+.login-button {
+  margin: 1.5%;
+	background-color:#44c767;
+	border-radius:13px;
+	border:3px solid #000000;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+}
+
+.login-button:active {
+  position:relative;
+	top:1px;
+}
+
+.login-button:hover {
+  background-color:#5cbf2a;
+}
+
+p.login {
+  margin: 1.5%;
+}
+
+ul.klas {
+  list-style-type: none;
+}
+
+li.klas {
+  margin: 1.5%;
+	background-color:#44c767;
+	border-radius:13px;
+	border:3px solid #000000;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:17px;
+	padding:16px 31px;
+	text-decoration:none;
+}
+
+img {
+width: 400px;
+}
