@@ -1,7 +1,7 @@
 import "../App.css"
 
 
-const Klas = () => {
+const Class = () => {
     return ( 
         <div className="klas">
             <ul className="klas">
@@ -17,4 +17,4 @@ const Klas = () => {
      );
 }
  
-export default Klas;
+export default Class;

@@ -1,6 +1,6 @@
 import "../App.css"
 
-const Leerling = () => {
+const Student = () => {
     return ( 
         <ul className="bookButton">
             <li>boek 1</li>
@@ -10,4 +10,4 @@ const Leerling = () => {
      );
 }
  
-export default Leerling;
+export default Student;

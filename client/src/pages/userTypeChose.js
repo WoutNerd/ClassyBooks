@@ -10,5 +10,5 @@ const UserTypeChose = () => {
         </div>
      );
 }
- 
+
 export default UserTypeChose;
