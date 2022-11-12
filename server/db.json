@@ -1,0 +1,25 @@
+{
+    "accounts": [
+        {
+            "id": "ID",
+            "name": "Name",
+            "surname": "Surname",
+            "privileged": false,
+            "sha256": "d10207ff4e3546fcae95062ba7382ae1a55cdea3d758a98c8cc8b179e170f74e",
+            "md5": "5b3270619a04fff5ac5790680ac65956",
+            "materials": []
+        }
+    ],
+    "books": [
+        {
+            "id": "0",
+            "title": "Arabische sprookjes",
+            "place": "Prentenboeken & Sprookjes",
+            "description": {
+                "isbn": "9789025771614",
+                "author": "Rodhan Al Galidi",
+                "pages": 136
+            }
+        }
+    ]
+}
