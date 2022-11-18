@@ -2,19 +2,18 @@ import "../App.css"
 const TeacherNavbar = () => {
 
     return ( 
-        <div className="lkNavbar">
-            <ul>
-                <li>
-                    <img src="" alt="" className="lkNavbar"/>
-                    <p className="lkNavbar">Overzicht</p>
+        <div className="lkNavbarDiv">
+            <ul className="lkNavbar">
+                <li className="lkNavbar">
+                    <img src={require('../images/Dashboard.png')} alt="Dashboard" className="lkNavbar"/>
                 </li>
-                <li>
-                    <img src="https://cdn-icons-png.flaticon.com/512/7075/7075232.png" alt="" className="lkNavbar"/>
-                    <p className="lkNavbar">Leerlingen</p>
+                <br />
+                <li className="lkNavbar">
+                    <img src={require('../images/Graduates.png')} alt="Leerlingen" className="lkNavbar"/>
                 </li>
-                <li>
-                    <img src="" alt="" className="lkNavbar"/>
-                    <p className="lkNavbar">Boeken</p>
+                <br />
+                <li className="lkNavbar">
+                    <img src={require('../images/book.png')} alt="Bibliotheek" className="lkNavbar"/>
                 </li>
             </ul>
        </div>

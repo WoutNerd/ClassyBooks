@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-
-
 import "../App.css";
+import crypto from "crypto-js";
+
 
 function TeacherLogin() {
   // React States
@@ -12,17 +12,13 @@ function TeacherLogin() {
   const database = [
     {
       username: "user1",
-      password: "pass1"
+      sha256: "e6c3da5b206634d7f3f3586d747ffdb36b5c675757b380c6a5fe5c570c714349",
+      md5: "a722c63db8ec8625af6cf71cb8c2d939"
     },
-    {
-      username: "user2",
-      password: "pass2"
-    }
   ];
 
   const errors = {
-    uname: "invalid username",
-    pass: "invalid password"
+    error: "Ongeldige gebruikersnaam of wachtwoord probeer opnieuw.",
   };
 
   const handleSubmit = (event) => {
@@ -36,15 +32,17 @@ function TeacherLogin() {
 
     // Compare user info
     if (userData) {
-      if (userData.password !== pass.value) {
+      var sha256Pass = crypto.SHA256(pass.value).toString()
+      var md5pass = crypto.MD5(pass.value).toString()
+      if (userData.sha256 !== sha256Pass && userData.md5 !== md5pass) {
         // Invalid password
-        setErrorMessages({ name: "pass", message: errors.pass });
+        setErrorMessages({ name: "pass", message: errors.error });
       } else {
         setIsSubmitted(true);
       }
     } else {
       // Username not found
-      setErrorMessages({ name: "uname", message: errors.uname });
+      setErrorMessages({ name: "uname", message: errors.error });
     }
   };
 
