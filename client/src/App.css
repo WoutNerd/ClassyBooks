@@ -123,5 +123,11 @@ li.klas {
 }
 
 img {
-width: 400px;
+  width: 400px;
+}
+
+.lkNavbar {
+  list-style-type: none;
+  float: left;
+  max-width: 70%;
 }

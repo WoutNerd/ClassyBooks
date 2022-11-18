@@ -1,5 +1,5 @@
 import "./App.css";
-import { BrowserRouter, Route, Link } from "react-router-dom";
+import {  Link } from "react-router-dom";
 
 const Navbar = () => {
     return ( 
