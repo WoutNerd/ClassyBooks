@@ -10,9 +10,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import UserTypeChose from './pages/userTypeChose';
 import NoPage from './pages/NoPage';
-import Leerling from './pages/leerling';
-import Leerkracht from './pages/leerkracht';
-import Klas from './pages/klassen';
+import Leerling from './pages/student';
+import Leerkracht from './pages/teacherLogin';
+import Klas from './pages/class';
+import Overzicht from './pages/teacher';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -24,6 +26,7 @@ root.render(
         <Route path='leerling' element={<Leerling />} />
         <Route path='*' element={<NoPage/>} />
         <Route path='klas' element={<Klas/>} />
+        <Route path='overzicht' element={<Overzicht/>}/>
       </Route>
     </Routes>
   </BrowserRouter>
