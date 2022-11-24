@@ -16,7 +16,7 @@ function importData(json) {
   let dtemp = { books: [], accounts: [] };
   for (let i = 0; i < d["books"].length; i++) {
     dtemp["books"].append(
-      new Book(
+      new Material(
         d["books"][i]["id"],
         d["books"][i]["title"],
         d["books"][i]["place"],
@@ -45,7 +45,7 @@ function exportData(d) {
   return JSON.stringify(d);
 }
 //-------------------------------------------------------------------------------------CLASSES-----//
-class Book {
+class Material {
   constructor(id, title, place, description, available) {
     this.id = id;
     this.title = title;
@@ -100,7 +100,7 @@ d = {
     ),
   ],
   books: [
-    new Book("0", "Arabische sprookjes", "Prentenboeken & Sprookjes", { "isbn": "9789025771614", "author": "Rodhan Al Galidi", "pages": 136 })
+    new Material("0", "Arabische sprookjes", "Prentenboeken & Sprookjes", { "isbn": "9789025771614", "author": "Rodhan Al Galidi", "pages": 136 })
   ]
 };
 
