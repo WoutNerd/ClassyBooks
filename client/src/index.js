@@ -13,7 +13,7 @@ import NoPage from './pages/NoPage';
 import Leerling from './pages/student';
 import Leerkracht from './pages/teacherLogin';
 import Klas from './pages/class';
-import Overzicht from './pages/teacher';
+import Dashboard from './pages/teacherDashboard';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,7 +26,7 @@ root.render(
         <Route path='leerling' element={<Leerling />} />
         <Route path='*' element={<NoPage/>} />
         <Route path='klas' element={<Klas/>} />
-        <Route path='overzicht' element={<Overzicht/>}/>
+        <Route path='overzicht' element={<Dashboard/>}/>
       </Route>
     </Routes>
   </BrowserRouter>
