@@ -8,21 +8,21 @@ const Dashboard = () => {
                 <TeacherNavbar/>
             </nav>
             <main>
-                <div className="inventory">
-                    <h2>Inventaris</h2>
-                    <div className="books">
-                        <h3>{"aantal boeken"}</h3>
-                        <p>boeken</p>
-                    </div>
-                    <div className="copies">
-                        <h3>{"aantal kopieëen"}</h3>
-                        <p>kopieëen</p>
-                    </div>
-                    <div className="students">
-                        <h3>{"aantal studenten"}</h3>
-                        <p>studenten</p>
-                    </div>
-                </div>
+                <table className="inventory">
+                    <caption>
+                        Inventaris
+                    </caption>
+                    <tr>
+                        <th>{"aantal boeken"}</th>
+                        <th>{"aantal kopieëen"}</th>
+                        <th>{"aantal leerlingen"}</th>
+                    </tr>
+                    <tr>
+                        <td>boeken</td>
+                        <td>kopieëen</td>
+                        <td>leerlingen</td>
+                    </tr>
+                </table>
                 <div className="manage">
                     <h2>Beheer</h2>
                     <div className="checkedOut">
