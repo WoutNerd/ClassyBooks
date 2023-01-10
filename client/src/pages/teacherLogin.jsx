@@ -76,7 +76,7 @@ function TeacherLogin() {
   return (
     <div className="app">
       <div className="login-form">
-        <div className="title">Sign In</div>
+        <div className="title">Log in</div>
         {isSubmitted ? window.location.replace("overzicht") : renderForm}
       </div>
     </div>
