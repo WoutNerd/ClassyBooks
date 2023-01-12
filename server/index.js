@@ -5,8 +5,9 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 var crypto = require("crypto");
 const { Sequelize } = require("sequelize-cockroachdb");
-
-//-------------------------------------------------------------------------------------REQUESTS-----//
+const { faker } = require('@faker-js/faker');
+faker.locale = "nl_BE"
+//-----------------------------------------------------------------------------------REQUESTS-----//
 app.use(express.static(__dirname + "/../client/build/"));
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
@@ -26,8 +27,6 @@ async function request(request) {
     return [results, metadata];
   } catch (err) {
     return err;
-  } finally {
-    await sequelize.close();
   }
 }
 
@@ -44,26 +43,23 @@ function generateHashes(name, surname, password) {
   return [sha256.toString(), md5.toString()];
 }
 
-function addUserWithPass(name, surname, password, privileged, materials) {
-  console.log("a");
+async function addUserWithPass(name, surname, password, privileged, materials) {
   let privilegedBit = 0;
   if (privileged) {
     privilegedBit = 1;
   }
   let hashes = generateHashes(name, surname, password);
-  req = new Request(
-    `INSERT INTO USERS VALUES(${name}, ${surname}, ${privilegedBit}, ${hashes[0]}, ${hashes[1]}, '')`,
-    (err) => {
-      console.log(err);
-    }
-  );
-  connection.execSql(req);
-  req.on("requestCompeleted", () => {
-    console.log("Request completed");
-  });
+  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${hashes[0]}', '${hashes[1]}', '${materials}');`);
 }
 //--------------------------------------------------------------------------------------------------//
+
 (async () => {
-  const a = await request("SELECT * FROM USERS");
-  console.log(a[0]);
+  console.log("Starting")
+  i = 0
+  while (i < 20) {
+    await addUserWithPass(faker.name.firstName(), faker.name.lastName(), faker.random.alphaNumeric(10), false, "0")
+    i++
+  }
+  await sequelize.close();
 })();
+
