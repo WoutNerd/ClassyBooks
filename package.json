@@ -28,5 +28,8 @@
     "sequelize-cockroachdb": "^6.0.5",
     "sqlite3": "^5.1.4",
     "tedious": "^15.1.2"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.6.0"
   }
 }
