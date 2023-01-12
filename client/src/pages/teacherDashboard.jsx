@@ -2,40 +2,46 @@ import "../App.css"
 import TeacherNavbar from "./teacherNavbar";
 
 const Dashboard = () => {
+var books = 0
+var copies = 0
+var students = 0
+var studentBooks = 0
+var checkedOut = 0
+var overdue = 0
     return ( 
-        <div>
+        <div className="grid">
             <nav className="navbar">
                 <TeacherNavbar/>
             </nav>
             <main>
-                <table className="inventory">
-                    <caption>
-                        Inventaris
-                    </caption>
-                    <tr>
-                        <th>{"aantal boeken"}</th>
-                        <th>{"aantal kopieëen"}</th>
-                        <th>{"aantal leerlingen"}</th>
-                    </tr>
-                    <tr>
-                        <td>boeken</td>
-                        <td>kopieëen</td>
-                        <td>leerlingen</td>
-                    </tr>
-                </table>
-                <div className="manage">
-                    <h2>Beheer</h2>
-                    <div className="checkedOut">
-                        <h3>{"aantal boeken uitgeleend"}</h3>
-                        <p>boeken uitgeleend</p>
+                <div className="inventory">
+                    <h3 className="caption">Inventaris</h3>
+                    <div className="books">
+                        <h1>{books}</h1>
+                        <p>boeken</p>
                     </div>
+                    <div className="copies">
+                        <h1>{copies}</h1>
+                        <p>kopieëen</p>
+                    </div>
+                    <div className="students">
+                        <h1>{students}</h1>
+                        <p>leerlingen</p>
+                    </div>
+                </div>
+                <div className="manage">
+                    <h3 className="caption">Beheer</h3>
                     <div className="studentBooks">
-                        <h3>{"aantal leerlingen met boeken"}</h3>
-                        <p>leerlingen met boeken</p>
+                        <h1>{studentBooks}</h1>
+                        <p>Leerlingen met boeken</p>
                     </div>
                     <div className="overdue">
-                        <h3>{"aantal boeken overtijd"}</h3>
+                        <h1>{overdue}</h1>
                         <p>boeken overtijd</p>
+                    </div>
+                    <div className="checkedOut">
+                        <h1>{checkedOut}</h1>
+                        <p>Boeken uitgecheckt</p>
                     </div>
                 </div>
             </main>
