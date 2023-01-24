@@ -22,9 +22,13 @@ app.get("*", (req, res) => {
 //-------------------------------------------------------------------------------API-REQUESTS-------//
 app.post("/login", (req, res) => {
   (async () => {
-    sessionId = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
-    if (sessionId == "Invalid credentials") { res.status(400).send(sessionId) }
-    else { res.status(200).send(sessionId) }
+    if (checkString(req["body"]["name"]) && checkString(req["body"]["surname"]) && checkString(req["body"]["sha256"]) && checkString(req["body"]["md5"])) {
+      sessionId = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
+      if (sessionId == "Invalid credentials") { res.status(400).send(sessionId) }
+      else { res.status(200).send(sessionId) }
+    }
+    else { res.status(400).send("Invalid credentials") }
+
   })();
 })
 //------------------------------------------------------------------------------------SQL SERVER----//
@@ -55,6 +59,17 @@ function generateHashes(name, surname, password) {
   return [sha256.toString(), md5.toString()];
 }
 
+function checkString(str) {
+  //Returns false when string is not good
+  return !(new RegExp(/(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})/, "gi").test(str))
+}
+
+Date.prototype.addHours = function (h) {
+  this.setTime(this.getTime() + (h * 60 * 60 * 1000));
+  return this;
+}
+//----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
+
 async function addUserWithPass(name, surname, password, privileged, materials) {
   let privilegedBit = 0;
   if (privileged) {
@@ -64,20 +79,13 @@ async function addUserWithPass(name, surname, password, privileged, materials) {
   await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${hashes[0]}', '${hashes[1]}', '${materials}');`);
 }
 
-async function addMaterial(title, place, description, available, daysTillReturn) {
-  let today = new Date()
-  today.setDate(today.getDate() + daysTillReturn)
-  let returndate = today
+async function addMaterial(title, place, description, available) {
+
   let availableBit = 0;
   if (available) {
     availableBit = 1;
   }
-  await request(`INSERT INTO MATERIALS (title, place, descr, available, returndate) VALUES ('${title}', '${place}', '${description}', '${availableBit}', '${returndate.getFullYear()}-${(returndate.getMonth() + 1).toString().padStart(2, "0")}-${returndate.getDate().toString().padStart(2, "0")}');`);
-}
-
-Date.prototype.addHours = function (h) {
-  this.setTime(this.getTime() + (h * 60 * 60 * 1000));
-  return this;
+  await request(`INSERT INTO MATERIALS (title, place, descr, available) VALUES ('${title}', '${place}', '${description}', '${availableBit}');`);
 }
 
 async function login(name, surname, sha256, md5) {
@@ -101,6 +109,8 @@ async function login(name, surname, sha256, md5) {
   return sessionId
 
 }
+
+
 //--------------------------------------------------------------------------------------------------//
 
 (async () => {
@@ -108,8 +118,8 @@ async function login(name, surname, sha256, md5) {
   await sequelize.authenticate()
   i = 0
   while (i < 20) {
-    await addUserWithPass(faker.name.firstName(), faker.name.lastName(), faker.random.alphaNumeric(10), false, "0")
-    await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveaus[Math.floor(Math.random() * leesniveaus.length - 1)], JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10 }), false, Math.floor(Math.random() * 21))
+    //await addUserWithPass(faker.name.firstName(), faker.name.lastName(), faker.random.alphaNumeric(10), false, "0")
+    //await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveaus[Math.floor(Math.random() * leesniveaus.length - 1)], JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620) }), false)
     i++
   }
 
