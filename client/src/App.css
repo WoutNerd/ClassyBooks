@@ -3,6 +3,7 @@
   --background: #222222;
   --accent2: #434242;
   --accent3: #22A39F;
+  --buttonHover: #FFFBEB;
 }
 
 body {
@@ -29,7 +30,7 @@ input.login {
   padding: 2px;
   font-size: 16px;
   border-width: 2px;
-  border-color: var(--accent2);
+  border-color: var(--accent3);
   background-color: #ffffff;
   color: #000000;
   border-style: solid;
@@ -52,7 +53,7 @@ input.login {
 	text-decoration:none;
 }
 .button:hover {
-	background-color: #f1e9c9;
+	background-color: var(--buttonHover);
 }
 .button:active {
 	position:relative;
@@ -65,12 +66,12 @@ input.login {
 
 .login-button {
   margin: 1.5%;
-	background-color:#44c767;
+	background-color:var(--master);
 	border-radius:13px;
-	border:3px solid #000000;
+	border:3px solid var(--accent3);
 	display:inline-block;
 	cursor:pointer;
-	color:#ffffff;
+	color:var(--accent2);
 	font-family:Arial;
 	font-size:17px;
 	padding:16px 31px;
@@ -83,7 +84,7 @@ input.login {
 }
 
 .login-button:hover {
-  background-color:#5cbf2a;
+  background-color:var(--buttonHover);
 }
 
 p.login {
@@ -96,12 +97,12 @@ ul {
 
 li.klas {
   margin: 1.5%;
-	background-color:#44c767;
+	background-color:var(--master);
 	border-radius:13px;
-	border:3px solid #000000;
+	border:3px solid var(--accent3);
 	display:inline-block;
 	cursor:pointer;
-	color:#ffffff;
+	color:var(--accent2);
 	font-family:Arial;
 	font-size:17px;
 	padding:16px 31px;
@@ -118,45 +119,41 @@ img {
   max-width: 70%;
 }
 
-
+img.lkNavbar{
+  filter: invert(91%) sepia(24%) saturate(309%) hue-rotate(319deg) brightness(108%) contrast(91%);
+}
 
 
 .caption{
   grid-area: header;
-  background-color: green;
-  padding: 20px;
-  border-radius: 5%;
 }
 
 .books, .studentBooks{
   grid-area: left;
-  background-color: green;
-  padding: 30px;
-  border-radius: 5%;
 }
 
 .students, .checkedOut{
   grid-area: right;
-  background-color: green;
-  padding: 30px;
-  border-radius: 5%;
 }
 
 .copies, .overdue{
   grid-area: middle;
-  background-color: green;
-  padding: 30px;
-  border-radius: 5%;
 }
+
 .inventory, .manage{
   display: inline-grid;
   grid-template-areas: 
-  ' header header header'
-  ' left middle right';
+  'header header header'
+  'left middle right';
   gap: 5px;
-  background-color: #44c767;
-  border-radius: 5%;
+  border-radius: 10px;
   margin: 5%;
+  background-color: var(--buttonHover);
 }
 
-
+.caption, .books, .studentBooks, .copies, .students, .checkedOut, .overdue{
+  background-color: var(--master);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 0;
+}
