@@ -1,21 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
 import crypto from "crypto-js";
+import fetch from 'node-fetch';
 
+
+
+async function request(name, surname, sha256, md5) {
+
+
+  const body = {name, surname, sha256, md5};
+  
+  const response = await fetch('/login', {
+    method: 'post',
+    body: body,
+    headers: {'Content-Type': 'application/json'}
+  });
+  const data = await response.json();
+
+  console.log(data);
+}
 
 function TeacherLogin() {
+  //changes title
+  useEffect(() => {
+    document.title = "Classy Books - Login"
+  }, []);
+
   // React States
   const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // User Login info
-  const database = [
-    {
-      username: "user1",
-      sha256: "e6c3da5b206634d7f3f3586d747ffdb36b5c675757b380c6a5fe5c570c714349",
-      md5: "a722c63db8ec8625af6cf71cb8c2d939"
-    },
-  ];
 
   const errors = {
     error: "Ongeldige gebruikersnaam of wachtwoord probeer opnieuw.",
@@ -25,25 +38,12 @@ function TeacherLogin() {
     //Prevent page reload
     event.preventDefault();
 
-    var { uname, pass } = document.forms[0];
+    var { name, surname, pass } = document.forms[0];
 
-    // Find user login info
-    const userData = database.find((user) => user.username === uname.value);
-
-    // Compare user info
-    if (userData) {
-      var sha256Pass = crypto.SHA256(pass.value).toString()
-      var md5pass = crypto.MD5(pass.value).toString()
-      if (userData.sha256 !== sha256Pass && userData.md5 !== md5pass) {
-        // Invalid password
-        setErrorMessages({ name: "pass", message: errors.error });
-      } else {
-        setIsSubmitted(true);
-      }
-    } else {
-      // Username not found
-      setErrorMessages({ name: "uname", message: errors.error });
-    }
+    var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
+    var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256.value).toString();
+    request(name, surname, sha256, md5);
+        
   };
 
   // Generate JSX code for error message
@@ -57,8 +57,11 @@ function TeacherLogin() {
     <div className="form">
       <form onSubmit={handleSubmit}>
         <div className="input-container">
-          <input type="text" name="uname" required placeholder="Gebruikersnaam" className="login"/>
+          <input type="text" name="name" required placeholder="Voornaam" className="login" autoFocus/>
           {renderErrorMessage("uname")}
+        </div>
+        <div className="input-container">
+          <input type="text" className="login" name="surname" required placeholder="Achternaam"/>
         </div>
         <div className="input-container">
           <input type="password" name="pass" required placeholder="Wachtwoord" className="login"/>
@@ -71,7 +74,8 @@ function TeacherLogin() {
     </div>
   );
 
-  
+
+
   
   return (
     <div className="app">
