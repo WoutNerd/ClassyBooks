@@ -110,6 +110,18 @@ async function login(name, surname, sha256, md5) {
 
 }
 
+async function getSession(sessionId) {
+  user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
+  if (user[1]["rowCount"] > 0) {
+    expiry = new Date(user[0][0]["sessionidexpire"])
+    if (new Date().getTime() < expiry.getTime()) {
+      return user[0][0]
+    }
+    else return null
+  }
+  else return null
+
+}
 
 //--------------------------------------------------------------------------------------------------//
 
@@ -118,11 +130,11 @@ async function login(name, surname, sha256, md5) {
   await sequelize.authenticate()
   i = 0
   while (i < 20) {
+    let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
     //await addUserWithPass(faker.name.firstName(), faker.name.lastName(), faker.random.alphaNumeric(10), false, "0")
-    //await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveaus[Math.floor(Math.random() * leesniveaus.length - 1)], JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620) }), false)
+    //await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), false)
     i++
   }
-
 })();
 
 
