@@ -4,9 +4,7 @@ ngrok.exe
 .vscode
 testData
 images
-serverlogin.txt
-.gitignore
-init.sql
-.gitignore
-server/settings.json
+settings.json
 data
+server/init.sql
+serverlogin.txt
