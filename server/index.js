@@ -79,6 +79,7 @@ async function addUserWithPass(name, surname, password, privileged, materials) {
   await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${hashes[0]}', '${hashes[1]}', '${materials}');`);
 }
 
+
 async function addMaterial(title, place, description, available) {
 
   let availableBit = 0;
@@ -104,7 +105,7 @@ async function login(name, surname, sha256, md5) {
     i += 1
   }
   if (sessionId == "") {
-    sessionId == "Invalid credentials"
+    sessionId = "Invalid credentials"
   }
   return sessionId
 
@@ -131,7 +132,7 @@ async function getSession(sessionId) {
   i = 0
   while (i < 20) {
     let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
-    //await addUserWithPass(faker.name.firstName(), faker.name.lastName(), faker.random.alphaNumeric(10), false, "0")
+    //await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", false, "0")
     //await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), false)
     i++
   }
