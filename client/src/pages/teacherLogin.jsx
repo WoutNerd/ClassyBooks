@@ -9,15 +9,17 @@ async function request(name, surname, sha256, md5) {
 
 
   const body = {name, surname, sha256, md5};
-  
+  console.log(JSON.stringify(body));
   const response = await fetch('/login', {
     method: 'post',
-    body: body,
+    body: JSON.stringify(body),
     headers: {'Content-Type': 'application/json'}
   });
   const data = await response.json();
 
   console.log(data);
+
+  
 }
 
 function TeacherLogin() {
@@ -41,8 +43,8 @@ function TeacherLogin() {
     var { name, surname, pass } = document.forms[0];
 
     var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
-    var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256.value).toString();
-    request(name, surname, sha256, md5);
+    var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
+    request(name.value, surname.value, sha256, md5);
         
   };
 
