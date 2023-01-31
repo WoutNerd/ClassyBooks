@@ -38,7 +38,7 @@ app.post("/createUser", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       if (sessionµ['privileged'] == '1') {
         await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], "0")
-        res.status(200).send("Succesfully added user")
+        res.status(200).send("Successfully added user")
       }
       else { res.status(400).send("Invalid session") }
     }
