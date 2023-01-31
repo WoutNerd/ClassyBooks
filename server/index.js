@@ -22,12 +22,27 @@ app.get("*", (req, res) => {
 //-------------------------------------------------------------------------------API-REQUESTS-------//
 app.post("/login", (req, res) => {
   (async () => {
-    if (checkString(req["body"]["name"]) && checkString(req["body"]["surname"]) && checkString(req["body"]["sha256"]) && checkString(req["body"]["md5"])) {
+    if (checkRequest(req)) {
       sessionId = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
       if (sessionId == "Invalid credentials") { res.status(400).send(sessionId) }
       else { res.status(200).send(sessionId) }
     }
     else { res.status(400).send("Invalid credentials") }
+
+  })();
+})
+
+app.post("/createUser", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      session = await getSession(req["body"]["sessionid"])
+      if (sessionµ['privileged'] == '1') {
+        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], "0")
+        res.status(200).send("Succesfully added user")
+      }
+      else { res.status(400).send("Invalid session") }
+    }
+    else { res.status(400).send("Invalid request") }
 
   })();
 })
@@ -63,6 +78,13 @@ function checkString(str) {
   //Returns false when string is not good
   return !(new RegExp(/(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})/, "gi").test(str))
 }
+function checkRequest(req) {
+  let stringGood = true
+  Object.keys(req["body"]).forEach((key) => {
+    if (!checkString(req["body"][key])) { stringGood = false }
+  })
+  return stringGood
+}
 
 Date.prototype.addHours = function (h) {
   this.setTime(this.getTime() + (h * 60 * 60 * 1000));
@@ -71,14 +93,18 @@ Date.prototype.addHours = function (h) {
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
 async function addUserWithPass(name, surname, password, privileged, materials) {
+  let hashes = generateHashes(name, surname, password);
+  await addUserWithHash(name, surname, privileged, hashes[0], hashes[1], materials)
+}
+
+async function addUserWithHash(name, surname, privileged, sha256, md5, materials) {
   let privilegedBit = 0;
   if (privileged) {
     privilegedBit = 1;
   }
-  let hashes = generateHashes(name, surname, password);
-  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${hashes[0]}', '${hashes[1]}', '${materials}');`);
-}
+  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${sha256}', '${md5}', '${materials}');`);
 
+}
 
 async function addMaterial(title, place, description, available) {
 
