@@ -36,7 +36,7 @@ app.post("/createUser", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
-      if (sessionµ['privileged'] == '1') {
+      if (session['privileged'] == '1') {
         await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], "0")
         res.status(200).send("Successfully added user")
       }
@@ -44,6 +44,19 @@ app.post("/createUser", (req, res) => {
     }
     else { res.status(400).send("Invalid request") }
 
+  })();
+})
+app.post("/getMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      session = await getSession(req["body"]["sessionid"])
+      material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
+      if (material[1]["rowCount"] > 0) {
+        if (session['privileged'] == '1') { res.status(200).send(material[0]) }
+        else { res.status(200).send(stripInfo(material, ["lendoutto", "returndate", "available"])) }
+      }
+      else res.status(400).send("Invalid material")
+    }
   })();
 })
 //------------------------------------------------------------------------------------SQL SERVER----//
@@ -84,6 +97,14 @@ function checkRequest(req) {
     if (!checkString(req["body"][key])) { stringGood = false }
   })
   return stringGood
+}
+
+function stripInfo(dbres, keys) {
+  d = dbres[0]
+  for (let i = 0; i < keys.length; i++) {
+    d[keys[i]] = null
+  }
+  return d
 }
 
 Date.prototype.addHours = function (h) {
