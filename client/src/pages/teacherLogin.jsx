@@ -9,17 +9,21 @@ async function request(name, surname, sha256, md5) {
 
 
   const body = {name, surname, sha256, md5};
-  console.log(JSON.stringify(body));
+  //console.log(JSON.stringify(body));
   const response = await fetch('/login', {
     method: 'post',
     body: JSON.stringify(body),
     headers: {'Content-Type': 'application/json'}
   });
-  const data = await response.json();
+  const data = response;
 
   console.log(data);
 
-  
+  if(data.status !== 200) {
+    return(
+      <div>Incorect gebruikersnaam of wachtwoord. Probeer opnieuw.</div>
+    )
+  }
 }
 
 function TeacherLogin() {
