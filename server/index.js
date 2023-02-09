@@ -25,7 +25,7 @@ app.post("/login", (req, res) => {
     if (checkRequest(req)) {
       sessionId = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
       if (sessionId == "Invalid credentials") { res.status(400).send(sessionId) }
-      else { res.status(200).send(sessionId) }
+      else { res.setHeader('content-type', 'text/plain'); res.status(200).send(sessionId) }
     }
     else { res.status(400).send("Invalid credentials") }
 
@@ -38,7 +38,7 @@ app.post("/createUser", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       if (session['privileged'] == '1') {
         await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], "0")
-        res.status(200).send("Successfully added user")
+        res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
       }
       else { res.status(400).send("Invalid session") }
     }
