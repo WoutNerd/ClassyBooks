@@ -22,7 +22,7 @@ function TeacherLogin() {
     
       // Check if the request was successful
       if (response.statusText !== "OK") {
-        throw new Error('Invalid username');
+        throw new Error('Ongeldige login gegevens');
       }
 
       if (response.statusText === "OK"){
