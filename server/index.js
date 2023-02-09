@@ -74,6 +74,19 @@ app.post("/getMaterial", (req, res) => {
     }
   })();
 })
+app.post("/createMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      session = await getSession(req["body"]["sessionid"])
+      if (session['privileged'] == '1') {
+        await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
+        res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added material")
+      }
+      else { res.status(400).send("Invalid session") }
+    }
+    else { res.status(400).send("Invalid request") }
+  })();
+})
 //------------------------------------------------------------------------------------SQL SERVER----//
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
 
