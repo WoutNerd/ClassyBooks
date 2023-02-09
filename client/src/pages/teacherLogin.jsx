@@ -26,13 +26,12 @@ function TeacherLogin() {
       }
 
       if (response.statusText === "OK"){
-        setIsSubmitted(true)
+       setIsSubmitted(true)
       }
     
       // Handle the successful response
-      console.log("response");
       const data = await response.json();
-      console.log(data);
+      document.cookie = "sessionId=" + data.sessionid;
     } catch (error) {
       // Handle the error
       console.error('Error:', error.message);
