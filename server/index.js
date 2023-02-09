@@ -33,7 +33,19 @@ app.post("/login", (req, res) => {
 
   })();
 })
-
+app.post("/getUser", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      session = await getSession(req["body"]["sessionid"])
+      user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
+      if (user[1]["rowCount"] > 0) {
+        if (session['privileged'] == '1') { res.status(200).send(stripInfo(user, ["md5", "sha256", "sessionid", "sessionidexpire"])) }
+        else { res.status(200).send(stripInfo(user, ["privileged", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) }
+      }
+      else res.status(400).send("Invalid user")
+    }
+  })();
+})
 app.post("/createUser", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
