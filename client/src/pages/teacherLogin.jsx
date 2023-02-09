@@ -4,37 +4,48 @@ import crypto from "crypto-js";
 import fetch from 'node-fetch';
 
 
-
-async function request(name, surname, sha256, md5) {
-
-
-  const body = {name, surname, sha256, md5};
-  //console.log(JSON.stringify(body));
-  const response = await fetch('/login', {
-    method: 'post',
-    body: JSON.stringify(body),
-    headers: {'Content-Type': 'application/json'}
-  });
-  const data = response;
-
-  console.log(data);
-
-  if(data.status !== 200) {
-    return(
-      <div>Incorect gebruikersnaam of wachtwoord. Probeer opnieuw.</div>
-    )
-  }
-}
-
 function TeacherLogin() {
+  // React States
+  const [errorMessages, setErrorMessages] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const request = async (name, surname, sha256, md5) => {
+      
+    const body = {name, surname, sha256, md5};
+    try {
+      // Make the HTTP request
+      const response = await fetch('/login', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json' },
+      });
+    
+      // Check if the request was successful
+      if (response.statusText !== "OK") {
+        throw new Error('Ongeldige login gegevens');
+      }
+
+      if (response.statusText === "OK"){
+        setIsSubmitted(true)
+      }
+    
+      // Handle the successful response
+      console.log("response");
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      // Handle the error
+      console.error('Error:', error.message);
+      alert(error.message);
+    }
+  
+}
   //changes title
   useEffect(() => {
     document.title = "Classy Books - Login"
   }, []);
 
-  // React States
-  const [errorMessages, setErrorMessages] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+
 
   const errors = {
     error: "Ongeldige gebruikersnaam of wachtwoord probeer opnieuw.",
@@ -49,7 +60,7 @@ function TeacherLogin() {
     var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
     var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
     request(name.value, surname.value, sha256, md5);
-        
+    
   };
 
   // Generate JSX code for error message
