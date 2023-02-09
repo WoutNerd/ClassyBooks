@@ -44,6 +44,7 @@ app.post("/getUser", (req, res) => {
       }
       else res.status(400).send("Invalid user")
     }
+    else res.status(400).send("Invalid request")
   })();
 })
 app.post("/createUser", (req, res) => {
