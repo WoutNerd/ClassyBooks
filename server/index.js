@@ -68,7 +68,7 @@ app.post("/getMaterial", (req, res) => {
       material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
       if (material[1]["rowCount"] > 0) {
         if (session['privileged'] == '1') { res.status(200).send(material[0]) }
-        else { res.status(200).send(stripInfo(material, ["lendoutto", "returndate", "available"])) }
+        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "available"])) }
       }
       else res.status(400).send("Invalid material")
     }
