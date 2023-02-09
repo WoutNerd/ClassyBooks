@@ -23,9 +23,11 @@ app.get("*", (req, res) => {
 app.post("/login", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
-      sessionId = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
-      if (sessionId == "Invalid credentials") { res.status(400).send(sessionId) }
-      else { res.setHeader('content-type', 'text/plain'); res.status(200).send(sessionId) }
+      user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
+      sessionid = user[0]
+      userid = user[1]
+      if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) }
+      else { res.status(200).send({ "sessionid": sessionid, "userid": userid }) }
     }
     else { res.status(400).send("Invalid credentials") }
 
@@ -145,6 +147,7 @@ async function login(name, surname, sha256, md5) {
     let dbmd5 = d[0][i]["md5"]
     if (dbsha256 == sha256 && dbmd5 == md5) {
       //Correct credentials
+      userid = d[0][i]["userid"]
       sessionId = uuidv4().toString()
       time = new Date().addHours(5)
       await request(`UPDATE USERS SET SESSIONID='${sessionId}', SESSIONIDEXPIRE='${time.toISOString()}' WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
@@ -153,8 +156,9 @@ async function login(name, surname, sha256, md5) {
   }
   if (sessionId == "") {
     sessionId = "Invalid credentials"
+    userid = ""
   }
-  return sessionId
+  return [sessionId, userid]
 
 }
 
