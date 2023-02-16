@@ -14,6 +14,8 @@ import Leerkracht from './pages/teacherLogin';
 import Klas from './pages/class';
 import Dashboard from './pages/teacherDashboard';
 import TeacherLibrary from './pages/teacherLibrary';
+import AddUser from './pages/addUser';
+//import  from "./pages/test";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,12 +24,13 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<UserTypeChose />} />
+        <Route path='*' element={<NoPage/>} />
         <Route path='leerkracht' element={<Leerkracht />} />
         <Route path='leerling' element={<Leerling />} />
-        <Route path='*' element={<NoPage/>} />
         <Route path='klas' element={<Klas/>} />
         <Route path='overzicht' element={<Dashboard/>}/>
         <Route path='bibliotheek' element={<TeacherLibrary/>}/>
+        <Route path='leerling-toevoegen' element={<AddUser/>}/>
       </Route>
     </Routes>
   </BrowserRouter>
