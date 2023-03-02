@@ -80,14 +80,26 @@ app.post("/createMaterial", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       if (session['privileged'] == '1') {
         await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
-        res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added material")
+        res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
       }
       else { res.status(400).send("Invalid session") }
     }
     else { res.status(400).send("Invalid request") }
   })();
 })
-
+app.post("/lendMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      let lend = await lendMaterial(req["body"]["userid"], req["body"]["materialid"])
+      if (lend[0]) {
+        res.setHeader('Content-Type', 'text/plain')
+        res.status(200).send(lend[1])
+      }
+      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
+    }
+    else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
+  })();
+})
 //------------------------------------------------------------------------------------SQL SERVER----//
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
 
@@ -142,7 +154,12 @@ Date.prototype.addHours = function (h) {
 }
 
 function hasData(dbres) {
-  return parseInt(dbres[1]["rowCount"]) > 0
+  try {
+    return dbres[1]["rowCount"] > 0
+  }
+  catch {
+    return false
+  }
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
@@ -211,11 +228,12 @@ async function lendMaterial(userid, materialid) {
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   user = await request(`SELECT * FROM USERS WHERE USERID='${userid}'`)
   if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user)) {
-    console.log(user[0][0]["materials"])
     user[0][0]["materials"].push(materialid)
     await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
     await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}' WHERE USERID='${userid}'`)
+    return [true, returndate]
   }
+  else { return false }
 
 }
 
