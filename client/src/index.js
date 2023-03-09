@@ -15,7 +15,7 @@ import Klas from './pages/class';
 import Dashboard from './pages/teacherDashboard';
 import TeacherLibrary from './pages/teacherLibrary';
 import AddUser from './pages/addUser';
-//import  from "./pages/test";
+import Test from "./pages/test";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -31,6 +31,7 @@ root.render(
         <Route path='overzicht' element={<Dashboard/>}/>
         <Route path='bibliotheek' element={<TeacherLibrary/>}/>
         <Route path='leerling-toevoegen' element={<AddUser/>}/>
+        <Route path='test' element={<Test/>}/>
       </Route>
     </Routes>
   </BrowserRouter>

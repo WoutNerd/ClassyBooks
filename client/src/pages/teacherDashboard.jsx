@@ -1,7 +1,9 @@
 import "../App.css"
 import TeacherNavbar from "./teacherNavbar";
+import checkUser from "./checkUser";
 
 const Dashboard = () => {
+    checkUser();
 var books = 0
 var copies = 0
 var students = 0
@@ -45,7 +47,10 @@ var overdue = 0
                     </div>
                 </div>
             </main>
+        <div>
+            <a href="./test">TEST</a>
         </div>
+        </div>        
      );
 }
  

@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 import crypto from "crypto-js";
 import fetch from 'node-fetch';
-
+import checkUser from "./checkUser";
+import getCookie from "./getCookie";
 
 function AddUser() {
+  checkUser();
   // React States
   const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const sessionid = document.cookie.split("=").pop()
+  const sessionid = getCookie("sessionId")
   
   const request = async (name, surname, sha256, md5, privileged) => {
     const body = {sessionid, name, surname, sha256, md5, privileged};
