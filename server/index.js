@@ -38,7 +38,7 @@ app.post("/getUser", (req, res) => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
       user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
-      if (user[1]["rowCount"] > 0) {
+      if (hasData(user)) {
         if (session['privileged'] == '1') { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) }
         else { res.status(200).send(stripInfo(user[0], ["privileged", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) }
       }
@@ -66,7 +66,7 @@ app.post("/getMaterial", (req, res) => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
       material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
-      if (material[1]["rowCount"] > 0) {
+      if (hasData(material)) {
         if (session['privileged'] == '1') { res.status(200).send(material[0]) }
         else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "available"])) }
       }
@@ -80,11 +80,24 @@ app.post("/createMaterial", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       if (session['privileged'] == '1') {
         await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
-        res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added material")
+        res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
       }
       else { res.status(400).send("Invalid session") }
     }
     else { res.status(400).send("Invalid request") }
+  })();
+})
+app.post("/lendMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      let lend = await lendMaterial(req["body"]["userid"], req["body"]["materialid"])
+      if (lend[0]) {
+        res.setHeader('Content-Type', 'text/plain')
+        res.status(200).send(lend[1])
+      }
+      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
+    }
+    else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
   })();
 })
 //------------------------------------------------------------------------------------SQL SERVER----//
@@ -139,6 +152,15 @@ Date.prototype.addHours = function (h) {
   this.setTime(this.getTime() + (h * 60 * 60 * 1000));
   return this;
 }
+
+function hasData(dbres) {
+  try {
+    return dbres[1]["rowCount"] > 0
+  }
+  catch {
+    return false
+  }
+}
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
 async function addUserWithPass(name, surname, password, privileged, materials) {
@@ -151,7 +173,7 @@ async function addUserWithHash(name, surname, privileged, sha256, md5, materials
   if (privileged) {
     privilegedBit = 1;
   }
-  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${sha256}', '${md5}', '${materials}');`);
+  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
 
@@ -201,18 +223,32 @@ async function getSession(sessionId) {
 
 }
 
+async function lendMaterial(userid, materialid) {
+  returndate = new Date().addHours(120).toISOString()
+  material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
+  user = await request(`SELECT * FROM USERS WHERE USERID='${userid}'`)
+  if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user)) {
+    user[0][0]["materials"].push(materialid)
+    await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
+    await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}' WHERE USERID='${userid}'`)
+    return [true, returndate]
+  }
+  else { return false }
+
+}
+
 //--------------------------------------------------------------------------------------------------//
 
 (async () => {
   console.log("Starting")
   await sequelize.authenticate()
   i = 0
-  while (i < 20) {
-    let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
-    //await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", false, "0")
-    //await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), false)
-    i++
-  }
+  // while (i < 20) {
+  //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
+  //   await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", false, [])
+  //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
+  //   i++
+  // }
 })();
 
 
