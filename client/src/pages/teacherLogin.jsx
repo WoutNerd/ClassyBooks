@@ -31,8 +31,8 @@ function TeacherLogin() {
     
       // Handle the successful response
       const data = await response.json();
-      document.cookie = "sessionId=" + data.sessionid;
-      document.cookie = "userId=" + data.userid
+      document.cookie = "sessionId=" + data.sessionid + ";path=../";
+      document.cookie = "userId=" + data.userid + ";path=../"
     } catch (error) {
       // Handle the error
       console.error('Error:', error.message);

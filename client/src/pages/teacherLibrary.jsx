@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import "../App.css"
 import TeacherNavbar from "./teacherNavbar"
-
+import checkUser from './checkUser';
 
 
 const BookList = () => {
+  checkUser()
   const [lendOut, setLendOut] = useState(false);
   const [showAll, setShowAll] = useState(true);
   const [books, setBooks] = useState([
