@@ -104,13 +104,20 @@ app.post("/lendMaterial", (req, res) => {
 app.post("/returnMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
-      let ret = await returnMaterial(req["materialid"])
+      let ret = await returnMaterial(req["body"]["materialid"])
       if (ret) {
         res.setHeader('Content-Type', 'text/plain')
         res.status(200).send("Successfully returned material")
       }
       else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
     }
+  })();
+})
+app.post("/allMaterials", (req, res) => {
+  (async () => {
+    books = await request("SELECT MATERIALID, TITLE, PLACE, DESCR FROM MATERIALS")
+    res.setHeader("Content-Type", "application/json")
+    res.status(200).send(books)
   })();
 })
 //------------------------------------------------------------------------------------SQL SERVER----//
@@ -178,9 +185,13 @@ function dateInPast(firstDate, secondDate) {
   return firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
 }
 
+function checkSessionValidity(user) {
+  if (user[0][0]["sessionid"] != null) {
+    return getSession(user[0][0]["sessionid"]) != null
+  }
+  else return false
 
-
-
+}
 
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
@@ -251,7 +262,7 @@ async function lendMaterial(userid, materialid) {
   returndate = new Date().addHours(120).toISOString()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   user = await request(`SELECT * FROM USERS WHERE USERID='${userid}'`)
-  if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user)) {
+  if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user) && checkSessionValidity(user)) {
     user[0][0]["materials"].push(materialid)
     await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
     await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}' WHERE USERID='${userid}'`)
@@ -261,11 +272,12 @@ async function lendMaterial(userid, materialid) {
 
 }
 async function returnMaterial(materialid) {
+
   now = new Date()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   if (hasData(material)) {
     user = await request(`SELECT * FROM USERS WHERE USERID='${material[0][0]['lendoutto']}'`)
-    if (hasData(user)) {
+    if (hasData(user) && checkSessionValidity(user)) {
       await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1' WHERE MATERIALID='${materialid}'`)
       user[0][0]["materials"].splice(user[0][0]["materials"].indexOf(materialid), 1)
       returnDate = new Date(material[0][0]["returndate"])
