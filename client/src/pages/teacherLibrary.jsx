@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import "../App.css"
 import TeacherNavbar from "./teacherNavbar"
-import checkUser from './checkUser';
+import checkUser from '../functions/checkUser';
+import { useEffect } from 'react';
 
 
 const BookList = () => {

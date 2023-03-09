@@ -1,9 +1,16 @@
 import "../App.css"
 import TeacherNavbar from "./teacherNavbar";
-import checkUser from "./checkUser";
+import checkUser from "../functions/checkUser";
+import { useEffect } from "react";
 
 const Dashboard = () => {
     checkUser();
+
+      //changes title
+  useEffect(() => {
+    document.title = "Classy Books - Dashboard"
+  }, []);
+
 var books = 0
 var copies = 0
 var students = 0

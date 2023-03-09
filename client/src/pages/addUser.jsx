@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 import crypto from "crypto-js";
 import fetch from 'node-fetch';
-import checkUser from "./checkUser";
-import getCookie from "./getCookie";
+import { checkUser, getCookie } from "../functions";
+//import { useEffect } from "react";
 
 function AddUser() {
   checkUser();
@@ -12,7 +12,13 @@ function AddUser() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const sessionid = getCookie("sessionId")
-  
+   
+  //changes title
+ // useEffect(() => {
+    document.title = "Classy Books - Voeg gebruiker toe"
+ // }, []);
+
+
   const request = async (name, surname, sha256, md5, privileged) => {
     const body = {sessionid, name, surname, sha256, md5, privileged};
     try {
@@ -31,10 +37,7 @@ function AddUser() {
     }
   
 }
-  //changes title
-  useEffect(() => {
-    document.title = "Classy Books - Voeg gebruiker toe"
-  }, []);
+
 
   function handleChange(e) {
     setIsChecked(e.target.checked);
