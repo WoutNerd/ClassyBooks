@@ -26,8 +26,9 @@ app.post("/login", (req, res) => {
       user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
       sessionid = user[0]
       userid = user[1]
+      privileged = user[2]
       if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) }
-      else { res.status(200).send({ "sessionid": sessionid, "userid": userid }) }
+      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privileged": privileged }) }
     }
     else { res.status(400).send("Invalid credentials") }
 
@@ -52,7 +53,7 @@ app.post("/createUser", (req, res) => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
       if (session['privileged'] == '1') {
-        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], "0")
+        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], [])
         res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
       }
       else { res.status(400).send("Invalid session") }
@@ -98,6 +99,18 @@ app.post("/lendMaterial", (req, res) => {
       else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
     }
     else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
+  })();
+})
+app.post("/returnMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      let ret = await returnMaterial(req["materialid"])
+      if (ret) {
+        res.setHeader('Content-Type', 'text/plain')
+        res.status(200).send("Successfully returned material")
+      }
+      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") }
+    }
   })();
 })
 //------------------------------------------------------------------------------------SQL SERVER----//
@@ -161,6 +174,14 @@ function hasData(dbres) {
     return false
   }
 }
+function dateInPast(firstDate, secondDate) {
+  return firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
+}
+
+
+
+
+
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
 async function addUserWithPass(name, surname, password, privileged, materials) {
@@ -199,14 +220,17 @@ async function login(name, surname, sha256, md5) {
       sessionId = uuidv4().toString()
       time = new Date().addHours(5)
       await request(`UPDATE USERS SET SESSIONID='${sessionId}', SESSIONIDEXPIRE='${time.toISOString()}' WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
+      sess = await getSession(sessionId)
+      privileged = sess["privileged"]
     }
     i += 1
   }
   if (sessionId == "") {
     sessionId = "Invalid credentials"
     userid = ""
+    privileged = 0
   }
-  return [sessionId, userid]
+  return [sessionId, userid, privileged]
 
 }
 
@@ -236,13 +260,30 @@ async function lendMaterial(userid, materialid) {
   else { return false }
 
 }
+async function returnMaterial(materialid) {
+  now = new Date()
+  material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
+  if (hasData(material)) {
+    user = await request(`SELECT * FROM USERS WHERE USERID='${material[0][0]['lendoutto']}'`)
+    if (hasData(user)) {
+      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1' WHERE MATERIALID='${materialid}'`)
+      user[0][0]["materials"].splice(user[0][0]["materials"].indexOf(materialid), 1)
+      returnDate = new Date(material[0][0]["returndate"])
+      if (dateInPast(returnDate, now)) { user[0][0]["howmuchlate"] += 1 }
+      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}', HOWMUCHLATE=${user[0][0]["howmuchlate"]} WHERE USERID='${material[0][0]['lendoutto']}'`)
+      return true
+    }
+    else return false
+  }
+  else return false
+}
 
 //--------------------------------------------------------------------------------------------------//
 
 (async () => {
   console.log("Starting")
   await sequelize.authenticate()
-  i = 0
+  // i = 0
   // while (i < 20) {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
   //   await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", false, [])
@@ -250,5 +291,3 @@ async function lendMaterial(userid, materialid) {
   //   i++
   // }
 })();
-
-
