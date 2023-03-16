@@ -9,7 +9,8 @@ const { faker } = require('@faker-js/faker/locale/nl_BE');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json());
 
-leesniveaus = ["AVI-START", "AVI-M3", "AVI-E3", "AVI-M4", "AVI-E4", "AVI-M5", "AVI-E5", "AVI-M6", "AVI-E6", "AVI-M7", "AVI-E7", "AVI-PLUS"]
+const leesniveaus = ["AVI-START", "AVI-M3", "AVI-E3", "AVI-M4", "AVI-E4", "AVI-M5", "AVI-E5", "AVI-M6", "AVI-E6", "AVI-M7", "AVI-E7", "AVI-PLUS"]
+const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
 //-----------------------------------------------------------------------------------REQUESTS-------//
 app.use(express.static(__dirname + "/../client/build/"));
 app.listen(PORT, () => {
@@ -26,9 +27,9 @@ app.post("/login", (req, res) => {
       user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
       sessionid = user[0]
       userid = user[1]
-      privileged = user[2]
+      privilege = user[2]
       if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) }
-      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privileged": privileged }) }
+      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
     }
     else { res.status(400).send("Invalid credentials") }
 
@@ -40,8 +41,8 @@ app.post("/getUser", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
       if (hasData(user)) {
-        if (session['privileged'] == '1') { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) }
-        else { res.status(200).send(stripInfo(user[0], ["privileged", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) }
+        if (session['privilege'] == '1') { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) }
+        else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) }
       }
       else res.status(400).send("Invalid user")
     }
@@ -52,8 +53,8 @@ app.post("/createUser", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
-      if (session['privileged'] == '1') {
-        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privileged"], req["body"]["sha256"], req["body"]["md5"], [])
+      if (session['privilege'] == '1') {
+        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
         res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
       }
       else { res.status(400).send("Invalid session") }
@@ -68,7 +69,7 @@ app.post("/getMaterial", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
       if (hasData(material)) {
-        if (session['privileged'] == '1') { res.status(200).send(material[0]) }
+        if (session['privilege'] == '1') { res.status(200).send(material[0]) }
         else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "available"])) }
       }
       else res.status(400).send("Invalid material")
@@ -79,7 +80,7 @@ app.post("/createMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
-      if (session['privileged'] == '1') {
+      if (session['privilege'] == '1') {
         await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
         res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
       }
@@ -195,17 +196,13 @@ function checkSessionValidity(user) {
 
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
-async function addUserWithPass(name, surname, password, privileged, materials) {
+async function addUserWithPass(name, surname, password, clsNum, cls, privilege, materials) {
   let hashes = generateHashes(name, surname, password);
-  await addUserWithHash(name, surname, privileged, hashes[0], hashes[1], materials)
+  await addUserWithHash(name, surname, clsNum, cls, privilege, hashes[0], hashes[1], materials)
 }
 
-async function addUserWithHash(name, surname, privileged, sha256, md5, materials) {
-  let privilegedBit = 0;
-  if (privileged) {
-    privilegedBit = 1;
-  }
-  await request(`INSERT INTO USERS (firstname, lastname, privileged, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilegedBit}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
+async function addUserWithHash(name, surname, clsNum, cls, privilege, sha256, md5, materials) {
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${cls}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
 
@@ -232,16 +229,16 @@ async function login(name, surname, sha256, md5) {
       time = new Date().addHours(5)
       await request(`UPDATE USERS SET SESSIONID='${sessionId}', SESSIONIDEXPIRE='${time.toISOString()}' WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
       sess = await getSession(sessionId)
-      privileged = sess["privileged"]
+      privilege = sess["privilege"]
     }
     i += 1
   }
   if (sessionId == "") {
     sessionId = "Invalid credentials"
     userid = ""
-    privileged = 0
+    privilege = 0
   }
-  return [sessionId, userid, privileged]
+  return [sessionId, userid, privilege]
 
 }
 
@@ -298,7 +295,8 @@ async function returnMaterial(materialid) {
   // i = 0
   // while (i < 20) {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
-  //   await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", false, [])
+  //   let cls = classes[Math.floor(Math.random() * classes.length)]
+  //   await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, cls, 0, [])
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }
