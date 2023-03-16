@@ -116,7 +116,7 @@ app.post("/returnMaterial", (req, res) => {
 })
 app.post("/allMaterials", (req, res) => {
   (async () => {
-    books = await request("SELECT MATERIALID, TITLE, PLACE, DESCR FROM MATERIALS")
+    books = await request("SELECT MATERIALID, TITLE, PLACE, DESCR FROM MATERIALS")[0]
     res.setHeader("Content-Type", "application/json")
     res.status(200).send(books)
   })();
