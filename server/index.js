@@ -21,10 +21,25 @@ app.get("*", (req, res) => {
 });
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
-app.post("/login", (req, res) => {
+app.post("/loginTeacher", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
+      sessionid = user[0]
+      userid = user[1]
+      privilege = user[2]
+      if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) }
+      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
+    }
+    else { res.status(400).send("Invalid credentials") }
+
+  })();
+})
+app.post("/loginPupil", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["class"]}' AND CLASSNUM=${req["body"]["number"]};`)
+      user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
       sessionid = user[0]
       userid = user[1]
       privilege = user[2]
@@ -41,7 +56,7 @@ app.post("/getUser", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
       if (hasData(user)) {
-        if (session['privilege'] == '1') { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) }
+        if (parseInt(session['privilege']) >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) }
         else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) }
       }
       else res.status(400).send("Invalid user")
@@ -53,7 +68,7 @@ app.post("/createUser", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
-      if (session['privilege'] == '1') {
+      if (session['privilege'] == '2') {
         await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
         res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
       }
@@ -69,7 +84,7 @@ app.post("/getMaterial", (req, res) => {
       session = await getSession(req["body"]["sessionid"])
       material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
       if (hasData(material)) {
-        if (session['privilege'] == '1') { res.status(200).send(material[0]) }
+        if (parseInt(session['privilege']) >= 1) { res.status(200).send(material[0]) }
         else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "available"])) }
       }
       else res.status(400).send("Invalid material")
@@ -80,7 +95,7 @@ app.post("/createMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
-      if (session['privilege'] == '1') {
+      if (session['privilege'] == '2') {
         await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
         res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
       }
