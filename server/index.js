@@ -131,11 +131,24 @@ app.post("/returnMaterial", (req, res) => {
 })
 app.post("/allMaterials", (req, res) => {
   (async () => {
-    books = await request("SELECT MATERIALID, TITLE, PLACE, DESCR FROM MATERIALS")[0]
+    materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR FROM MATERIALS")
     res.setHeader("Content-Type", "application/json")
-    res.status(200).send(books)
+    res.status(200).send(materials[0])
   })();
 })
+app.post("/allUsers", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      sess = await getSession(req["body"]["sessionId"])
+      if (parseInt(sess["privilege"]) >= 1) {
+        users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM FROM USERS")
+        res.setHeader("Content-Type", "application/json")
+        res.status(200).send(users[0])
+      } else { res.status(400).send("Invalid request") }
+    }
+  })();
+})
+
 //------------------------------------------------------------------------------------SQL SERVER----//
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
 
