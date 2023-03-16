@@ -149,11 +149,10 @@ app.post("/allUsers", (req, res) => {
   })();
 })
 
-//------------------------------------------------------------------------------------SQL SERVER----//
+//------------------------------------------------------------------------------------SQL-----------//
+//Initialise SQL-Clinet
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
-
 const sequelize = new Sequelize(settings["url"]);
-
 async function request(request) {
   try {
 
@@ -176,7 +175,6 @@ function generateHashes(name, surname, password) {
     .digest("hex");
   return [sha256.toString(), md5.toString()];
 }
-
 function checkString(str) {
   //Returns false when string is not good
   return !(new RegExp(/(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})/, "gi").test(str))
@@ -188,7 +186,6 @@ function checkRequest(req) {
   })
   return stringGood
 }
-
 function stripInfo(dbres, keys) {
   d = dbres[0]
   for (let i = 0; i < keys.length; i++) {
@@ -196,12 +193,10 @@ function stripInfo(dbres, keys) {
   }
   return d
 }
-
 Date.prototype.addHours = function (h) {
   this.setTime(this.getTime() + (h * 60 * 60 * 1000));
   return this;
 }
-
 function hasData(dbres) {
   try {
     return dbres[1]["rowCount"] > 0
@@ -213,7 +208,6 @@ function hasData(dbres) {
 function dateInPast(firstDate, secondDate) {
   return firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
 }
-
 function checkSessionValidity(user) {
   if (user[0][0]["sessionid"] != null) {
     return getSession(user[0][0]["sessionid"]) != null
@@ -228,12 +222,10 @@ async function addUserWithPass(name, surname, password, clsNum, cls, privilege, 
   let hashes = generateHashes(name, surname, password);
   await addUserWithHash(name, surname, clsNum, cls, privilege, hashes[0], hashes[1], materials)
 }
-
 async function addUserWithHash(name, surname, clsNum, cls, privilege, sha256, md5, materials) {
   await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${cls}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
-
 async function addMaterial(title, place, description, available) {
 
   let availableBit = 0;
@@ -242,7 +234,6 @@ async function addMaterial(title, place, description, available) {
   }
   await request(`INSERT INTO MATERIALS (title, place, descr, available) VALUES ('${title}', '${place}', '${description}', '${availableBit}');`);
 }
-
 async function login(name, surname, sha256, md5) {
   let d = await request(`SELECT * FROM USERS WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
   let i = 0
@@ -269,7 +260,6 @@ async function login(name, surname, sha256, md5) {
   return [sessionId, userid, privilege]
 
 }
-
 async function getSession(sessionId) {
   user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
   if (user[1]["rowCount"] > 0) {
@@ -282,7 +272,6 @@ async function getSession(sessionId) {
   else return null
 
 }
-
 async function lendMaterial(userid, materialid) {
   returndate = new Date().addHours(120).toISOString()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
