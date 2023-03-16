@@ -1,45 +1,36 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
 import crypto from "crypto-js";
-import fetch from 'node-fetch';
+import { post } from "../functions";
 
 
 function TeacherLogin() {
+
+    //changes title
+    useEffect(() => {
+      document.title = "Classy Books - Login"
+    }, []);
+
   // React States
   const [errorMessages, setErrorMessages] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const request = async (name, surname, sha256, md5) => {
       
     const body = {name, surname, sha256, md5};
-    try {
-      // Make the HTTP request
-      const response = await fetch('/login', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-      });
-    
-      // Check if the request was successful
-      if (response.statusText !== "OK") {
-        throw new Error('Ongeldige login gegevens');
-      }
+    const response = await post('/login', body)
 
-      if (response.statusText === "OK"){
-       setIsSubmitted(true)
-      }
+      document.cookie = "sessionId=" + response.sessionid + ";path=../";
+      document.cookie = "userId=" + response.userid + ";path=../"
     
-      // Handle the successful response
-      const data = await response.json();
-      document.cookie = "sessionId=" + data.sessionid + ";path=../";
-      document.cookie = "userId=" + data.userid + ";path=../"
-    } catch (error) {
-      // Handle the error
-      console.error('Error:', error.message);
-      alert(error.message);
+      if (response.privileged == "1") {
+        window.location.replace("../overzicht")
+      }
+      if (response.privileged == "0") {
+        window.location.replace("../boeken")
+      }
     }
   
-}
+
   //changes title
   useEffect(() => {
     document.title = "Classy Books - Login"
@@ -98,7 +89,7 @@ function TeacherLogin() {
     <div className="app">
       <div className="login-form">
         <div className="title">Log in</div>
-        {isSubmitted ? window.location.replace("overzicht") : renderForm}
+        {renderForm}
       </div>
     </div>
   );
