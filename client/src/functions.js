@@ -1,4 +1,5 @@
 import fetch from 'node-fetch'
+import { useEffect } from 'react';
 
 export function getCookie(cookieName) {
     // Split all cookies into an array
@@ -18,6 +19,13 @@ export function getCookie(cookieName) {
     return null;
   }
 
+export function Title(title) {
+  //changes Title
+  useEffect(() => {
+    document.title = "Classy Books - "+title
+})
+}
+
 
 export async function checkUser() {
   const sessionid = getCookie("sessionId").toString();
@@ -25,17 +33,14 @@ export async function checkUser() {
   const body = {sessionid,userid};
   const response = post('/getUser', body)
       if (response.statusText === "OK"){
-        if (response.json.privileged != "1") {
-        window.location.replace("../#")
-        }
-      }
+        return response.json.privileged
+      } else {return null}
     } 
 
 
 
 export async function post(url, body) {
   try {
-    // Make the HTTP request
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -57,3 +62,4 @@ export async function post(url, body) {
     console.error('Error:', error.message);
     alert(error.message);
   }}
+
