@@ -69,8 +69,15 @@ app.post("/createUser", (req, res) => {
     if (checkRequest(req)) {
       session = await getSession(req["body"]["sessionid"])
       if (session['privilege'] == '2') {
-        await addUserWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
-        res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
+        if (parseInt(req["body"]["privilege"]) >= 1) {
+          await addTeacherWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
+          res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
+        }
+        else {
+          await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
+          res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
+        }
+
       }
       else { res.status(400).send("Invalid session") }
     }
@@ -148,7 +155,6 @@ app.post("/allUsers", (req, res) => {
     }
   })();
 })
-
 app.post("/removeUser", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
@@ -164,7 +170,6 @@ app.post("/removeUser", (req, res) => {
     else { res.status(400).send("Invalid request") }
   })();
 })
-
 app.post("/removeMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
