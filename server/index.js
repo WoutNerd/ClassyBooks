@@ -165,6 +165,22 @@ app.post("/removeUser", (req, res) => {
   })();
 })
 
+app.post("/removeMaterial", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      sess = await getSession(req["body"]["sessionId"])
+      if (parseInt(sess["privilege"]) == 2) {
+        await request(`DELETE FROM MATERIALS WHERE MATERIALID='${req["body"]["materialId"]}'`)
+        res.status(200).send("Successfully removed material")
+      }
+      else {
+        res.status(400).send("Invalid request")
+      }
+    }
+    else { res.status(400).send("Invalid request") }
+  })();
+})
+
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Clinet
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
