@@ -38,7 +38,7 @@ app.post("/loginTeacher", (req, res) => {
 app.post("/loginPupil", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
-      let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["class"]}' AND CLASSNUM=${req["body"]["number"]};`)
+      let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["clss"]}' AND CLASSNUM=${req["body"]["number"]};`)
       user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
       sessionid = user[0]
       userid = user[1]
@@ -187,7 +187,7 @@ app.post("/removeMaterial", (req, res) => {
 })
 
 //------------------------------------------------------------------------------------SQL-----------//
-//Initialise SQL-Clinet
+//Initialise SQL-Client
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
