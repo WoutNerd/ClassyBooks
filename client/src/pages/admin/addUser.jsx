@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
+import "../../App.css";
 import crypto from "crypto-js";
 import fetch from 'node-fetch';
-import { checkUser, getCookie } from "../functions";
+import { checkUser, getCookie } from "../../functions";
 //import { useEffect } from "react";
 
 function AddUser() {

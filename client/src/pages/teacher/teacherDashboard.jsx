@@ -1,15 +1,10 @@
-import "../App.css"
+import "../../App.css"
 import TeacherNavbar from "./teacherNavbar";
-import checkUser from "../functions/checkUser";
-import { useEffect } from "react";
+import {checkUser, Title} from '../../functions'
 
 const Dashboard = () => {
     checkUser();
-
-      //changes title
-  useEffect(() => {
-    document.title = "Classy Books - Dashboard"
-  }, []);
+    Title('Dashboard')
 
 var books = 0
 var copies = 0

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import "../App.css"
+import "../../App.css"
 import TeacherNavbar from "./teacherNavbar"
-import checkUser from '../functions/checkUser';
-import { useEffect } from 'react';
+import {checkUser, post, Title} from '../../functions'
 
 
 const BookList = () => {
+  Title('Bibliotheek')
+  
   checkUser()
   const [lendOut, setLendOut] = useState(false);
   const [showAll, setShowAll] = useState(true);

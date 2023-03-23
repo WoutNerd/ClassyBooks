@@ -1,47 +1,30 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
+import "../../App.css";
 import crypto from "crypto-js";
-import { post } from "../functions";
+import { post, Title } from "../../functions";
 
 
 function TeacherLogin() {
+Title("Leerkracht login")
 
-    //changes title
-    useEffect(() => {
-      document.title = "Classy Books - Login"
-    }, []);
 
-  // React States
-  const [errorMessages, setErrorMessages] = useState({});
 
   const request = async (name, surname, sha256, md5) => {
       
     const body = {name, surname, sha256, md5};
-    const response = await post('/login', body)
+    const response = await post('/loginTeacher', body)
 
       document.cookie = "sessionId=" + response.sessionid + ";path=../";
       document.cookie = "userId=" + response.userid + ";path=../"
     
-      if (response.privileged == "1") {
+      if (response.privilege === 1 || response.privilege === 2 ) {
         window.location.replace("../overzicht")
       }
-      if (response.privileged == "0") {
+      if (response.privilege === 0) {
         window.location.replace("../boeken")
       }
     }
   
-
-  //changes title
-  useEffect(() => {
-    document.title = "Classy Books - Login"
-  }, []);
-
-
-
-  const errors = {
-    error: "Ongeldige gebruikersnaam of wachtwoord probeer opnieuw.",
-  };
-
   const handleSubmit = (event) => {
     //Prevent page reload
     event.preventDefault();
@@ -54,11 +37,6 @@ function TeacherLogin() {
     
   };
 
-  // Generate JSX code for error message
-  const renderErrorMessage = (name) =>
-    name === errorMessages.name && (
-      <div className="error">{errorMessages.message}</div>
-    );
 
   // JSX code for login form
   const renderForm = (
@@ -66,14 +44,12 @@ function TeacherLogin() {
       <form onSubmit={handleSubmit}>
         <div className="input-container">
           <input type="text" name="name" required placeholder="Voornaam" className="login" autoFocus/>
-          {renderErrorMessage("uname")}
         </div>
         <div className="input-container">
           <input type="text" className="login" name="surname" required placeholder="Achternaam"/>
         </div>
         <div className="input-container">
           <input type="password" name="pass" required placeholder="Wachtwoord" className="login"/>
-          {renderErrorMessage("pass")}
         </div>
         <div className="button-container">
           <input type="submit" value={"Login"} className="login-button"/>
