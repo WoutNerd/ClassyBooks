@@ -149,6 +149,22 @@ app.post("/allUsers", (req, res) => {
   })();
 })
 
+app.post("/removeUser", (req, res) => {
+  (async () => {
+    if (checkRequest(req)) {
+      sess = await getSession(req["body"]["sessionId"])
+      if (parseInt(sess["privilege"]) == 2) {
+        await request(`DELETE FROM USERS WHERE USERID='${req["body"]["userId"]}'`)
+        res.status(200).send("Successfully removed user")
+      }
+      else {
+        res.status(400).send("Invalid request")
+      }
+    }
+    else { res.status(400).send("Invalid request") }
+  })();
+})
+
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Clinet
 settings = JSON.parse(fs.readFileSync("./server/settings.json"));
@@ -218,12 +234,20 @@ function checkSessionValidity(user) {
 
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
-async function addUserWithPass(name, surname, password, clsNum, cls, privilege, materials) {
+async function addTeacherWithPass(name, surname, password, privilege, materials) {
   let hashes = generateHashes(name, surname, password);
-  await addUserWithHash(name, surname, clsNum, cls, privilege, hashes[0], hashes[1], materials)
+  await addTeacherWithHash(name, surname, privilege, hashes[0], hashes[1], materials)
 }
-async function addUserWithHash(name, surname, clsNum, cls, privilege, sha256, md5, materials) {
+async function addPupilWithPass(name, surname, password, clsNum, cls, privilege, materials) {
+  let hashes = generateHashes(cls, clsNum, password);
+  await addPupilWithHash(name, surname, clsNum, cls, privilege, hashes[0], hashes[1], materials)
+}
+async function addPupilWithHash(name, surname, clsNum, cls, privilege, sha256, md5, materials) {
   await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${cls}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
+
+}
+async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
+  await request(`INSERT INTO USERS (firstname, lastname, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
 async function addMaterial(title, place, description, available) {
@@ -313,7 +337,8 @@ async function returnMaterial(materialid) {
   // while (i < 20) {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
   //   let cls = classes[Math.floor(Math.random() * classes.length)]
-  //   await addUserWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, cls, 0, [])
+  //   await addTeacherWithPass(faker.name.firstName(), faker.name.lastName(), "password", 1, [])
+  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, cls, 0, [])
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }
