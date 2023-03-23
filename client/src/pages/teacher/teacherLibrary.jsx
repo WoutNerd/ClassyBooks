@@ -6,8 +6,8 @@ import {checkUser, post, Title} from '../../functions'
 
 const BookList = () => {
   Title('Bibliotheek')
-  
-  checkUser()
+
+  checkUser(0)
   const [lendOut, setLendOut] = useState(false);
   const [showAll, setShowAll] = useState(true);
   const [books, setBooks] = useState([

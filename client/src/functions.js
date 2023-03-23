@@ -27,14 +27,16 @@ export function Title(title) {
 }
 
 
-export async function checkUser() {
+export async function checkUser(privilege) {
   const sessionid = getCookie("sessionId").toString();
   const userid = getCookie("userId").toString();
   const body = {sessionid,userid};
   const response = post('/getUser', body)
       if (response.statusText === "OK"){
-        return response.json.privileged
-      } else {return null}
+        if (response.json.privileged != privilege){
+          window.location.replace('./#')
+        }
+      } 
     } 
 
 
