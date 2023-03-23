@@ -7,14 +7,12 @@ import ReactDOM from 'react-dom/client';
 
 //pages
 import App from './App';
-import UserTypeChose from './pages/userTypeChose';
 import NoPage from './pages/NoPage';
-import Leerling from './pages/student';
-import Leerkracht from './pages/teacherLogin';
-import Klas from './pages/class';
-import Dashboard from './pages/teacherDashboard';
-import TeacherLibrary from './pages/teacherLibrary';
-import AddUser from './pages/addUser';
+import StudentLogin from './pages/student/studentLogin';
+import TeacherLogin from './pages/teacher/teacherLogin';
+import Dashboard from './pages/teacher/teacherDashboard';
+import TeacherLibrary from './pages/teacher/teacherLibrary';
+import AddUser from './pages/admin/addUser';
 import Test from "./pages/test";
 
 
@@ -23,11 +21,9 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        <Route index element={<UserTypeChose />} />
+        <Route index element={<TeacherLogin />} />
         <Route path='*' element={<NoPage/>} />
-        <Route path='leerkracht' element={<Leerkracht />} />
-        <Route path='leerling' element={<Leerling />} />
-        <Route path='klas' element={<Klas/>} />
+        <Route path='leerling' element={<StudentLogin />} />
         <Route path='overzicht' element={<Dashboard/>}/>
         <Route path='bibliotheek' element={<TeacherLibrary/>}/>
         <Route path='leerling-toevoegen' element={<AddUser/>}/>
