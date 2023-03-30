@@ -272,7 +272,10 @@ function checkSessionValidity(user) {
   else return false
 
 }
-
+function parseISOString(s) {
+  var b = s.split(/\D+/);
+  return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+}
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 
 async function addTeacherWithPass(name, surname, password, privilege, materials) {
@@ -368,6 +371,20 @@ async function returnMaterial(materialid) {
   }
   else return false
 }
+async function checkSessionExpireSweep() {
+  let d = await request("SELECT SESSIONIDEXPIRE, SESSIONID FROM USERS")
+  d[0].forEach(async element => {
+    if (element["sessionid"] != null) {
+      let time = element["sessionidexpire"]
+      let now = new Date()
+      if (Date.now() > time) {
+        await request(`UPDATE USERS SET SESSIONID=NULL, SESSIONIDEXPIRE=NULL WHERE SESSIONID='${element['sessionid']}'`)
+      }
+    }
+  });
+
+}
+
 
 //--------------------------------------------------------------------------------------------------//
 
@@ -383,4 +400,5 @@ async function returnMaterial(materialid) {
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }
+  setTimeout(() => checkSessionExpireSweep, 60000)
 })();
