@@ -354,7 +354,6 @@ async function lendMaterial(userid, materialid) {
 
 }
 async function returnMaterial(materialid) {
-
   now = new Date()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   if (hasData(material)) {
@@ -384,7 +383,6 @@ async function checkSessionExpireSweep() {
   });
 
 }
-
 
 //--------------------------------------------------------------------------------------------------//
 
