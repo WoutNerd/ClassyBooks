@@ -14,6 +14,7 @@ import Dashboard from './pages/teacher/teacherDashboard';
 import TeacherLibrary from './pages/teacher/teacherLibrary';
 import AddUser from './pages/admin/addUser';
 import UserTyperChoise from './userTypeChoise';
+import AddMaterial from './pages/admin/addMaterial';
 import Test from "./pages/test";
 
 
@@ -30,6 +31,7 @@ root.render(
         <Route path='overzicht' element={<Dashboard/>}/>
         <Route path='bibliotheek' element={<TeacherLibrary/>}/>
         <Route path='leerling-toevoegen' element={<AddUser/>}/>
+        <Route path='boek-toevoegen' element={<AddMaterial/>}/>
         <Route path='test' element={<Test/>}/>
       </Route>
     </Routes>
