@@ -2,16 +2,18 @@ import React, { useState, useEffect } from "react";
 import "../../App.css";
 import crypto from "crypto-js";
 import fetch from 'node-fetch';
-import { checkUser, getCookie, Title } from "../../functions";
+import { checkUser, getCookie, Title, post } from "../../functions";
 
 
 function AddUser() {
-  Title('')
+  Title('Gebruiker Toevoegen')
   checkUser(2);
   // React States
-  const [errorMessages, setErrorMessages] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+
+  const [isCheckedT, setIsCheckedT] = useState(false);
+  const [isCheckedA, setIsCheckedA] = useState(false);
+
   const sessionid = getCookie("sessionId")
    
 
@@ -19,32 +21,31 @@ function AddUser() {
 
   const request = async (name, surname, sha256, md5, privileged) => {
     const body = {sessionid, name, surname, sha256, md5, privileged};
-    try {
-      // Make the HTTP request
-      const response = await fetch('/createUser', {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-      });
-   
-
-    } catch (error) {
-      // Handle the error
-      console.error('Error:', error.message);
-      alert(error.message);
-    }
+     post('/addUser', body)
   
 }
 
 
-  function handleChange(e) {
-    setIsChecked(e.target.checked);
+
+
+  function handleChangeT(e) {
+    if(isCheckedT == true){
+      setIsCheckedT(e.target.checked);
+    }else if(isCheckedT == false){
+      setIsCheckedT(e.target.checked);
+      setIsCheckedA(!e.target.checked);
+    }
   }
 
+  function handleChangeA(e) {
+    if(isCheckedA == true){
+      setIsCheckedA(e.target.checked); 
+    }else if(isCheckedA == false){
+      setIsCheckedA(e.target.checked);
+      setIsCheckedT(!e.target.checked);
+    }
+  }
 
-  const errors = {
-    error: "Ongeldige gebruikersnaam of wachtwoord probeer opnieuw.",
-  };
 
   const handleSubmit = (event) => {
     //Prevent page reload
@@ -55,15 +56,11 @@ function AddUser() {
 
     var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
     var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
-    request(name.value, surname.value, sha256, md5, isChecked);
+   // request(name.value, surname.value, sha256, md5, isChecked);
     
   };
 
-  // Generate JSX code for error message
-  const renderErrorMessage = (name) =>
-    name === errorMessages.name && (
-      <div className="error">{errorMessages.message}</div>
-    );
+
 
   // JSX code for login form
   const renderForm = (
@@ -80,7 +77,11 @@ function AddUser() {
         </div>
         <div className="input-container">
           <label htmlFor="">Leerkracht</label>
-          <input type="checkbox" className="login" label="leerkracht" checked={isChecked} onChange={handleChange}/>
+          <input type="checkbox" className="login" label="leerkracht" checked={isCheckedT} onChange={handleChangeT}/>
+        </div>
+        <div className="input-container">
+          <label htmlFor="">Beheerder</label>
+          <input type="checkbox" className="login" label="beheerder" checked={isCheckedA} onChange={handleChangeA} />
         </div>
         <div className="button-container">
           <input type="submit" value="Voeg gebruiker toe" className="login-button"/>
