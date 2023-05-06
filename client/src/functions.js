@@ -33,7 +33,7 @@ export async function checkUser(privilege) {
   const body = {sessionid,userid};
   const response = post('/getUser', body)
       if (response.statusText === "OK"){
-        if (response.json.privileged != privilege){
+        if (response.json.privileged >= privilege){
           window.location.replace('./#')
         }
       } 
