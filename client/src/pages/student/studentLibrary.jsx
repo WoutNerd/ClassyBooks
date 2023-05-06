@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
-import {checkUser, post, Title} from '../../functions'
+import {checkUser, post, Title, getCookie} from '../../functions'
 
+async function lend(materialid) {
+  const userid = getCookie("userId")
+  const body = {userid, materialid}
+  const resp = await post("/lendMaterial", body)
+  if(resp.statusText === 'OK'){
+    alert('Succesvol uit geleend. Je moet het terugbrengen voor '+ resp.json)
+  }
+}
 
 const StudentLib =  () => {
   Title('Bibliotheek')
-  checkUser(1)
+  checkUser(0)
   
   const [books, setBooks] = useState(null);
   const [showAll, setShowAll] = useState(true);
@@ -45,6 +53,7 @@ const StudentLib =  () => {
           <p>Locatie: {selectedBook.place}</p>
           <p>Paginas: {selectedBook.descr.pages}</p>
           <p>{selectedBook.lendoutto ? `Niet beschikbaar` : 'Beschikbaar'}</p>
+          <button onClick={() => lend(selectedBook.materialid)}>Leen uit</button>
           <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
         </div>
         }
