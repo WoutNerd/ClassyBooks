@@ -29,10 +29,10 @@ root.render(
         <Route path='*' element={<NoPage/>} />
         <Route path='leerling' element={<StudentLogin />} />
         <Route path='leerkracht' element={<TeacherLogin />} />
-        <Route path='overzicht' element={<Dashboard/>}/>
-        <Route path='bibliotheek' element={<TeacherLib/>}/>
-        <Route path='leerling-toevoegen' element={<AddUser/>}/>
-        <Route path='boek-toevoegen' element={<AddMaterial/>}/>
+        <Route path='leerkracht/overzicht' element={<Dashboard/>}/>
+        <Route path='leerkracht/bibliotheek' element={<TeacherLib/>}/>
+        <Route path='leerkracht/gebruiker-toevoegen' element={<AddUser/>}/>
+        <Route path='leerkracht/boek-toevoegen' element={<AddMaterial/>}/>
         <Route path='leerling/bibliotheek' element={<StudentLib/>}/>
         <Route path='test' element={<Test/>}/>
       </Route>
