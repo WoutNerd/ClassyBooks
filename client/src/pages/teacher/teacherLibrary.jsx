@@ -4,7 +4,7 @@ import TeacherNavbar from "./teacherNavbar"
 import {checkUser, post, Title} from '../../functions'
 
 
-const BookList =  () => {
+const TeacherLib =  () => {
   Title('Bibliotheek')
   checkUser(1)
   
@@ -55,4 +55,4 @@ const BookList =  () => {
   )
 };
 
-export default BookList;
+export default TeacherLib;
