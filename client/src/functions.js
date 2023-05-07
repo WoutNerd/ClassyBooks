@@ -28,12 +28,11 @@ export async function checkUser(privilege) {
   const sessionid = getCookie("sessionId").toString();
   const userid = getCookie("userId").toString();
   const body = {sessionid,userid};
-  const response = post('/getUser', body)
-      if (response.statusText === "OK"){
-        if (response.json.privileged >= privilege){
-          window.location.replace('./#')
-        }
-      } 
+  const response = await post('/getUser', body)
+  if (response.privilege >= privilege || response.privilege === null){
+    alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
+    window.location.replace('./#')
+  } 
     } 
 
 
