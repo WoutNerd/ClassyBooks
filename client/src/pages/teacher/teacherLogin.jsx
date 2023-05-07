@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
 import "../../App.css";
 import crypto from "crypto-js";
 import { post, Title } from "../../functions";
-
 
 function TeacherLogin() {
 Title("Leerkracht login")
@@ -17,11 +15,11 @@ Title("Leerkracht login")
       document.cookie = "sessionId=" + response.sessionid + ";path=../";
       document.cookie = "userId=" + response.userid + ";path=../"
     
-      if (response.privilege === 1 || response.privilege === 2 ) {
-        window.location.replace("../overzicht")
+      if (response.privilege === 1) {
+        window.location.replace("../leerkracht/overzicht")
       }
-      if (response.privilege === 0) {
-        window.location.replace("../boeken")
+      if (response.privilege === 2) {
+        window.location.replace("../beheer/gebruikers-beheren")
       }
     }
   
