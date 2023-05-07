@@ -19,6 +19,7 @@ import StudentLib from './pages/student/studentLibrary';
 import Test from "./pages/test";
 import ManageUsers from './pages/admin/manageUsers';
 import TeacherChangePassword from './pages/teacher/teacherChangePassword';
+import StudentChangePassword from './pages/student/studentChangePassword';
 
 
 
@@ -41,7 +42,8 @@ root.render(
         <Route path='beheer/boek-toevoegen' element={<AddMaterial/>}/>
 
         <Route path='leerling/bibliotheek' element={<StudentLib/>}/>
-        
+        <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword/>}/>
+
         <Route path='test' element={<Test/>}/>
       </Route>
     </Routes>
