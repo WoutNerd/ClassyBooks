@@ -54,3 +54,16 @@ export async function post(url, body) {
     console.error('Error:', error.message);
   }
 }
+
+//changes password of user
+export async function changePassword(sha256, md5, newSha256, neMd5){
+  const sessionId = getCookie('sessionId')
+  const body = {sessionId, sha256, md5, newSha256, neMd5}
+  const resp =  await post('/changePassword', body)
+
+  console.log(body)
+  if(resp === 'Changed password'){
+    alert('Wachtwoord succesvol veranderd')
+    window.location.replace('../../#')
+  }
+}
