@@ -3,7 +3,7 @@ import TeacherNavbar from "./teacherNavbar";
 import {checkUser, Title} from '../../functions'
 
 const Dashboard = () => {
-    checkUser();
+    checkUser(1);
     Title('Dashboard')
 
 var books = 0
