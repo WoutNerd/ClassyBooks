@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js v1.18.0
+      - name: Use Node.js v18.10.0
         uses: actions/setup-node@v1
         with:
           node-version: 18.10.0
