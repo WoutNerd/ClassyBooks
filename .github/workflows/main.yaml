@@ -14,8 +14,7 @@ jobs:
         with:
           node-version: 18.10.0
       - run: cd client
-      - run: npm i react-scripts
-      - run: npm ci
+      - run: npm i
       - run: npm run build
       - name: Share artifact inside workflow
         uses: actions/upload-artifact@v1
