@@ -16,7 +16,6 @@ import AddUser from './pages/admin/addUser';
 import UserTyperChoise from './userTypeChoise';
 import AddMaterial from './pages/admin/addMaterial';
 import StudentLib from './pages/student/studentLibrary';
-import Test from "./pages/test";
 import ManageUsers from './pages/admin/manageUsers';
 import TeacherChangePassword from './pages/teacher/teacherChangePassword';
 import StudentChangePassword from './pages/student/studentChangePassword';
@@ -29,22 +28,22 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route index element={<UserTyperChoise />} />
-        <Route path='*' element={<NoPage/>} />
+        <Route path='*' element={<NoPage />} />
         <Route path='leerling' element={<StudentLogin />} />
         <Route path='leerkracht' element={<TeacherLogin />} />
 
-        <Route path='leerkracht/overzicht' element={<Dashboard/>}/>
-        <Route path='leerkracht/bibliotheek' element={<TeacherLib/>}/>
-        <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword/>}/>
+        <Route path='leerkracht/overzicht' element={<Dashboard />} />
+        <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
+        <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
 
-        <Route path='beheer/gebruiker-toevoegen' element={<AddUser/>}/>
-        <Route path='beheer/gebruikers-beheren' element={<ManageUsers/>}/>
-        <Route path='beheer/boek-toevoegen' element={<AddMaterial/>}/>
+        <Route path='beheer/gebruiker-toevoegen' element={<AddUser />} />
+        <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
+        <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
 
-        <Route path='leerling/bibliotheek' element={<StudentLib/>}/>
-        <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword/>}/>
+        <Route path='leerling/bibliotheek' element={<StudentLib />} />
+        <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
 
-        <Route path='test' element={<Test/>}/>
+        <Route path='test' element={<Test />} />
       </Route>
     </Routes>
   </BrowserRouter>
