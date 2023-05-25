@@ -1,46 +1,58 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "./teacherNavbar"
 import {checkUser, post, Title} from '../../functions'
 
 
-const BookList = () => {
+const TeacherLib =  () => {
   Title('Bibliotheek')
-
-  checkUser(0)
-  const [lendOut, setLendOut] = useState(false);
+  checkUser(1)
+  
+  const [books, setBooks] = useState(null);
   const [showAll, setShowAll] = useState(true);
-  const [books, setBooks] = useState([
-    { title: 'Book 1', author: 'Author 1', location: 'Wolfklas', shelf: '1', checkedOutUser: 'Jan' },
-    { title: 'Book 2', author: 'Author 2', location: 'Wolfklas', shelf: '2', checkedOutUser: '' },
-    { title: 'Book 3', author: 'Author 3', location: 'Wolfklas', shelf: '3', checkedOutUser: '' },
-  ]);
-  
   const [selectedBook, setSelectedBook] = useState(null);
-  
 
-  return (
-    <div>
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await post("/allMaterials")
+        setBooks(response);
+      } catch (error) {
+        console.error(error)
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+  if (!books) {
+    return <div>Loading...</div>;
+  }
+
+  return (<div>
+    <div><TeacherNavbar></TeacherNavbar></div>
       <div>
-        <TeacherNavbar/>
+          {showAll ? 
+      books.map((book) => (
+        <div key={book.title}>
+          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }}>{book.title}</h3>
+        </div>
+      ))
+      : <div>
+          <h2>{selectedBook.title}</h2>
+          <h3>Auteur: {selectedBook.descr.author}</h3>
+          <img src={selectedBook.descr.cover} alt="" />
+          <p>Locatie: {selectedBook.place}</p>
+          <p>Paginas: {selectedBook.descr.pages}</p>
+          <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
+          <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
+        </div>
+        }
       </div>
-      {showAll ? 
-        books.map((book) => (
-          <div key={book.title}>
-            <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }}>{book.title}</h3>
-          </div>
-        ))
-        : <div>
-            <h2>{selectedBook.title}</h2>
-            <h3>{selectedBook.author}</h3>
-            <p>Het boek staat in de {selectedBook.location}</p>
-            <p>Het staat in rek {selectedBook.shelf}</p>
-            <p>{selectedBook.checkedOutUser ? `Is uitgeleend door: ${selectedBook.checkedOutUser}` : ''}</p>
-            <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
-          </div>
-          }
     </div>
-  );
+  )
 };
 
-export default BookList;
+export default TeacherLib;

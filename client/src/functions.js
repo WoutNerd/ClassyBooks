@@ -1,46 +1,42 @@
 import fetch from 'node-fetch'
 import { useEffect } from 'react';
 
+//extracs cookie zith given name
 export function getCookie(cookieName) {
-    // Split all cookies into an array
     var cookies = document.cookie.split(';');
   
-    // Loop through each cookie and check if it matches the cookie name
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i].trim();
   
-      // If the cookie name matches, return the value of the cookie
       if (cookie.startsWith(cookieName + '=')) {
         return cookie.substring(cookieName.length + 1, cookie.length);
       }
     }
   
-    // If the cookie name was not found, return null
     return null;
   }
 
+//changes title 
 export function Title(title) {
-  //changes Title
   useEffect(() => {
     document.title = "Classy Books - "+title
 })
 }
 
-
+//checks if user is privileged to the page
 export async function checkUser(privilege) {
   const sessionid = getCookie("sessionId").toString();
   const userid = getCookie("userId").toString();
   const body = {sessionid,userid};
-  const response = post('/getUser', body)
-      if (response.statusText === "OK"){
-        if (response.json.privileged != privilege){
-          window.location.replace('./#')
-        }
-      } 
+  const response = await post('/getUser', body)
+  if (response.privilege < privilege || response.privilege === null){
+    alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
+    window.location.replace('./#')
+  } 
     } 
 
 
-
+//post to given url
 export async function post(url, body) {
   try {
     const response = await fetch(url, {
@@ -48,20 +44,25 @@ export async function post(url, body) {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
     });
-    
     const data = await response.json();
-
     if (response.statusText !== "OK") {
       throw new Error(response);
     }
-
-
-
   return data
   }
   catch (error) {
-    // Handle the error
     console.error('Error:', error.message);
-    alert(error.message);
-  }}
+  }
+}
 
+//changes password of user
+export async function changePassword(sha256, md5, newSha256, neMd5){
+  const sessionId = getCookie('sessionId')
+  const body = {sessionId, sha256, md5, newSha256, neMd5}
+  const resp =  await post('/changePassword', body)
+
+  if(resp === 'Changed password'){
+    alert('Wachtwoord succesvol veranderd')
+    window.location.replace('../../#')
+  }
+}

@@ -1,5 +1,5 @@
 import '../../App.css'
-import { post, Title, getCookie } from '../../functions'
+import { post, Title, getCookie, checkUser } from '../../functions'
 import { useState } from 'react'
 
 async function addMaterial(isChecked) {
@@ -26,6 +26,8 @@ async function addMaterial(isChecked) {
 
 const AddMaterial = () => {
     Title('Boeken toevoegen')
+    checkUser(2)
+
     const [isChecked, setIsChecked] = useState(false);
 
     function handleChange(e) {
