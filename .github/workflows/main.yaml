@@ -13,11 +13,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18.10.0
-      - run: cd client
-      - run: npm i
-      - run: npm i react-scripts
-      - run: npm install -g create-react-app
-      - run: npm run build
+      - name: Install dependencies
+        working-directory: ./client
+        run: npm i
+      - name: Build
+        run: npm run build
+
       - name: Share artifact inside workflow
         uses: actions/upload-artifact@v1
         with:
