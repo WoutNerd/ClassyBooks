@@ -191,15 +191,15 @@ app.post("/changePassword", (req, res) => {
       sess = await getSession(req["body"]["sessionId"])
       if (parseInt(sess["privilege"]) <= 1) {
         if (sess["sha256"] == req["body"]["sha256"] && sess["md5"] == req["body"]["md5"]) {
-          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]} WHERE USERID='${sess["userid"]}'`)
-          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]} WHERE USERID='${sess["userid"]}'`)
+          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}'`)
+          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}'`)
           res.status(200).send("Changed password")
         }
         else { res.status(400).send("Invalid credentials") }
       }
       else if (parseInt(sess["privilege"]) == 2) {
-        await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]} WHERE USERID='${req["body"]["userid"]}'`)
-        await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]} WHERE USERID='${req["body"]["userid"]}'`)
+        await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${req["body"]["userid"]}'`)
+        await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${req["body"]["userid"]}'`)
         res.status(200).send("Changed password")
       }
     }
