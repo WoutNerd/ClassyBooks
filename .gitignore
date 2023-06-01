@@ -9,3 +9,5 @@ data
 server/init.sql
 serverlogin.txt
 test.jsx
+classybooks-testserver.session.sql
+art
