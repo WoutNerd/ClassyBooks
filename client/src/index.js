@@ -25,28 +25,28 @@ import ChangeUserPass from './pages/admin/changeUserPass';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />}>
-        <Route index element={<UserTyperChoise />} />
-        <Route path='*' element={<NoPage />} />
-        <Route path='leerling' element={<StudentLogin />} />
-        <Route path='leerkracht' element={<TeacherLogin />} />
+        <BrowserRouter>
+                <Routes>
+                        <Route path="/" element={<App />}>
+                                <Route index element={<UserTyperChoise />} />
+                                <Route path='*' element={<NoPage />} />
+                                <Route path='leerling' element={<StudentLogin />} />
+                                <Route path='leerkracht' element={<TeacherLogin />} />
 
-        <Route path='leerkracht/overzicht' element={<Dashboard />} />
-        <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
-        <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
+                                <Route path='leerkracht/overzicht' element={<Dashboard />} />
+                                <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
+                                <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
 
-        <Route path='beheer/gebruiker-toevoegen' element={<AddUser/>}/>
-        <Route path='beheer/gebruikers-beheren' element={<ManageUsers/>}/>
-        <Route path='beheer/boek-toevoegen' element={<AddMaterial/>}/>
-        <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass/>}/>
+                                <Route path='beheer/gebruiker-toevoegen' element={<AddUser />} />
+                                <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
+                                <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
+                                <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass />} />
 
-        <Route path='leerling/bibliotheek' element={<StudentLib />} />
-        <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
+                                <Route path='leerling/bibliotheek' element={<StudentLib />} />
+                                <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
 
 
-      </Route>
-    </Routes>
-  </BrowserRouter>
+                        </Route>
+                </Routes>
+        </BrowserRouter>
 );
