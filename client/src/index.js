@@ -19,6 +19,7 @@ import StudentLib from './pages/student/studentLibrary';
 import ManageUsers from './pages/admin/manageUsers';
 import TeacherChangePassword from './pages/teacher/teacherChangePassword';
 import StudentChangePassword from './pages/student/studentChangePassword';
+import ChangeUserPass from './pages/admin/changeUserPass';
 
 
 
@@ -36,14 +37,25 @@ root.render(
         <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
         <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
 
+<<<<<<< HEAD
+        <Route path='beheer/gebruiker-toevoegen' element={<AddUser/>}/>
+        <Route path='beheer/gebruikers-beheren' element={<ManageUsers/>}/>
+        <Route path='beheer/boek-toevoegen' element={<AddMaterial/>}/>
+        <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass/>}/>
+=======
         <Route path='beheer/gebruiker-toevoegen' element={<AddUser />} />
         <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
         <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
+>>>>>>> 49737b00bfa0d2e6ee13ae72d90902370feda427
 
         <Route path='leerling/bibliotheek' element={<StudentLib />} />
         <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
 
+<<<<<<< HEAD
+     
+=======
         <Route path='test' element={<Test />} />
+>>>>>>> 49737b00bfa0d2e6ee13ae72d90902370feda427
       </Route>
     </Routes>
   </BrowserRouter>

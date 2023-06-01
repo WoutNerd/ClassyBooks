@@ -3,7 +3,6 @@ ngrok.exe
 .gitignore
 .vscode
 testData
-images
 settings.json
 data
 server/init.sql

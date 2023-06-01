@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, Title, post, checkUser } from '../../functions';
+import { Link } from "react-router-dom"
 
 async function deleteUser(userId) {
     const sessionId = getCookie('sessionId')
@@ -8,6 +9,11 @@ async function deleteUser(userId) {
     if(window.confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?')){
         post('/removeUser', body)
     }else{}
+}
+
+function handlePw(userid) {
+  document.cookie = 'changePwUser=' + userid
+  window.location.replace('/beheer/verander-gebruiker-wachtwoord')
 }
 
 const ManageUsers =  () => {
@@ -48,7 +54,7 @@ const ManageUsers =  () => {
         ))
         : <div>
             <h2>{selectedUser.firstname+' '+selectedUser.lastname}</h2>
-            <button onClick={() => {}}>Verander wachtwoord van deze {selectedUser.firstname+' '+selectedUser.lastname}</button>
+            <button onClick={() => {handlePw(selectedUser.userid)}}>Verander wachtwoord van {selectedUser.firstname+' '+selectedUser.lastname}</button>
             <button onClick={() => {deleteUser(selectedUser.userid)}}>Verwijder {selectedUser.firstname+' '+selectedUser.lastname}</button>
             <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
           </div>
