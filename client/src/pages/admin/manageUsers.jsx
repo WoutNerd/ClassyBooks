@@ -31,10 +31,10 @@ const ManageUsers =  () => {
     const [users, setUsers] = useState(null)
     const [selectedUser, setSelectedUser] = useState(null)
     const [showAll, setShowAll] = useState(true)
-    const sessionId = getCookie('sessionId')
   
     useEffect(() => {
       const fetchData = async () => {
+        const sessionId = getCookie('sessionId')
         try {
         const body = {sessionId}
         const response = await post("/allUsers", body)

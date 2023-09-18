@@ -14,7 +14,8 @@ const StudentLogin = () => {
       navigate(path); // Use navigate to go to the specified path
     };
     function HandleSubmit(event) {
-    useEffect(async ()=> {
+    useEffect( ()=> {
+      async function fetchData() {
         event.preventDefault();
         var { clss, number, pass } = document.forms[0];
         clss = clss.value
@@ -26,13 +27,13 @@ const StudentLogin = () => {
         const body = {clss, number, sha256, md5};
         const response = await post('/loginPupil', body)
         console.log(response.privilege)
-        if (response.privilege != 0) {
+        if (response.privilege !== 0) {
             alert("Leerkrachten en beheerders moeten zich inloggen via de loginpagina voor leerkrachten")
         }else if (response.privilege === 0) {
             document.cookie = "sessionId=" + response.sessionid + ";path=../";
             document.cookie = "userId=" + response.userid + ";path=../"
             redirectToPage('./boeken')
-        }
+        }} fetchData();
     })
   }
 

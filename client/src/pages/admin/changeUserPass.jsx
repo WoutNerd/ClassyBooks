@@ -16,7 +16,7 @@ const ChangeUserPass =  () => {
       const userId = userid
       const sessionId = sessionid
       const {Newpass, NewpassCheck} = document.form[0]
-      if(Newpass.value != NewpassCheck.value){
+      if(Newpass.value !== NewpassCheck.value){
         alert('Voer 2 maal hetzelfde wachtwoord in.')
       }
       if(Newpass.value === NewpassCheck.value){
@@ -31,6 +31,8 @@ const ChangeUserPass =  () => {
 
     useEffect(() => {
         const fetchData = async () => {
+          const userid = getCookie('changePwUser')
+          const sessionid = getCookie('sessionId')
           try {
           const body = {sessionid, userid}
           const response = await post("/getUser", body)
