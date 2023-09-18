@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../../App.css";
 import crypto from "crypto-js";
 import { checkUser, getCookie, Title, post } from "../../functions";
@@ -16,7 +16,7 @@ function AddUser() {
     navigate(path); // Use navigate to go to the specified path
   };
   // React States
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitted] = useState(false);
 
   const [isCheckedT, setIsCheckedT] = useState(false);
   const [isCheckedA, setIsCheckedA] = useState(false);
@@ -28,7 +28,7 @@ function AddUser() {
 
   const request = async (name, surname, sha256, md5, privileged) => {
     const body = {sessionid, name, surname, sha256, md5, privileged};
-     post('/addUser', body)
+     post('/createUser', body)
   
 }
 
@@ -36,18 +36,18 @@ function AddUser() {
 
 
   function handleChangeT(e) {
-    if(isCheckedT == true){
+    if(isCheckedT === true){
       setIsCheckedT(e.target.checked);
-    }else if(isCheckedT == false){
+    }else if(isCheckedT === false){
       setIsCheckedT(e.target.checked);
       setIsCheckedA(!e.target.checked);
     }
   }
 
   function handleChangeA(e) {
-    if(isCheckedA == true){
+    if(isCheckedA === true){
       setIsCheckedA(e.target.checked); 
-    }else if(isCheckedA == false){
+    }else if(isCheckedA === false){
       setIsCheckedA(e.target.checked);
       setIsCheckedT(!e.target.checked);
     }
@@ -63,7 +63,15 @@ function AddUser() {
 
     var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
     var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
-   // request(name.value, surname.value, sha256, md5, isChecked);
+    var privileged = 0
+
+    if (isCheckedA === 1){
+      privileged = 2
+    } else if (isCheckedT === 1){
+      privileged = 1
+    }
+
+    request(name.value, surname.value, sha256, md5, privileged);
     
   };
 
