@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, Title, post, checkUser } from '../../functions';
-import { Link } from "react-router-dom"
+import {useNavigate} from 'react-router'
 
 async function deleteUser(userId) {
     const sessionId = getCookie('sessionId')
@@ -11,14 +11,22 @@ async function deleteUser(userId) {
     }else{}
 }
 
-function handlePw(userid) {
-  document.cookie = 'changePwUser=' + userid
-  window.location.replace('/beheer/verander-gebruiker-wachtwoord')
-}
+
 
 const ManageUsers =  () => {
     Title('Gebruikers beheren')
     checkUser(2)
+
+    const navigate = useNavigate();
+
+  const redirectToPage = (path) => {
+    navigate(path); // Use navigate to go to the specified path
+  };
+
+  function handlePw(userid) {
+    document.cookie = 'changePwUser=' + userid
+    redirectToPage('/beheer/verander-gebruiker-wachtwoord')
+  }
     
     const [users, setUsers] = useState(null)
     const [selectedUser, setSelectedUser] = useState(null)
@@ -38,6 +46,8 @@ const ManageUsers =  () => {
   
       fetchData();
     }, []);
+
+    
   
   
     if (!users) {

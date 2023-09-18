@@ -1,11 +1,16 @@
 import "../../App.css";
 import crypto from "crypto-js";
 import { post, Title } from "../../functions";
+import {useNavigate} from 'react-router'
 
 function TeacherLogin() {
 Title("Leerkracht login")
 
+const navigate = useNavigate();
 
+const redirectToPage = (path) => {
+  navigate(path); // Use navigate to go to the specified path
+};
 
   const request = async (name, surname, sha256, md5) => {
       
@@ -16,10 +21,10 @@ Title("Leerkracht login")
       document.cookie = "userId=" + response.userid + ";path=../"
     
       if (response.privilege === 1) {
-        window.location.replace("../leerkracht/overzicht")
+        redirectToPage("../leerkracht/overzicht")
       }
       if (response.privilege === 2) {
-        window.location.replace("../beheer/gebruikers-beheren")
+        redirectToPage("../beheer/gebruikers-beheren")
       }
     }
   

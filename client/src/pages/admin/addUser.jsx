@@ -2,11 +2,19 @@ import React, { useState, useEffect } from "react";
 import "../../App.css";
 import crypto from "crypto-js";
 import { checkUser, getCookie, Title, post } from "../../functions";
+import {useNavigate} from 'react-router'
 
 
 function AddUser() {
   Title('Gebruiker Toevoegen')
   checkUser(2);
+
+
+  const navigate = useNavigate();
+
+  const redirectToPage = (path) => {
+    navigate(path); // Use navigate to go to the specified path
+  };
   // React States
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -96,7 +104,7 @@ function AddUser() {
     <div className="app">
       <div className="login-form">
         <div className="title">Log in</div>
-        {isSubmitted ? window.location.replace("overzicht") : renderForm}
+        {isSubmitted ? redirectToPage("overzicht") : renderForm}
       </div>
     </div>
   );
