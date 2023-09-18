@@ -283,11 +283,11 @@ async function addTeacherWithPass(name, surname, password, privilege, materials)
   await addTeacherWithHash(name, surname, privilege, hashes[0], hashes[1], materials)
 }
 async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials) {
-  let hashes = generateHashes(cls, clsNum, password);
-  await addPupilWithHash(name, surname, clsNum, cls, privilege, hashes[0], hashes[1], materials)
+  let hashes = generateHashes(clss, clsNum, password);
+  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials)
 }
 async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${cls}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
