@@ -92,7 +92,7 @@ app.post("/getMaterial", (req, res) => {
       material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
       if (hasData(material)) {
         if (parseInt(session['privilege']) >= 1) { res.status(200).send(material[0]) }
-        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate"])) }
+        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "lendcount"])) }
       }
       else res.status(400).send("Invalid material")
     }
@@ -127,7 +127,7 @@ app.post("/lendMaterial", (req, res) => {
 app.post("/returnMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
-      let ret = await returnMaterial(req["body"]["materialid"])
+      let ret = await returnMaterial(req["body"]["materialid"], req["body"]["score"])
       if (ret) {
         res.setHeader('Content-Type', 'text/plain')
         res.status(200).send("Successfully returned material")
@@ -300,7 +300,7 @@ async function addMaterial(title, place, description, available) {
   if (available) {
     availableBit = 1;
   }
-  await request(`INSERT INTO MATERIALS (title, place, descr, available) VALUES ('${title}', '${place}', '${description}', '${availableBit}');`);
+  await request(`INSERT INTO MATERIALS (title, place, descr, available, lendcount, avgscore) VALUES ('${title}', '${place}', '${description}', '${availableBit}'), '0', '0.0'`);
 }
 async function login(name, surname, sha256, md5) {
   let d = await request(`SELECT * FROM USERS WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
@@ -353,13 +353,13 @@ async function lendMaterial(userid, materialid) {
   else { return false }
 
 }
-async function returnMaterial(materialid) {
+async function returnMaterial(materialid, score) {
   now = new Date()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   if (hasData(material)) {
     user = await request(`SELECT * FROM USERS WHERE USERID='${material[0][0]['lendoutto']}'`)
     if (hasData(user) && checkSessionValidity(user)) {
-      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1' WHERE MATERIALID='${materialid}'`)
+      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1', AVGSCORE='${((material[0][0]["avgscore"] * material[0][0]["lendcount"]) + score / material[0][0]["lendcount"] + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}'`)
       user[0][0]["materials"].splice(user[0][0]["materials"].indexOf(materialid), 1)
       returnDate = new Date(material[0][0]["returndate"])
       if (dateInPast(returnDate, now)) { user[0][0]["howmuchlate"] += 1 }
