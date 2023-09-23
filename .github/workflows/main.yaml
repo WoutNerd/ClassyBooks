@@ -5,7 +5,7 @@ on:
     branches: [develop]
 
 jobs:
-  build-react:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,11 +24,10 @@ jobs:
         with:
           name: react-github-actions-build
           path: ./client/build
-  build-docker:
-    runs-on: ubuntu-latest
-    steps:
+          
       - uses: actions/checkout@v3
       - name: Build docker container
         working-directory: .
-        run: docker build -t JasperDG828/classybooks:${GITHUB_SHA} .
+        run: docker build -t jasperdg828/classybooks:${GITHUB_SHA} .
+      
     
