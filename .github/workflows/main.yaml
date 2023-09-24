@@ -26,8 +26,13 @@ jobs:
           path: ./client/build
           
       - uses: actions/checkout@v3
+      - name: Logging in to GHCR
+        run: docker login --username jasperdg828 --password ${{secrets.GHCR_TOKEN}} ghcr.io
+        
       - name: Build docker container
         working-directory: .
-        run: docker build -t jasperdg828/classybooks:${GITHUB_SHA} .
+        run: docker build -t ghcr.io/jasperdg828/classybooks:latest-dev .
       
+      - name: Pushing container
+        run: docker push ghcr.io/jasperdg828/classybooks
     
