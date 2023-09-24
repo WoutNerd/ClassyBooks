@@ -16,3 +16,5 @@ When running the container, assign a volume `/server/settings.json`, this file h
 You can find the connection-url in your database's dashboard
 #### Environment variables
 When running the container, assign the connection-url to the `DBURL`-environment table.
+
+<img src="https://github.com/JasperDG828/classybooks/blob/develop/art/logo.png?raw=true" width="400"/>
