@@ -34,5 +34,5 @@ jobs:
         run: docker build -t ghcr.io/jasperdg828/classybooks:latest-dev .
       
       - name: Pushing container
-        run: docker push ghcr.io/jasperdg828/classybooks
+        run: docker push ghcr.io/jasperdg828/classybooks:latest-dev
     
