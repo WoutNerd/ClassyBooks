@@ -1,9 +1,11 @@
 import './App.css'
 import { useNavigate } from 'react-router';
+import { Title } from './functions';
 
 
 
 const UserTyperChoise= () => {
+  Title('')
 const navigate = useNavigate();
 
   const redirectToPage = (path) => {
