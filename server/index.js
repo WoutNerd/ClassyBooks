@@ -1,4 +1,5 @@
 //-------------------------------------------------------------------------------------IMPORTS-------//
+require('dotenv').config()
 const express = require("express");
 const fs = require("fs");
 const PORT = process.env.PORT || 8080;
@@ -245,7 +246,12 @@ app.post("/changePassword", (req, res) => {
 })
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
-settings = JSON.parse(fs.readFileSync("./server/settings.json"));
+try {
+  settingsFile = fs.readFileSync("./server/settings.json")
+  settings = JSON.parse(settingsFile);
+}
+catch { settings = { "url": process.env.DBURL }; }
+
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
   try {
