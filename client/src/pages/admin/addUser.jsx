@@ -3,6 +3,7 @@ import "../../App.css";
 import crypto from "crypto-js";
 import { checkUser, getCookie, Title, post } from "../../functions";
 import {useNavigate} from 'react-router'
+import TeacherNavbar from "../teacher/teacherNavbar";
 
 
 function AddUser() {
@@ -110,6 +111,7 @@ function AddUser() {
   
   return (
     <div className="app">
+      <nav><TeacherNavbar/></nav>
       <div className="login-form">
         <div className="title">Log in</div>
         {isSubmitted ? redirectToPage("overzicht") : renderForm}

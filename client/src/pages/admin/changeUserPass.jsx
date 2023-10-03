@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, post, Title } from '../../functions';
 import crypto from 'crypto-js';
+import TeacherNavbar from '../teacher/teacherNavbar';
 
 
 const ChangeUserPass =  () => {
@@ -49,7 +50,8 @@ const ChangeUserPass =  () => {
         return <div>Loading...</div>;
       }
       
-    return ( 
+    return ( <div>
+      <nav><TeacherNavbar/></nav>
         <div>
             {user.firstname+' '+user.lastname}
             <form onSubmit={() => {console.log()}}>
@@ -63,6 +65,7 @@ const ChangeUserPass =  () => {
           <input type="button" onClick={() => {handleSubmit()}} value={"Verander wachtwoord"} className="login-button"/>
         </div>
         </form>
+        </div>
         </div>
      );
 }

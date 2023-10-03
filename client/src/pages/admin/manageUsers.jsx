@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, Title, post, checkUser } from '../../functions';
 import {useNavigate} from 'react-router'
+import TeacherNavbar from '../teacher/teacherNavbar';
 
 async function deleteUser(userId) {
     const sessionId = getCookie('sessionId')
@@ -55,6 +56,7 @@ const ManageUsers =  () => {
     }
   
     return (<div>
+      <nav><TeacherNavbar/></nav>
         <div>
             {showAll ? 
         users.map((user) => (
