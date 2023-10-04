@@ -31,13 +31,13 @@ const TeacherLib =  () => {
     return <div>Loading...</div>;
   }
 
-  return (<div>
-    <div><TeacherNavbar></TeacherNavbar></div>
-      <div>
+  return (<div className='page'>
+    <div className='lNav'><TeacherNavbar></TeacherNavbar></div>
+      <div className='content'>
           {showAll ? 
       books.map((book) => (
         <div key={book.title}>
-          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }}>{book.title}</h3>
+          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} className='item'>{book.title}</h3>
         </div>
       ))
       : <div>

@@ -45,7 +45,7 @@ const ManageMaterials =  () => {
           {showAll ? 
       books.map((book) => (
         <div key={book.title}>
-          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }}>{book.title}</h3>
+          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} className='item'>{book.title}</h3>
         </div>
       ))
       : <div>
@@ -55,7 +55,7 @@ const ManageMaterials =  () => {
           <p>Locatie: {selectedBook.place}</p>
           <p>Paginas: {selectedBook.descr.pages}</p>
           <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
-          <button onClick={()=> del(selectedBook.materialid)}>Verwijder Boek</button>
+          <button onClick={()=> del(selectedBook.materialid)} className="button">Verwijder Boek</button>
           <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
         </div>
         }

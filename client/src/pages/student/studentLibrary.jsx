@@ -77,7 +77,7 @@ const StudentLib = () => {
             {books &&
               books.map((book) => (
                 <div key={book.materialid}>
-                  <h3 onClick={() => handleClick(book.materialid)}>{book.title}</h3>
+                  <h3 onClick={() => handleClick(book.materialid)} className='item'>{book.title}</h3>
                 </div>
               ))}
           </div>

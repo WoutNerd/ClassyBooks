@@ -53,7 +53,7 @@ const AddMaterial = () => {
             <input type="checkbox"  placeholder='Beschikbaar' checked={isChecked} onChange={handleChange}/>
             <label htmlFor="">Beschikbaar</label>
             <br />
-            <button placeholder='Voeg toe' onClick={() => addMaterial(isChecked)} ><p>Voeg toe</p></button>
+            <button placeholder='Voeg toe' onClick={() => addMaterial(isChecked)} className='button'><p>Voeg toe</p></button>
         </form>
     </div> );
 }

@@ -100,7 +100,7 @@ function AddUser() {
           <input type="checkbox" className="login" label="beheerder" checked={isCheckedA} onChange={handleChangeA} />
         </div>
         <div className="button-container">
-          <input type="submit" value="Voeg gebruiker toe" className="login-button"/>
+          <input type="submit" value="Voeg gebruiker toe" className="button"/>
         </div>
       </form>
     </div>
@@ -113,7 +113,7 @@ function AddUser() {
     <div className="app">
       <nav><TeacherNavbar/></nav>
       <div className="login-form">
-        <div className="title">Log in</div>
+        <div className="title">Voeg gebruiker toe</div>
         {isSubmitted ? redirectToPage("overzicht") : renderForm}
       </div>
     </div>

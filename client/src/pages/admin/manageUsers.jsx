@@ -61,13 +61,13 @@ const ManageUsers =  () => {
             {showAll ? 
         users.map((user) => (
           <div key={user.userid}>
-            <h3 onClick={() => { setSelectedUser(user); setShowAll(false); }}>{user.firstname +' '+ user.lastname}</h3>
+            <h3 onClick={() => { setSelectedUser(user); setShowAll(false); }} className='item'>{user.firstname +' '+ user.lastname}</h3>
           </div>
         ))
         : <div>
             <h2>{selectedUser.firstname+' '+selectedUser.lastname}</h2>
-            <button onClick={() => {handlePw(selectedUser.userid)}}>Verander wachtwoord van {selectedUser.firstname+' '+selectedUser.lastname}</button>
-            <button onClick={() => {deleteUser(selectedUser.userid)}}>Verwijder {selectedUser.firstname+' '+selectedUser.lastname}</button>
+            <button onClick={() => {handlePw(selectedUser.userid)}} className="button">Verander wachtwoord van {selectedUser.firstname+' '+selectedUser.lastname}</button>
+            <button onClick={() => {deleteUser(selectedUser.userid)}} className="button">Verwijder {selectedUser.firstname+' '+selectedUser.lastname}</button>
             <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
           </div>
           }
