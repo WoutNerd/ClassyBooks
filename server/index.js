@@ -61,12 +61,15 @@ app.post("/getUser", (req, res) => {
     if (checkRequest(req)) {
       // Get admin's session and requested user's details
       session = await getSession(req["body"]["sessionid"])
-      user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
-
-      // If requested user is real
-      if (hasData(user)) {
-        if (parseInt(session['privilege']) >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
-        else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) } //If admin is not privileged, send user other user details
+      if (session != null) {
+        user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
+        // If requested user is real
+        if (hasData(user)) {
+          sessionPrivilege = parseInt(session['privilege'])
+          if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
+          else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) } //If admin is not privileged, send user other user details
+        }
+        else res.status(400).send("Invalid user")
       }
       else res.status(400).send("Invalid user") // Requested user is not real
     }
@@ -402,11 +405,12 @@ async function lendMaterial(userid, materialid) {
   // Check if user and material are valid and available
   if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user) && checkSessionValidity(user)) {
     // Add material to user
-    user[0][0]["materials"].push(materialid)
+    userMaterials = user[0][0]["materials"]
+    userMaterials.push(materialid)
 
     // Push to db
     await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
-    await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}' WHERE USERID='${userid}'`)
+    await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}' WHERE USERID='${userid}'`)
 
     // Return validity and returndate
     return [true, returndate]
