@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, post, Title } from '../../functions';
 import crypto from 'crypto-js';
+import TeacherNavbar from '../teacher/teacherNavbar';
 
 
 const ChangeUserPass =  () => {
@@ -13,9 +14,12 @@ const ChangeUserPass =  () => {
     
 
     const handleSubmit = () => {
+      
       const userId = userid
       const sessionId = sessionid
-      const {Newpass, NewpassCheck} = document.form[0]
+      const Newpass = document.getElementById('Newpass').value
+      const NewpassCheck = document.getElementById('NewpassCheck').value
+
       if(Newpass.value !== NewpassCheck.value){
         alert('Voer 2 maal hetzelfde wachtwoord in.')
       }
@@ -23,7 +27,9 @@ const ChangeUserPass =  () => {
         var newSha256 = crypto.SHA256(user.firstname+user.lastname+Newpass.value).toString();
         var newMd5 = crypto.MD5(user.firstname+user.lastname+Newpass.value+newSha256).toString();
         const body = {sessionId, newSha256, newMd5, userId} 
-        console.log(body)
+        if(window.confirm('Bent u zeker dat u '+user.firstname+' '+user.lastname+' zijn/haar wachtwoord wilt veranderen in "'+Newpass+'"')){
+          post('/changePassword', body)
+        }
       }
       
 
@@ -49,20 +55,22 @@ const ChangeUserPass =  () => {
         return <div>Loading...</div>;
       }
       
-    return ( 
+    return ( <div>
+      <nav><TeacherNavbar/></nav>
         <div>
             {user.firstname+' '+user.lastname}
-            <form onSubmit={() => {console.log()}}>
+            <form onSubmit={(event) => {event.preventDefault(); handleSubmit()}}>
             <div className="input-container">
-          <input type="password" name="Newpass" required placeholder="Nieuw wachtwoord" className="login"/>
+          <input type="password" name="Newpass" required placeholder="Nieuw wachtwoord" id='Newpass' className="login"/>
         </div>
         <div className="input-container">
-          <input type="password" name="NewpassCheck" required placeholder="Bevestig nieuw wachtwoord" className="login"/>
+          <input type="password" name="NewpassCheck" required placeholder="Bevestig nieuw wachtwoord" id="NewpassCheck" className="login"/>
         </div>
         <div className="button-container">
-          <input type="button" onClick={() => {handleSubmit()}} value={"Verander wachtwoord"} className="login-button"/>
+          <input type="submit" value={"Verander wachtwoord"} className="button"/>
         </div>
         </form>
+        </div>
         </div>
      );
 }

@@ -1,6 +1,7 @@
 import '../../App.css'
 import { post, Title, getCookie, checkUser } from '../../functions'
 import { useState } from 'react'
+import TeacherNavbar from '../teacher/teacherNavbar'
 
 async function addMaterial(isChecked) {
     
@@ -35,6 +36,7 @@ const AddMaterial = () => {
       }
     
     return ( <div>
+        <nav><TeacherNavbar/></nav>
         <form >
             <input type="text" name='title' placeholder='Titel' />
             <br />
@@ -51,7 +53,7 @@ const AddMaterial = () => {
             <input type="checkbox"  placeholder='Beschikbaar' checked={isChecked} onChange={handleChange}/>
             <label htmlFor="">Beschikbaar</label>
             <br />
-            <button placeholder='Voeg toe' onClick={() => addMaterial(isChecked)} ><p>Voeg toe</p></button>
+            <button placeholder='Voeg toe' onClick={() => addMaterial(isChecked)} className='button'><p>Voeg toe</p></button>
         </form>
     </div> );
 }

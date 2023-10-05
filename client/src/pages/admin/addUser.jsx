@@ -3,6 +3,7 @@ import "../../App.css";
 import crypto from "crypto-js";
 import { checkUser, getCookie, Title, post } from "../../functions";
 import {useNavigate} from 'react-router'
+import TeacherNavbar from "../teacher/teacherNavbar";
 
 
 function AddUser() {
@@ -99,7 +100,7 @@ function AddUser() {
           <input type="checkbox" className="login" label="beheerder" checked={isCheckedA} onChange={handleChangeA} />
         </div>
         <div className="button-container">
-          <input type="submit" value="Voeg gebruiker toe" className="login-button"/>
+          <input type="submit" value="Voeg gebruiker toe" className="button"/>
         </div>
       </form>
     </div>
@@ -110,8 +111,9 @@ function AddUser() {
   
   return (
     <div className="app">
+      <nav><TeacherNavbar/></nav>
       <div className="login-form">
-        <div className="title">Log in</div>
+        <div className="title">Voeg gebruiker toe</div>
         {isSubmitted ? redirectToPage("overzicht") : renderForm}
       </div>
     </div>

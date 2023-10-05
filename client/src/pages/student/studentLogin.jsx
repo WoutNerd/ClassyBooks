@@ -13,16 +13,7 @@ const StudentLogin = () => {
       navigate(path); // Use navigate to go to the specified path
     };
 
-    const HandleSubmit = async (event) => {
-      event.preventDefault();
-      var { clss, number, pass } = document.forms[0];
-      clss = clss.value
-      number = number.value
-      pass = pass.value
-    
-      var sha256 = crypto.SHA256(clss+number+pass).toString();
-      var md5 = crypto.MD5(clss+number+pass+sha256).toString();
-      const body = {clss, number, sha256, md5};
+    const request = async (body) => {
       const response = await post('/loginPupil', body)
       console.log(response.privilege)
       if (response.privilege !== 0) {
@@ -32,6 +23,19 @@ const StudentLogin = () => {
           document.cookie = "userId=" + response.userid + ";path=../"
           redirectToPage('./bibliotheek')
     }
+    }
+
+    const HandleSubmit =  (e) => {
+      e.preventDefault();
+      var { clss, number, pass } = document.forms[0];
+      clss = clss.value
+      number = number.value
+      pass = pass.value
+    
+      var sha256 = crypto.SHA256(clss+number+pass).toString();
+      var md5 = crypto.MD5(clss+number+pass+sha256).toString();
+      const body = {clss, number, sha256, md5};
+      request(body)
     }
     //Login form
     const renderForm = (

@@ -20,6 +20,7 @@ import ManageUsers from './pages/admin/manageUsers';
 import TeacherChangePassword from './pages/teacher/teacherChangePassword';
 import StudentChangePassword from './pages/student/studentChangePassword';
 import ChangeUserPass from './pages/admin/changeUserPass';
+import ManageMaterials from './pages/admin/manageMaterial';
 
 
 
@@ -41,6 +42,7 @@ root.render(
                                 <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
                                 <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
                                 <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass />} />
+                                <Route path='beheer/boeken-beheren' element={<ManageMaterials />} />
 
                                 <Route path='leerling/bibliotheek' element={<StudentLib />} />
                                 <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />

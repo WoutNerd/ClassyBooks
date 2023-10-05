@@ -116,7 +116,7 @@ img {
 .lkNavbar {
   list-style-type: none;
   float: left;
-  max-width: 70%;
+  
 }
 
 img.lkNavbar{
@@ -156,4 +156,17 @@ img.lkNavbar{
   padding: 30px;
   border-radius: 10px;
   margin: 0;
+}
+
+.page{
+  grid-template-areas: 
+  'nav content';
+}
+
+.nav{
+  grid-area: nav;
+}
+
+.content{
+  grid-area: content;
 }

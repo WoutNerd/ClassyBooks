@@ -50,7 +50,7 @@ function StudentChangePassword() {
           <input type="password" name="NewpassCheck" required placeholder="Bevestig nieuw wachtwoord" className="login"/>
         </div>
         <div className="button-container">
-          <input type="submit" value={"Login"} className="login-button"/>
+          <input type="submit" value={"Login"} className="button"/>
         </div>
       </form>
     </div>
