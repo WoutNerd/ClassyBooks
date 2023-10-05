@@ -1,5 +1,34 @@
 # Classybooks
-
+### Database
+Classybooks is configured to usebelow. CockroachDB, a cloud-hosted SQL-solution, this makes it compatible with PostgreSQL. More information on configuring the SQL Database below.
+To initialise the database, we recommend using the following SQL statement:
+```SQL
+CREATE TABLE MATERIALS(
+  MATERIALID UUID NOT NULL DEFAULT gen_random_uuid(),
+  TITLE TEXT,
+  PLACE TEXT,
+  DESCR JSONB,
+  AVAILABLE BIT,
+  LENDOUTTO UUID,
+  RETURNDATE DATE,
+  LENDCOUNT INT,
+  AVGSCORE FLOAT
+);
+CREATE TABLE USERS(
+  USERID UUID NOT NULL DEFAULT gen_random_uuid(),
+  FIRSTNAME TEXT,
+  LASTNAME TEXT,
+  CLASS TEXT,
+  CLASSNUM INT2,
+  PRIVILEGE INT2,
+  SHA256 TEXT,
+  MD5 TEXT,
+  MATERIALS JSONB,
+  HOWMUCHLATE INT DEFAULT 0,
+  SESSIONID TEXT,
+  SESSIONIDEXPIRE TIMESTAMP
+);
+```
 ### Configuration
 Classybooks is available through a docker-image on ghcr.io, to pull the image, use:
 ```
