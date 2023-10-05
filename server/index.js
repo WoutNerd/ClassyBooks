@@ -402,11 +402,12 @@ async function lendMaterial(userid, materialid) {
   // Check if user and material are valid and available
   if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user) && checkSessionValidity(user)) {
     // Add material to user
-    user[0][0]["materials"].push(materialid)
+    userMaterials = user[0][0]["materials"]
+    userMaterials.push(materialid)
 
     // Push to db
     await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
-    await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}' WHERE USERID='${userid}'`)
+    await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}' WHERE USERID='${userid}'`)
 
     // Return validity and returndate
     return [true, returndate]
