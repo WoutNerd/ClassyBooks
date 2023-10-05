@@ -430,14 +430,15 @@ async function returnMaterial(materialid, score) {
       // Write material update to server with score
       await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1', AVGSCORE='${((material[0][0]["avgscore"] * material[0][0]["lendcount"]) + score / material[0][0]["lendcount"] + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}'`)
       // Remove material from user
-      user[0][0]["materials"].splice(user[0][0]["materials"].indexOf(materialid), 1)
+      userMaterials = user[0][0]["materials"]
+      userMaterials.splice(userMaterials.indexOf(materialid), 1)
 
       // Check whether material is late
       returnDate = new Date(material[0][0]["returndate"])
       if (dateInPast(returnDate, now)) { user[0][0]["howmuchlate"] += 1 }
 
       // Push to db
-      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(user[0][0]["materials"])}', HOWMUCHLATE=${user[0][0]["howmuchlate"]} WHERE USERID='${material[0][0]['lendoutto']}'`)
+      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}', HOWMUCHLATE=${user[0][0]["howmuchlate"]} WHERE USERID='${material[0][0]['lendoutto']}'`)
       return true
     }
     else return false // User is invalid
