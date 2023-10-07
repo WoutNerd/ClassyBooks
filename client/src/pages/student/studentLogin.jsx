@@ -19,8 +19,8 @@ const StudentLogin = () => {
       if (response.privilege !== 0) {
           alert("Leerkrachten en beheerders moeten zich inloggen via de loginpagina voor leerkrachten")
       }else if (response.privilege === 0) {
-          document.cookie = "sessionId=" + response.sessionid + ";path=../";
-          document.cookie = "userId=" + response.userid + ";path=../"
+          document.cookie = "sessionId=" + response.sessionid + ";path=/";
+          document.cookie = "userId=" + response.userid + ";path=/"
           redirectToPage('./bibliotheek')
     }
     }
