@@ -369,7 +369,14 @@ async function login(name, surname, sha256, md5) {
 
       // Get session privilege
       sess = await getSession(sessionId)
-      privilege = sess["privilege"]
+      if (sess != null) {
+        privilege = sess["privilege"]
+      }
+      else {
+        sessionId = "Invalid credentials"
+        userid = ""
+        privilege = 0
+      }
     }
     i += 1
   }
