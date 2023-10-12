@@ -57,12 +57,12 @@ const ManageUsers =  () => {
   
     return (<div>
       <nav><TeacherNavbar/></nav>
-        <div>
+        <div className='itemList'>
             {showAll ? 
         users.map((user) => (
-          <div key={user.userid}>
-            <h3 onClick={() => { setSelectedUser(user); setShowAll(false); }} className='item'>{user.firstname +' '+ user.lastname}</h3>
-          </div>
+          <li key={user.userid}  onClick={() => { setSelectedUser(user); setShowAll(false); }} className='item'>
+            <h3>{user.firstname +' '+ user.lastname}</h3>
+          </li>
         ))
         : <div>
             <h2>{selectedUser.firstname+' '+selectedUser.lastname}</h2>

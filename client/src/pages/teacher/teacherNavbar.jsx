@@ -10,8 +10,8 @@ const TeacherNavbar = () => {
     const [admin, setAdmin] = useState(false)
 
     const priv = async () => {
-        const sessionid = getCookie("sessionId").toString();
-        const userid = getCookie("userId").toString();
+        const sessionid = getCookie("sessionId");
+        const userid = getCookie("userId");
         const body = { sessionid, userid };
         const response = await post('/getUser', body)
         if (response.privilege !== 2) {

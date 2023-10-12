@@ -160,13 +160,40 @@ img.lkNavbar{
 
 .page{
   grid-template-areas: 
-  'nav content';
+  'nav content'
+  'empty content';
 }
+
 
 .nav{
   grid-area: nav;
+  
 }
 
 .content{
   grid-area: content;
+}
+
+.itemList{
+  max-width: 90%;
+}
+
+.itemList li{
+  float: left;
+  margin: 1%;
+  background-color: var(--master);
+}
+
+.item{
+  background:linear-gradient(to bottom, var(--buttonHover) 5%, var(--master) 100%);
+	background-color:var(--master);
+	border-radius:5px;
+	display:inline-block;
+	cursor:pointer;
+	color:var(--accent2);
+	font-family:Arial;
+	font-size:21px;
+	font-weight:bold;
+	padding:1px 19px;
+	text-decoration:none;
 }
