@@ -65,7 +65,7 @@ app.post("/getUser", (req, res) => {
         user = await request(`SELECT * FROM USERS WHERE USERID='${req["body"]["userid"]}'`)
         // If requested user is real
         if (hasData(user)) {
-          sessionPrivilege = parseInt(session['privilege'])
+          sessionPrivilege = parseInt(session["privilege"])
           if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
           else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) } //If admin is not privileged, send user other user details
         }
