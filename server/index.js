@@ -250,11 +250,11 @@ app.post("/changePassword", (req, res) => {
 })
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
-try {
+settings = { "url": process.env.DBURL };
+if (settings["url"] == null || settings["url"] == "") {
   settingsFile = fs.readFileSync("./server/settings.json")
   settings = JSON.parse(settingsFile);
 }
-catch { settings = { "url": process.env.DBURL }; }
 
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
