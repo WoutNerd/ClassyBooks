@@ -9,5 +9,6 @@ server/init.sql
 serverlogin.txt
 test.jsx
 classybooks-testserver.session.sql
-art
+art/*.ai
+build
 .env
