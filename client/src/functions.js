@@ -25,13 +25,15 @@ export function Title(title) {
 
 //checks if user is privileged to the page
 export async function checkUser(privilege) {
-  const sessionid = getCookie("sessionId").toString();
-  const userid = getCookie("userId").toString();
+  const sessionid = getCookie("sessionId");
+  const userid = getCookie("userId");
   const body = {sessionid,userid};
   const response = await post('/getUser', body)
-  if (response.privilege < privilege ){
+  if (response.privilege === privilege ){}
+  else if (response.privilege === null && privilege === 0){}
+  else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
-    window.location.replace('./#')
+   window.location.replace('./#')
   } 
     } 
 
