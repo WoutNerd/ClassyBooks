@@ -61,4 +61,8 @@ You can find the connection-url in your database's dashboard
 
 When running the container, assign the connection-url to the `DBURL`-environment table.
 
+#### Port
+
+Make sure to open port 8080 through docker, you can map this to any local port using the port parameters in docker.
+
 <img src="https://github.com/JasperDG828/classybooks/blob/develop/art/logo_long.png?raw=true" width="600"/>
