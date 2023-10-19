@@ -331,7 +331,7 @@ async function addTeacherWithPass(name, surname, password, privilege, materials)
 }
 async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history) {
   let hashes = generateHashes(clss, clsNum, password);
-  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials)
+  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history) {
@@ -348,7 +348,7 @@ async function addMaterial(title, place, description, available) {
   if (available) {
     availableBit = 1;
   }
-  await request(`INSERT INTO MATERIALS (title, place, descr, available, lendcount, avgscore) VALUES ('${title}', '${place}', '${description}', '${availableBit}'), '0', '0.0'`);
+  await request(`INSERT INTO MATERIALS (title, place, descr, available, lendcount, avgscore) VALUES ('${title}', '${place}', '${description}', '${availableBit}', '0', '0.0')`);
 }
 async function login(name, surname, sha256, md5) {
   // Get trying user from database
