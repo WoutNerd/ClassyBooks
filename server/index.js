@@ -407,6 +407,7 @@ async function getSession(sessionId) {
 }
 async function lendMaterial(userid, materialid) {
   returndate = new Date().addHours(120).toISOString()
+  now = new Date().toISOString()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
   user = await request(`SELECT * FROM USERS WHERE USERID='${userid}'`)
 
@@ -417,7 +418,7 @@ async function lendMaterial(userid, materialid) {
     userMaterials.push(materialid)
 
     // Push to db
-    await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0' WHERE MATERIALID='${materialid}'`)
+    await request(`UPDATE MATERIALS SET LENDOUTTO='${userid}', RETURNDATE='${returndate}', AVAILABLE='0', STARTDATE='${now}' WHERE MATERIALID='${materialid}'`)
     await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}' WHERE USERID='${userid}'`)
 
     // Return validity and returndate
@@ -436,7 +437,7 @@ async function returnMaterial(materialid, score) {
     // Check whether user is valid
     if (hasData(user) && checkSessionValidity(user)) {
       // Write material update to server with score
-      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, AVAILABLE='1', AVGSCORE='${((material[0][0]["avgscore"] * material[0][0]["lendcount"]) + score / material[0][0]["lendcount"] + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}'`)
+      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, STARTDATE=NULL, AVAILABLE='1', AVGSCORE='${((material[0][0]["avgscore"] * material[0][0]["lendcount"]) + score / material[0][0]["lendcount"] + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}'`)
       // Remove material from user
       userMaterials = user[0][0]["materials"]
       userMaterials.splice(userMaterials.indexOf(materialid), 1)
