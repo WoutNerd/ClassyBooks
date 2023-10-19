@@ -6,7 +6,6 @@ server/init.sql
 server/settings.json
 .env
 client/node_modules
-client/public
 client/README.md
 data
 art
