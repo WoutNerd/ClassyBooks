@@ -67,7 +67,7 @@ app.post("/getUser", (req, res) => {
         if (hasData(user)) {
           sessionPrivilege = parseInt(session["privilege"])
           if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
-          else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire"])) } //If admin is not privileged, send user other user details
+          else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire", "history"])) } //If admin is not privileged, send user other user details
         }
         else res.status(400).send("Invalid user")
       }
@@ -112,7 +112,7 @@ app.post("/getMaterial", (req, res) => {
       // If material is real
       if (hasData(material)) {
         if (parseInt(session['privilege']) >= 1) { res.status(200).send(material[0]) } // If user is privileged, send material details
-        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "lendcount"])) } // If user isn't privileged, strip info
+        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "lendcount", "startdate"])) } // If user isn't privileged, strip info
       }
       else res.status(400).send("Invalid material") // Invalid material
     }
@@ -152,7 +152,7 @@ app.post("/lendMaterial", (req, res) => {
 app.post("/returnMaterial", (req, res) => {
   (async () => {
     if (checkRequest(req)) {
-      let ret = await returnMaterial(req["body"]["materialid"], req["body"]["score"])
+      let ret = await returnMaterial(req["body"]["materialid"], req["body"]["score"], req["body"]["fullyread"])
 
       // Is return valid
       if (ret) {
@@ -329,13 +329,13 @@ async function addTeacherWithPass(name, surname, password, privilege, materials)
   let hashes = generateHashes(name, surname, password);
   await addTeacherWithHash(name, surname, privilege, hashes[0], hashes[1], materials)
 }
-async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials) {
+async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history) {
   let hashes = generateHashes(clss, clsNum, password);
   await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
-async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
+async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history) {
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}');`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
@@ -427,7 +427,7 @@ async function lendMaterial(userid, materialid) {
   else { return false } // User not valid or material not available
 
 }
-async function returnMaterial(materialid, score) {
+async function returnMaterial(materialid, score, fullyread) {
   now = new Date()
   material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${materialid}'`)
 
@@ -444,10 +444,17 @@ async function returnMaterial(materialid, score) {
 
       // Check whether material is late
       returnDate = new Date(material[0][0]["returndate"])
-      if (dateInPast(returnDate, now)) { user[0][0]["howmuchlate"] += 1 }
+      isontime = true
+      if (dateInPast(returnDate, now)) { user[0][0]["howmuchlate"] += 1; isontime = false; }
+
+      // Create dict for user history
+      userDict = { "material": materialid, "score": score, "fullyread": fullyread, "startdate": material[0][0]['startdate'], "enddate": now.toISOString(), "ontime": isontime }
+      userHistory = user[0][0]["history"]
+      userHistory.push(userDict)
 
       // Push to db
-      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}', HOWMUCHLATE=${user[0][0]["howmuchlate"]} WHERE USERID='${material[0][0]['lendoutto']}'`)
+      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}', 'HOWMUCHLATE=${user[0][0]["howmuchlate"]}', HISTORY='${JSON.stringify(userHistory)}' WHERE USERID='${material[0][0]['lendoutto']}'`)
+
       return true
     }
     else return false // User is invalid
@@ -478,7 +485,7 @@ async function checkSessionExpireSweep() {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
   //   let clss = classes[Math.floor(Math.random() * classes.length)]
   //   await addTeacherWithPass(faker.name.firstName(), faker.name.lastName(), "password", 1, [])
-  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [])
+  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [], [])
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }
