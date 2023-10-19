@@ -10,23 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js v18.10.0
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.10.0
-      - name: Install dependencies
-        working-directory: ./client
-        run: npm i
-      - name: Build
-        run: npm run build
-
-      - name: Share artifact inside workflow
-        uses: actions/upload-artifact@v3
-        with:
-          name: react-github-actions-build
-          path: ./client/build
-
-      - uses: actions/checkout@v3
       - name: Logging in to GHCR
         run: docker login --username jasperdg828 --password ${{secrets.GHCR_TOKEN}} ghcr.io
 

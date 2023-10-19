@@ -6,6 +6,11 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
+WORKDIR /client
+RUN npm install
+RUN npm run build
+
+WORKDIR /
 
 ENV PORT=8080
 
