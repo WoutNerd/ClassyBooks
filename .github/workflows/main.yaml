@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-<<<<<<< HEAD
->>>>>>> 9e18729eb3c727044e4e7eac523ebea830417845
       - name: Logging in to GHCR
         run: docker login --username jasperdg828 --password ${{secrets.GHCR_TOKEN}} ghcr.io
 
