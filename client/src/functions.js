@@ -46,11 +46,14 @@ export async function post(url, body) {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
     });
+    const respType = await response.headers.get('Content-Type')
+    if(respType.includes('application/json')) {
     const data = await response.json();
     if (response.statusText !== "OK") {
       throw new Error(response);
     }
-  return data
+  return data}
+  else if(respType.includes('text')) return response
   }
   catch (error) {
     console.error('Error:', error.message);
