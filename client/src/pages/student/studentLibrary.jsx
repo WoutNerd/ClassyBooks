@@ -56,26 +56,17 @@ const StudentLib = () => {
         const userid = getCookie('userId')
         var body = {sessionid,userid}
         const resp = await post("/getUser", body)
+        console.log(resp)
+        if(resp.materials !== null){
         const materialid = resp.materials[0] 
         body = {sessionid, materialid}
         const book = await post('/getMaterial',body)
         setCurrentBook(book)
-        setCurrentBookSelected(true)
+        setCurrentBookSelected(true)}
     }; getCurrentBook()
   },[])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await post("/allMaterials");
-        setBooks(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    fetchData();
-  }, []);
 
   const handleClick = async (materialid) => {
     const sessionid = getCookie('sessionId');
@@ -149,7 +140,7 @@ const StudentLib = () => {
         </select>
       <div>{currentBookSelected ? (
         <div className="return">
-          <button className='button' onClick={redirectToPage('/lever-in')}>Dien {currentBook?.title} terug in</button>
+          <button className='button' onClick={()=>{document.cookie='materialid='+currentBook.materialid;redirectToPage('/leerling/lever-in')}}>Dien {currentBook?.title} terug in</button>
         </div>):<div/>}
         {showAll ? (
           <div>
