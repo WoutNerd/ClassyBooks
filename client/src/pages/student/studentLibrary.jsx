@@ -66,13 +66,20 @@ const StudentLib = () => {
     }; getCurrentBook()
   },[])
 
-
+  useEffect(()=>{
+    const getBooks = async () => {
+        console.log('getBooks')
+        const book = await post('/allMaterials')
+        console.log('books: '+book)
+        setBooks(book)
+    }; getBooks()
+  },[])
 
   const handleClick = async (materialid) => {
     const sessionid = getCookie('sessionId');
     const body = { materialid, sessionid };
     try {
-      const response = await post("/getMaterial", body);
+      const response = await post("/getMaterial", body)
       setSelectedBook(response);
       setShowAll(false); 
       const bookAvailability = await available(materialid); 
