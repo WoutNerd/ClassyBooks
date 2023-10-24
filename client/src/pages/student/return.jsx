@@ -2,25 +2,26 @@ import { useNavigate } from 'react-router-dom'
 import '../../App.css'
 import { Title, checkUser, getCookie, post } from '../../functions';
 import { useEffect, useState } from 'react';
+import Rating from '@mui/material/Rating'
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 
 
 const ReturnBooks = () => {
   checkUser(0)
   Title('inleveren')
-  
+
   const [book, setBook] = useState(null)
-  const [star1, setStar1] = useState('rating__star')
-  const [star2, setStar2] = useState('rating__star')
-  const [star3, setStar3] = useState('rating__star')
-  const [star4, setStar4] = useState('rating__star')
+  const [rating, setRating] = useState(null)
+  const [isChecked, setIsChecked] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const materialid = getCookie('materialid')
         const sessionid = getCookie('sessionId')
-        const body = {materialid, sessionid}
+        const body = { materialid, sessionid }
         const response = await post("/getMaterial", body);
         setBook(response);
       } catch (error) {
@@ -30,43 +31,45 @@ const ReturnBooks = () => {
 
     fetchData();
   }, []);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const redirectToPage = (path) => {
     navigate(path); // Use navigate to go to the specified path
   };
 
-  const ratingStars = [...document.getElementsByClassName("rating__star")];
 
-function executeRating(stars) {
-  const starClassActive = "rating__star checked";
-  const starClassInactive = "rating__star";
-  const starsLength = stars.length;
-  let i;
-  stars.map((star) => {
-    star.onclick = () => {
-      i = stars.indexOf(star);
+  const handleClick = async () => {
+    const body = {'materialid': book.materialid, 'score': rating, 'fullyread': isChecked}
+    if(rating === null) alert('Geef je boek eerst een score')
+    else if(window.confirm('Bent u seker dat u '+book.title+' wilt inleveren met een score van '+rating+'/4?')){
+      const resp = await post('/returnMaterial', body)
+      if(resp === 'Successfully returned material') alert('Succesvol ingeleverd')
+      else if(resp === 'Invalid request') alert('Inleveren mislukt probeer later opnieuw');//redirectToPage('../leerling/bibliotheek')
+    }
+  }
 
-      if (star.className===starClassInactive) {
-        for (i; i >= 0; --i) stars[i].className = starClassActive;
-      } else {
-        for (i; i < starsLength; ++i) stars[i].className = starClassInactive;
-      }
-    };
-  });
+  const handleChange = (e) => {
+    setIsChecked(e.target.checked);
+  }
+  	
+  return (
+    <div>
+      {book ? <Box className="" sx={{'& > legend': { mt: 2 },}}>
+        <Typography  >Hoeveel sterren geef je het boek?</Typography>
+        <Rating
+          name="simple-controlled"
+          value={rating}
+          max={4}
+          onChange={(event, newValue) => {
+            setRating(newValue+0.0);
+          }}
+        />
+        <input type="checkbox" name="fullyRead" id="fullyRead" checked={isChecked} onChange={handleChange}/>
+        <label htmlFor="fullyRead">Volldig gelezen?</label>
+        <button className="button" onClick={() => {handleClick()}}>Lever {book.title} in</button>
+      </Box> : <div>{redirectToPage('/leerling/bibliotheek')}</div>}
+    </div>
+  );
 }
-executeRating(ratingStars);
-  
-    return ( 
-        <div>
-          {book ? <div class="rating">
-          <i className={star1}>&#9734;</i>
-          <i className={star2}>☆</i>
-          <i className={star3}>☆</i>
-          <i className={star4}>☆</i>
-   </div>:<div>{redirectToPage('/leerling/bibliotheek')}</div>}
-        </div>
-     );
-}
- 
+
 export default ReturnBooks;
