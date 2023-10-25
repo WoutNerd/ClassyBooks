@@ -53,7 +53,7 @@ export async function post(url, body) {
       throw new Error(response);
     }
   return data}
-  else if(respType.includes('text')) return response
+  else if(respType.includes('text/plain')) return response
   }
   catch (error) {
     console.error('Error:', error.message);
