@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "../../App.css";
 import { checkUser, post, Title, getCookie } from '../../functions';
+import { useNavigate } from 'react-router-dom';
 
 async function lend(materialid) {
   const userid = getCookie("userId");
@@ -31,47 +32,123 @@ async function available(materialid) {
   }
 }
 
-
 const StudentLib = () => {
   Title('Bibliotheek');
   checkUser(0);
+  const navigate = useNavigate();
+
+  const redirectToPage = (path) => {
+    navigate(path); // Use navigate to go to the specified path
+  };
 
   const [books, setBooks] = useState(null);
   const [showAll, setShowAll] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
-  const [availability, setAvailability] = useState(''); // Added state for availability
+  const [availability, setAvailability] = useState(''); 
+  const [currentBook, setCurrentBook] = useState(null)
+  const [currentBookSelected, setCurrentBookSelected] = useState(false)
+  const [sort, setSort] = useState('title')
+  const [sortDirection, setSortDirection] = useState('ascending')
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await post("/allMaterials");
-        setBooks(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  useEffect(()=>{
+    const getCurrentBook = async () => {
+        const sessionid = getCookie('sessionId')
+        const userid = getCookie('userId')
+        var body = {sessionid,userid}
+        const resp = await post("/getUser", body)
+        console.log(resp)
+        if(resp.materials !== null){
+        const materialid = resp.materials[0] 
+        body = {sessionid, materialid}
+        const book = await post('/getMaterial',body)
+        setCurrentBook(book)
+        setCurrentBookSelected(true)}
+    }; getCurrentBook()
+  },[])
 
-    fetchData();
-  }, []);
+  useEffect(()=>{
+    const getBooks = async () => {
+        console.log('getBooks')
+        const book = await post('/allMaterials')
+        console.log('books: '+book)
+        setBooks(book)
+    }; getBooks()
+  },[])
 
   const handleClick = async (materialid) => {
     const sessionid = getCookie('sessionId');
     const body = { materialid, sessionid };
     try {
-      const response = await post("/getMaterial", body);
+      const response = await post("/getMaterial", body)
       setSelectedBook(response);
-      setShowAll(false); // Show the selected book details
-      // Fetch and set the availability when a book is selected
-      const bookAvailability = await available(materialid); // Pass materialid explicitly
+      setShowAll(false); 
+      const bookAvailability = await available(materialid); 
       setAvailability(bookAvailability);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleChangeSort = (event) => {
+    const selectedSort = event.target.value; 
+    const selectedDirection = sortDirection; 
+  
+    setSort(selectedSort)
+  
+    const sortedMaterials = [...books].sort((a, b) => {
+      if (selectedDirection === 'ascending') {
+        if (a[selectedSort] < b[selectedSort]) return -1;
+        if (a[selectedSort] > b[selectedSort]) return 1;
+        return 0;
+      } else if (selectedDirection === 'descending') {
+        if (a[selectedSort] > b[selectedSort]) return -1;
+        if (a[selectedSort] < b[selectedSort]) return 1;
+        return 0;
+      }
+    });
+  
+    setBooks(sortedMaterials); // Update the sorted data
+  };
+  
+  
+  
+  const handleChangeDirection = (event) => {
+    const selectedSort = sort; // Get the currently selected sort key
+    const selectedDirection = event.target.value; // Get the newly selected sort direction
+  
+    setSortDirection(selectedDirection); // Update the sort direction
+  
+    const sortedMaterials = [...books].sort((a, b) => {
+      if (selectedDirection === 'ascending') {
+        if (a[selectedSort] < b[selectedSort]) return -1;
+        if (a[selectedSort] > b[selectedSort]) return 1;
+        return 0;
+      } else if (selectedDirection === 'descending') {
+        if (a[selectedSort] > b[selectedSort]) return -1;
+        if (a[selectedSort] < b[selectedSort]) return 1;
+        return 0;
+      }
+    });
+  
+    setBooks(sortedMaterials); // Update the sorted data
+  };
+
   return (
     <div>
-      <div>
+              <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
+          <option value="title" selected>Titel</option>
+          <option value="avgscore">Score</option>
+          <option value="available">Beschikbaar</option>
+          <option value="place">Locatie</option>
+        </select>
+        <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
+          <option value="ascending" selected>Oplopen</option>
+          <option value="descending">Aflopend</option>
+        </select>
+      <div>{currentBookSelected ? (
+        <div className="return">
+          <button className='button' onClick={()=>{document.cookie='materialid='+currentBook.materialid;redirectToPage('/leerling/lever-in')}}>Dien {currentBook?.title} terug in</button>
+        </div>):<div/>}
         {showAll ? (
           <div>
             {books &&

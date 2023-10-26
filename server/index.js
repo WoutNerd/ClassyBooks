@@ -67,7 +67,7 @@ app.post("/getUser", (req, res) => {
         if (hasData(user)) {
           sessionPrivilege = parseInt(session["privilege"])
           if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
-          else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "materials", "sessionid", "sessionidexpire", "history"])) } //If admin is not privileged, send user other user details
+          else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "sessionid", "sessionidexpire", "history"])) } //If admin is not privileged, send user other user details
         }
         else res.status(400).send("Invalid user")
       }
@@ -180,7 +180,7 @@ app.post("/allUsers", (req, res) => {
       if (sess != null) {
         // If admin is privileged
         if (parseInt(sess["privilege"]) >= 1) {
-          users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM FROM USERS")
+          users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE FROM USERS")
           res.setHeader("Content-Type", "application/json")
           res.status(200).send(users[0])
         } else { res.status(400).send("Invalid request") } // Admin is not privileged

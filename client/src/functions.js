@@ -25,13 +25,15 @@ export function Title(title) {
 
 //checks if user is privileged to the page
 export async function checkUser(privilege) {
-  const sessionid = getCookie("sessionId").toString();
-  const userid = getCookie("userId").toString();
+  const sessionid = getCookie("sessionId");
+  const userid = getCookie("userId");
   const body = {sessionid,userid};
   const response = await post('/getUser', body)
-  if (response.privilege < privilege ){
+  if (response.privilege === privilege ){}
+  else if (response.privilege === null && privilege === 0){}
+  else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
-    window.location.replace('./#')
+   window.location.replace('./#')
   } 
     } 
 
@@ -44,11 +46,14 @@ export async function post(url, body) {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
     });
+    const respType = await response.headers.get('Content-Type')
+    if(respType.includes('application/json')) {
     const data = await response.json();
     if (response.statusText !== "OK") {
       throw new Error(response);
     }
-  return data
+  return data}
+  else if(respType.includes('text/plain')) return response
   }
   catch (error) {
     console.error('Error:', error.message);

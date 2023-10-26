@@ -21,6 +21,7 @@ import TeacherChangePassword from './pages/teacher/teacherChangePassword';
 import StudentChangePassword from './pages/student/studentChangePassword';
 import ChangeUserPass from './pages/admin/changeUserPass';
 import ManageMaterials from './pages/admin/manageMaterial';
+import ReturnBooks from './pages/student/return';
 
 
 
@@ -46,6 +47,7 @@ root.render(
 
                                 <Route path='leerling/bibliotheek' element={<StudentLib />} />
                                 <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
+                                <Route path='leerling/lever-in' element={<ReturnBooks/>} />
 
 
                         </Route>
