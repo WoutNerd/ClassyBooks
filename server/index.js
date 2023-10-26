@@ -355,7 +355,7 @@ async function login(name, surname, sha256, md5) {
   let d = await request(`SELECT * FROM USERS WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
   let i = 0
   let sessionId = ""
-  if (d.hasData()) {
+  if (hasData(d)) {
     while (i < d[0].length) {
       let dbsha256 = d[0][i]["sha256"]
       let dbmd5 = d[0][i]["md5"]
