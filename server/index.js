@@ -453,7 +453,7 @@ async function returnMaterial(materialid, score, fullyread) {
       userHistory.push(userDict)
 
       // Push to db
-      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}', 'HOWMUCHLATE=${user[0][0]["howmuchlate"]}', HISTORY='${JSON.stringify(userHistory)}' WHERE USERID='${material[0][0]['lendoutto']}'`)
+      await request(`UPDATE USERS SET MATERIALS='${JSON.stringify(userMaterials)}', HOWMUCHLATE='${user[0][0]["howmuchlate"]}', HISTORY='${JSON.stringify(userHistory)}' WHERE USERID='${material[0][0]['lendoutto']}'`)
 
       return true
     }
