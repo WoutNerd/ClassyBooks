@@ -393,8 +393,7 @@ async function getSession(sessionId) {
   // get user from db
   user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
   // does user exist
-  if (user[1]["rowCount"] > 0) {
-
+  if (hasData(user)) {
     // Check expiration
     expiry = new Date(user[0][0]["sessionidexpire"])
     if (new Date().getTime() < expiry.getTime()) {
@@ -412,7 +411,7 @@ async function lendMaterial(userid, materialid) {
   user = await request(`SELECT * FROM USERS WHERE USERID='${userid}'`)
 
   // Check if user and material are valid and available
-  if (hasData(material) > 0 && material[0][0]["available"] == '1' && hasData(user) && checkSessionValidity(user)) {
+  if (hasData(material) && material[0][0]["available"] == '1' && hasData(user) && checkSessionValidity(user)) {
     // Add material to user
     userMaterials = user[0][0]["materials"]
     userMaterials.push(materialid)
