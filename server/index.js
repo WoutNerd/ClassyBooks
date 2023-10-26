@@ -355,30 +355,30 @@ async function login(name, surname, sha256, md5) {
   let d = await request(`SELECT * FROM USERS WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
   let i = 0
   let sessionId = ""
-  while (i < d[0].length) {
-    let dbsha256 = d[0][i]["sha256"]
-    let dbmd5 = d[0][i]["md5"]
-    if (dbsha256 == sha256 && dbmd5 == md5) {
-      //Correct credentials
-      userid = d[0][i]["userid"]
-      sessionId = uuidv4().toString() // Create sessionid
-      time = new Date().addHours(5) // Create expiration time
+  if (d.hasData()) {
+    while (i < d[0].length) {
+      let dbsha256 = d[0][i]["sha256"]
+      let dbmd5 = d[0][i]["md5"]
+      if (dbsha256 == sha256 && dbmd5 == md5) {
+        //Correct credentials
+        userid = d[0][i]["userid"]
+        sessionId = uuidv4().toString() // Create sessionid
+        time = new Date().addHours(5) // Create expiration time
 
-      // Push to server
-      await request(`UPDATE USERS SET SESSIONID='${sessionId}', SESSIONIDEXPIRE='${time.toISOString()}' WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
+        // Push to server
+        await request(`UPDATE USERS SET SESSIONID='${sessionId}', SESSIONIDEXPIRE='${time.toISOString()}' WHERE FIRSTNAME='${name}' AND LASTNAME='${surname}'`)
 
-      // Get session privilege
-      sess = await getSession(sessionId)
-      if (sess != null) {
-        privilege = sess["privilege"]
+        // Get session privilege
+        sess = await getSession(sessionId)
+        if (sess != null) {
+          privilege = sess["privilege"]
+        }
+        else {
+          sessionId = ""
+        }
       }
-      else {
-        sessionId = "Invalid credentials"
-        userid = ""
-        privilege = 0
-      }
+      i += 1
     }
-    i += 1
   }
   // Login invalid
   if (sessionId == "") {
