@@ -136,13 +136,13 @@ const StudentLib = () => {
   return (
     <div>
               <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="title" selected>Titel</option>
+          <option value="title">Titel</option>
           <option value="avgscore">Score</option>
           <option value="available">Beschikbaar</option>
           <option value="place">Locatie</option>
         </select>
         <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-          <option value="ascending" selected>Oplopen</option>
+          <option value="ascending">Oplopen</option>
           <option value="descending">Aflopend</option>
         </select>
       <div>{currentBookSelected ? (

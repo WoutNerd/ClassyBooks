@@ -104,14 +104,15 @@ const ManageUsers =  () => {
   
     return (<div>
       <nav><TeacherNavbar/></nav>
+      <div className='content'>
       <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="firstname" selected>Voornaam</option>
+          <option value="firstname">Voornaam</option>
           <option value="lastname">Achternaam</option>
           <option value="class">Klas</option>
           <option value="privilege">Gebruikerstype</option>
         </select>
         <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-          <option value="ascending" selected>Oplopen</option>
+          <option value="ascending">Oplopen</option>
           <option value="descending">Aflopend</option>
         </select>
         <div className='itemList'>
@@ -128,7 +129,7 @@ const ManageUsers =  () => {
             <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
           </div>
           }
-        </div>
+        </div></div>
       </div> 
     )
   };
