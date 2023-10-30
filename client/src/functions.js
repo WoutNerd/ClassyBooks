@@ -29,7 +29,7 @@ export async function checkUser(privilege) {
   const userid = getCookie("userId");
   const body = {sessionid,userid};
   const response = await post('/getUser', body)
-  if (response.privilege === privilege ){}
+  if (response.privilege >= privilege ){}
   else if (response.privilege === null && privilege === 0){}
   else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
