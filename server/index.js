@@ -279,7 +279,7 @@ function generateHashes(name, surname, password) {
     .digest("hex");
   return [sha256.toString(), md5.toString()];
 }
-function checkString(str) {
+function checkString(value) {
   //Returns false when string is not good
   var sql_meta = new RegExp('(%27)|(\')|(--)|(%23)|(#)', 'i');
   if (sql_meta.test(value)) {
