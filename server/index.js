@@ -10,7 +10,7 @@ const { faker } = require('@faker-js/faker/locale/nl_BE');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json());
 
-const leesniveaus = ["AVI-START", "AVI-M3", "AVI-E3", "AVI-M4", "AVI-E4", "AVI-M5", "AVI-E5", "AVI-M6", "AVI-E6", "AVI-M7", "AVI-E7", "AVI-PLUS"]
+const leesniveaus = ['AVI-START', 'AVI-M3', 'AVI-E3', 'AVI-M4', 'AVI-E4', 'AVI-M5', 'AVI-E5', 'AVI-M6', 'AVI-E6', 'AVI-M7', 'AVI-E7', 'AVI-PLUS']
 const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
 //-----------------------------------------------------------------------------------REQUESTS-------//
 
@@ -89,7 +89,7 @@ app.post("/createUser", (req, res) => {
         }
         // Create pupil
         else {
-          await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
+          await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["readinglevel"])
           res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
         }
 
@@ -348,13 +348,13 @@ async function addTeacherWithPass(name, surname, password, privilege, materials)
   let hashes = generateHashes(name, surname, password);
   await addTeacherWithHash(name, surname, privilege, hashes[0], hashes[1], materials)
 }
-async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history) {
+async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history, readinglevel) {
   let hashes = generateHashes(clss, clsNum, password);
-  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history)
+  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history, readinglevel)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
-async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}');`);
+async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history, readinglevel) {
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${readinglevel}');`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
@@ -503,7 +503,7 @@ async function checkSessionExpireSweep() {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
   //   let clss = classes[Math.floor(Math.random() * classes.length)]
   //   await addTeacherWithPass(faker.name.firstName(), faker.name.lastName(), "password", 1, [])
-  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [], [])
+  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [], [], leesniveau)
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }
