@@ -57,7 +57,11 @@ app.post("/loginPupil", (req, res) => {
           privilege = user[2]
           if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } // Invalid credentials
           else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
-        } //Successfully logged in
+        }
+        else {
+          res.status(400).send("Invalid credentials")
+
+        }
       }
       else { res.status(400).send("Invalid credentials") } // Invalid credentials
     }
