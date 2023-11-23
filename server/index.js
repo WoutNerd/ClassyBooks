@@ -290,7 +290,7 @@ app.post("/changePassword", (req, res) => {
         // If user is lvl 0 or 1, change own password
         if (parseInt(sess["privilege"]) <= 1) {
           // If current password is correct, change it to new
-          if (sess["sha256"] == req["body"]["sha256"] && sess["md5"] == req["body"]["md5"]) {
+          if ((toString(sess["sha256"]) == toString(req["body"]["sha256"])) && (toString(sess["md5"]) == toString(req["body"]["md5"]))) {
             await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}'`)
             await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}'`)
             res.status(200).send("Changed password")
