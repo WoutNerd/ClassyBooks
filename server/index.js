@@ -50,12 +50,14 @@ app.post("/loginPupil", (req, res) => {
         // Get user from server based on class and number
         let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["clss"]}' AND CLASSNUM=${req["body"]["number"]};`)
         // Try login
-        user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
-        sessionid = user[0]
-        userid = user[1]
-        privilege = user[2]
-        if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } // Invalid credentials
-        else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) } //Successfully logged in
+        if (hasData(userReq)) {
+          user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
+          sessionid = user[0]
+          userid = user[1]
+          privilege = user[2]
+          if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } // Invalid credentials
+          else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
+        } //Successfully logged in
       }
       else { res.status(400).send("Invalid credentials") } // Invalid credentials
     }
