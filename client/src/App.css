@@ -93,6 +93,7 @@ p.login {
 
 ul {
   list-style-type: none;
+
 }
 
 li.klas {
@@ -118,7 +119,7 @@ img {
   flex: 0 0 250px; 
   padding: 20px;
   height: 100%;
-  
+  padding-left: 3px;
 
 }
 .lkNavbarDiv{
@@ -268,3 +269,34 @@ img.lkNavbar{
   .itemList { grid-template-columns: repeat(4, 1fr); }
 }
 
+.bookItem{
+  background:linear-gradient(to bottom, var(--buttonHover) 5%, var(--master) 100%);
+	background-color:var(--master);
+	border-radius:5px;
+	cursor:pointer;
+	color:var(--accent2);
+	font-family:Arial;
+	font-size:21px;
+	font-weight:bold;
+	padding:1px 19px;
+	text-decoration:none;
+  
+  
+  width: 50%; 
+  height: 300px;
+  position: relative;
+}
+
+.bbokItem h3{
+  margin: 0;
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+.cover {
+  margin-top: 10px;
+  width: 90%;
+
+}

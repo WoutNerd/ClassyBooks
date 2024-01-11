@@ -29,7 +29,8 @@ export async function checkUser(privilege) {
   const userid = getCookie("userId");
   const body = {sessionid,userid};
   const response = await post('/getUser', body)
-  if (response.privilege === privilege ){}
+  
+  if (response.privilege >= privilege ){}
   else if (response.privilege === null && privilege === 0){}
   else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
@@ -61,9 +62,9 @@ export async function post(url, body) {
 }
 
 //changes password of user
-export async function changePassword(sha256, md5, newSha256, neMd5){
+export async function changePassword(sha256, md5, newSha256, newMd5){
   const sessionId = getCookie('sessionId')
-  const body = {sessionId, sha256, md5, newSha256, neMd5}
+  const body = {sessionId, sha256, md5, newSha256, newMd5}
   const resp =  await post('/changePassword', body)
 
   if(resp === 'Changed password'){
