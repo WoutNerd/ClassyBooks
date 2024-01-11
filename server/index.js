@@ -98,7 +98,7 @@ app.post("/createUser", (req, res) => {
     try {
       if (checkRequest(req)) {
         session = await getSession(req["body"]["sessionid"]) // Get admin session
-
+        console.log(session)
         if (session['privilege'] == '2') {
           // Create admin (lvl 1)
           if (parseInt(req["body"]["privilege"]) >= 1) {
@@ -107,7 +107,7 @@ app.post("/createUser", (req, res) => {
           }
           // Create pupil
           else {
-            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], req["body"]["history"], req["body"]["readinglevel"])
+            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["history"], req["body"]["readinglevel"])
             res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
           }
 
@@ -294,16 +294,16 @@ app.post("/changePassword", (req, res) => {
         if (parseInt(sess["privilege"]) <= 1) {
           // If current password is correct, change it to new
           if ((toString(sess["sha256"]) == toString(req["body"]["sha256"])) && (toString(sess["md5"]) == toString(req["body"]["md5"]))) {
-            await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}'`)
-            await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}'`)
+            await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}';`)
+            await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}';`)
             res.status(200).send("Changed password")
           }
           else { res.status(400).send("Invalid credentials") } // Invalid credentials
         }
         // If user is lvl 2, change other user's password
         else if (parseInt(sess["privilege"]) == 2) {
-          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${req["body"]["userid"]}'`)
-          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${req["body"]["userid"]}'`)
+          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${req["body"]["userid"]}';`)
+          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${req["body"]["userid"]}';`)
           res.status(200).send("Changed password")
         }
       }
@@ -477,6 +477,7 @@ async function login(name, surname, sha256, md5) {
 async function getSession(sessionId) {
   // get user from db
   user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
+  console.log(user)
   // does user exist
   if (hasData(user)) {
     // Check expiration
