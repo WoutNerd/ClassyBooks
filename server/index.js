@@ -420,7 +420,7 @@ async function addPupilWithPass(name, surname, password, clsNum, clss, privilege
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
 async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history, readinglevel) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${readinglevel}');`);
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${toString(readinglevel)}');`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
