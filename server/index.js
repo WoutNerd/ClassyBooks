@@ -15,13 +15,16 @@ const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A
 //-----------------------------------------------------------------------------------REQUESTS-------//
 
 // Deploy express app
-app.use(express.static(__dirname + "/../client/build/"));
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
-app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/../client/build/index.html");
-});
+try {
+  app.use(express.static(__dirname + "/../client/build/"));
+  app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+  });
+  app.get("*", (req, res) => {
+    res.sendFile(__dirname + "/../client/build/index.html");
+  });
+}
+catch (error) { console.log(error) }
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
 app.post("/loginTeacher", (req, res) => {
