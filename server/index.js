@@ -286,6 +286,7 @@ app.post("/removeMaterial", (req, res) => {
 })
 app.post("/changePassword", (req, res) => {
   (async () => {
+    console.log(req["body"])
     try {
       if (checkRequest(req)) {
         sess = await getSession(req["body"]["sessionId"])
@@ -310,7 +311,7 @@ app.post("/changePassword", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(400).send("Invalid request")
     }
   })();
 })
