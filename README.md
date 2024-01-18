@@ -2,7 +2,7 @@
 
 ### Database
 
-Classybooks is configured to usebelow. CockroachDB, a cloud-hosted SQL-solution, this makes it compatible with PostgreSQL. More information on configuring the SQL Database below.
+Classybooks is configured to CockroachDB, a cloud-hosted SQL-solution, this makes it compatible with PostgreSQL. More information on configuring the SQL Database below.
 To initialise the database, we recommend using the following SQL statement:
 
 ```SQL
