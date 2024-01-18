@@ -98,7 +98,6 @@ app.post("/createUser", (req, res) => {
     try {
       if (checkRequest(req)) {
         session = await getSession(req["body"]["sessionid"]) // Get admin session
-        console.log(session)
         if (session['privilege'] == '2') {
           // Create admin (lvl 1)
           if (parseInt(req["body"]["privilege"]) >= 1) {
@@ -286,7 +285,6 @@ app.post("/removeMaterial", (req, res) => {
 })
 app.post("/changePassword", (req, res) => {
   (async () => {
-    console.log(req["body"])
     try {
       if (checkRequest(req)) {
         sess = await getSession(req["body"]["sessionId"])
@@ -478,7 +476,6 @@ async function login(name, surname, sha256, md5) {
 async function getSession(sessionId) {
   // get user from db
   user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
-  console.log(user)
   // does user exist
   if (hasData(user)) {
     // Check expiration
