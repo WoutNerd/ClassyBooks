@@ -320,6 +320,7 @@ if (settings["url"] == null || settings["url"] == "") {
   settingsFile = fs.readFileSync("./server/settings.json")
   settings = JSON.parse(settingsFile);
 }
+console.log(process.env.DBURL)
 
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
@@ -520,7 +521,7 @@ async function returnMaterial(materialid, score, fullyread) {
     // Check whether user is valid
     if (hasData(user) && checkSessionValidity(user)) {
       // Write material update to server with score
-      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, STARTDATE=NULL, AVAILABLE='1', AVGSCORE='${(((parseFloat(material[0][0]["avgscore"]) * parseFloat(material[0][0]["lendcount"])) + score) / parseFloat(material[0][0]["lendcount"]) + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}';`)
+      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, STARTDATE=NULL, AVAILABLE='1', AVGSCORE='${(((parseFloat(material[0][0]["avgscore"]) * parseFloat(material[0][0]["lendcount"])) + score) / (parseFloat(material[0][0]["lendcount"]) + 1))}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}';`)
       // Remove material from user
       userMaterials = user[0][0]["materials"]
       userMaterials.splice(userMaterials.indexOf(materialid), 1)
