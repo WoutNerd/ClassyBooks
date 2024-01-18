@@ -19,8 +19,12 @@ const ReturnBooks = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const materialid = getCookie('materialid')
+        const userid = getCookie('userId')
         const sessionid = getCookie('sessionId')
+        const userBody = {sessionid, userid}
+        const user = await post('/getUser', userBody)
+        
+        const materialid = user.materials[0]
         const body = { materialid, sessionid }
         const response = await post("/getMaterial", body);
         setBook(response);
@@ -43,7 +47,7 @@ const ReturnBooks = () => {
     if(rating === null) alert('Geef je boek eerst een score')
     else if(window.confirm('Bent u seker dat u '+book.title+' wilt inleveren met een score van '+rating+'/4?')){
       const resp = await post('/returnMaterial', body)
-      if(resp === 'Successfully returned material') alert('Succesvol ingeleverd')
+      if(resp === 'Successfully returned material') alert('Succesvol ingeleverd');
       else if(resp === 'Invalid request') alert('Inleveren mislukt probeer later opnieuw');//redirectToPage('../leerling/bibliotheek')
     }
   }
@@ -67,7 +71,7 @@ const ReturnBooks = () => {
         <input type="checkbox" name="fullyRead" id="fullyRead" checked={isChecked} onChange={handleChange}/>
         <label htmlFor="fullyRead">Volldig gelezen?</label>
         <button className="button" onClick={() => {handleClick()}}>Lever {book.title} in</button>
-      </Box> : <div>{redirectToPage('/leerling/bibliotheek')}</div>}
+      </Box> : <div></div>}
     </div>
   );
 }

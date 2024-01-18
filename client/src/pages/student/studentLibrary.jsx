@@ -7,13 +7,16 @@ async function lend(materialid) {
   const userid = getCookie('userId')
   const body = {materialid, userid}
   const time = await post('/lendMaterial', body)
+  alert('Je hebt tot '+ time+ ' om het boek terug te brengen.')
 }
 
 
 
-const TeacherLib =  () => {
+const StudentLib =  () => {
   Title('Bibliotheek')
   checkUser(0)
+
+  //vars
   const [books, setBooks] = useState(null);
   const [filterdBooks, setFilterdBooks] = useState(null)
   const [showAll, setShowAll] = useState(true);
@@ -25,7 +28,7 @@ const TeacherLib =  () => {
   const [readinglevels, setReadinglevels] = useState([])
   const [currentBook, setCurrentBook] = useState(null)
 
-function Navigate(url){useNavigate(url)} 
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +38,9 @@ function Navigate(url){useNavigate(url)}
         setFilterdBooks(response)
         const sessionid = getCookie('sessionId')
         const userid = getCookie('userId')
-        var body = {userid, sessionid}
-        const materialid = await post('/getUser').materials
-        body = {sessionid, materialid}
-        const currentMaterial = post('/getMaterial', body)
+        const user = await post('/getUser', {sessionid, userid})
+        const materialid = user.materials[0]
+        const currentMaterial = await post('/getMaterial', {sessionid, materialid})
         setCurrentBook(currentMaterial)
         
       } catch (error) {
@@ -173,14 +175,14 @@ function Navigate(url){useNavigate(url)}
         </optgroup>
       </select>
 
-      {currentBook ? <div><button onClick={() => Navigate('leerling/lever-in')} className="button">Dien {currentBook.title} in</button></div>:<></>}
+      {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button">Dien {currentBook.title} in</button></div>:<></>}
 
       {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
-      <li className='bookItem'>
+      <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false)}}>
         <img src={book.descr.cover} alt="" className='cover'/>
-        <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} >{book.title}</h3>
+        <h3>{book.title}</h3>
       </li>
-    ))}}
+    ))}
         
       </div>
 
@@ -201,4 +203,4 @@ function Navigate(url){useNavigate(url)}
 };
 
 
-export default TeacherLib;
+export default StudentLib;
