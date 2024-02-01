@@ -32,9 +32,11 @@ const Navbar = () => {
         const userid = getCookie("userId");
         const body = { sessionid, userid };
         const response = await post('/getUser', body)
-        if (typeof(response) === 'undefined') {
+        console.log(response)
+        console.log(typeof(response))
+        if (response == null) {
             setUser(false)
-        } else if (typeof(response) === 'object') {
+        } else if (response != null) {
             setUser(true);
             if (response.privilege === 2) setHome('../beheer/gebruikers-beheren')
             else if (response.privilege === 1) setHome('../leerkracht/overzicht')
