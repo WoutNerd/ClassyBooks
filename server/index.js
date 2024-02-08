@@ -98,7 +98,7 @@ app.post("/createUser", (req, res) => {
     try {
       if (checkRequest(req)) {
         session = await getSession(req["body"]["sessionid"]) // Get admin session
-        if (session['privilege'] == '2') {
+        if (session['privilege'] == 2) {
           // Create admin (lvl 1)
           if (parseInt(req["body"]["privilege"]) >= 1) {
             await addTeacherWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
