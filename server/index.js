@@ -313,6 +313,20 @@ app.post("/changePassword", (req, res) => {
     }
   })();
 })
+app.post("/logout", (req, res) => {
+  (async () => {
+    try {
+      logout(req["body"]["sessionid"])
+      res.status(200).send("Succesfully logged out")
+    }
+    catch (err) {
+      res.status(500).send("Server error: " + err)
+
+    }
+  })();
+
+})
+
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
 settings = { "url": process.env.DBURL };
@@ -558,7 +572,9 @@ async function checkSessionExpireSweep() {
   });
 
 }
-
+async function logout(sessionid) {
+  await request(`UPDATE USERS SET SESSIONID=null, SESSIONIDEXPIRE=null WHERE SESSIONID='${sessionid}'`)
+}
 //--------------------------------------------------------------------------------------------------//
 
 (async () => {
