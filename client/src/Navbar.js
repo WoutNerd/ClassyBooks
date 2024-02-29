@@ -31,7 +31,7 @@ const Navbar = () => {
         const sessionid = getCookie("sessionId");
         const userid = getCookie("userId");
         const body = { sessionid, userid };
-        const response = await post('/getUser', body)
+        const response = await post('/getUser', body, 'navbar')
         if (response == null) {
             setUser(false)
         } else if (response != null) {
