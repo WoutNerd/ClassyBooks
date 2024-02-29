@@ -164,7 +164,7 @@ const TeacherLib =  () => {
         <img src={book.descr.cover} alt="" className='cover'/>
         <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} >{book.title}</h3>
       </li>
-    ))}}
+    ))}
         
       </div>
 
