@@ -22,6 +22,7 @@ import StudentChangePassword from './pages/student/studentChangePassword';
 import ChangeUserPass from './pages/admin/changeUserPass';
 import ManageMaterials from './pages/admin/manageMaterial';
 import ReturnBooks from './pages/student/return';
+import Pupils from './pages/teacher/teacherPupils';
 
 
 
@@ -38,6 +39,7 @@ root.render(
                                 <Route path='leerkracht/overzicht' element={<Dashboard />} />
                                 <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
                                 <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
+                                <Route path='leerkracht/leerlingen' element={<Pupils/>}/>
 
                                 <Route path='beheer/gebruiker-toevoegen' element={<AddUser />} />
                                 <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
