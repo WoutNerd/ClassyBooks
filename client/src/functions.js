@@ -28,7 +28,7 @@ export async function checkUser(privilege) {
   const sessionid = getCookie("sessionId");
   const userid = getCookie("userId");
   const body = { sessionid, userid };
-  const response = await post('/getUser', body)
+  const response = await post('/getUser', body, 'checkuser')
 
   if (response.privilege >= privilege) { }
   else if (response.privilege === null && privilege === 0) { }
@@ -40,12 +40,12 @@ export async function checkUser(privilege) {
 
 
 //post to given url
-export async function post(url, body) {
+export async function post(url, body, func) {
   try {
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json' ,'Function':func },
     });
     
     const respType = await response.headers.get('Content-Type')

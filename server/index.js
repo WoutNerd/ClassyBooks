@@ -226,7 +226,7 @@ app.post("/allUsers", (req, res) => {
         if (sess != null) {
           // If admin is privileged
           if (parseInt(sess["privilege"]) >= 1) {
-            users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE FROM USERS")
+            users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE, READINGLEVEL FROM USERS")
             res.setHeader("Content-Type", "application/json")
             res.status(200).send(users[0])
           } else { res.status(400).send("Invalid request") } // Admin is not privileged

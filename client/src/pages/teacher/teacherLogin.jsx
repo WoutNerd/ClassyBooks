@@ -20,7 +20,6 @@ const redirectToPage = (path) => {
       document.cookie = "sessionId=" + response.sessionid + ";path=/";
       document.cookie = "userId=" + response.userid + ";path=/"
 
-      console.log(document.cookie)
     
       if (response.privilege === 1) {
         redirectToPage("../leerkracht/overzicht")
