@@ -230,6 +230,8 @@ app.post("/allUsers", (req, res) => {
             res.setHeader("Content-Type", "application/json")
             res.status(200).send(users[0])
           } else { res.status(400).send("Invalid request") } // Admin is not privileged
+        } else {
+          res.status(400).send("Invalid request")
         }
       }
       else { res.status(400).send("Invalid request") } // Invalid request
@@ -316,7 +318,7 @@ app.post("/changePassword", (req, res) => {
 app.post("/logout", (req, res) => {
   (async () => {
     try {
-      logout(req["body"]["sessionid"])
+      logout(req["body"]["sessionId"])
       res.status(200).send("Succesfully logged out")
     }
     catch (err) {
@@ -489,19 +491,22 @@ async function login(name, surname, sha256, md5) {
 
 }
 async function getSession(sessionId) {
-  // get user from db
-  user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
-  // does user exist
-  if (hasData(user)) {
-    // Check expiration
-    expiry = new Date(user[0][0]["sessionidexpire"])
-    if (new Date().getTime() < expiry.getTime()) {
-      return user[0][0]
+  // Check whether sessionID is a UUID
+  if (sessionId.length == 36) {
+    // get user from db
+    user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
+    // does user exist
+    if (hasData(user)) {
+      // Check expiration
+      expiry = new Date(user[0][0]["sessionidexpire"])
+      if (new Date().getTime() < expiry.getTime()) {
+        return user[0][0]
+      }
+      else return null
     }
     else return null
   }
   else return null
-
 }
 async function lendMaterial(userid, materialid) {
   returndate = new Date().addHours(120).toISOString()
