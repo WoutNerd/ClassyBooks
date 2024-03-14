@@ -496,22 +496,20 @@ async function login(name, surname, sha256, md5) {
 
 }
 async function getSession(sessionId) {
-  // Check whether sessionID is a UUID
-  if (sessionId.length == 36) {
-    // get user from db
-    user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
-    // does user exist
-    if (hasData(user)) {
-      // Check expiration
-      expiry = new Date(user[0][0]["sessionidexpire"])
-      if (new Date().getTime() < expiry.getTime()) {
-        return user[0][0]
-      }
-      else return null
+
+  // get user from db
+  user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
+  // does user exist
+  if (hasData(user)) {
+    // Check expiration
+    expiry = new Date(user[0][0]["sessionidexpire"])
+    if (new Date().getTime() < expiry.getTime()) {
+      return user[0][0]
     }
     else return null
   }
   else return null
+
 }
 async function lendMaterial(userid, materialid) {
   returndate = new Date().addHours(120).toISOString()
