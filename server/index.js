@@ -62,7 +62,7 @@ app.post("/loginPupil", (req, res) => {
           else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
         }
         else {
-          res.status(400).send("Invalid credentials")
+          res.status(400).send("Invalid credentials") // Invalid credentials
 
         }
       }
@@ -86,7 +86,7 @@ app.post("/getUser", (req, res) => {
           if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
           else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "sessionid", "sessionidexpire", "history"])) } //If admin is not privileged, send user other user details
         }
-        else res.status(400).send("Invalid user")
+        else res.status(400).send("Invalid user") // Requested user is not real
       }
       else res.status(400).send("Invalid user") // Requested user is not real
     }
@@ -116,7 +116,7 @@ app.post("/createUser", (req, res) => {
       else { res.status(400).send("Invalid request") } // Request is invalid
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -139,7 +139,7 @@ app.post("/getMaterial", (req, res) => {
       }
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -159,7 +159,7 @@ app.post("/createMaterial", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -180,7 +180,7 @@ app.post("/lendMaterial", (req, res) => {
       else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Request is invalid
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -201,7 +201,7 @@ app.post("/returnMaterial", (req, res) => {
       else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -214,7 +214,7 @@ app.post("/allMaterials", (req, res) => {
       res.status(200).send(materials[0])
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -237,7 +237,7 @@ app.post("/allUsers", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -259,7 +259,7 @@ app.post("/removeUser", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -281,7 +281,7 @@ app.post("/removeMaterial", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
@@ -311,7 +311,7 @@ app.post("/changePassword", (req, res) => {
       else { res.status(400).send("Invalid request") } // Invalid request
     }
     catch (err) {
-      res.status(400).send("Invalid request")
+      res.status(400).send("Invalid request") // Internal error
     }
   })();
 })
@@ -322,8 +322,7 @@ app.post("/logout", (req, res) => {
       res.status(200).send("Succesfully logged out")
     }
     catch (err) {
-      res.status(500).send("Server error: " + err)
-
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 
@@ -351,10 +350,13 @@ async function request(request) {
 
 //-------------------------------------------------------------------------------------FUNCTIONS----//
 function generateHashes(name, surname, password) {
+  // Sha256 = sha256(name+surname+password)
   var sha256 = crypto
     .createHash("sha256")
     .update(name + surname + password)
     .digest("hex");
+
+  // Md5 = md5(name+surname+password+sha256)
   var md5 = crypto
     .createHash("md5")
     .update(name + surname + password + sha256.toString())
@@ -385,13 +387,15 @@ function checkString(value) {
   return true
 }
 function checkRequest(req) {
+  // Returns true if request is good
   let stringGood = true
   Object.keys(req["body"]).forEach((key) => {
-    if (!checkString(req["body"][key])) { stringGood = false }
+    stringGood = checkString(req["body"][key]) && stringGood // If either current check or previous check failed, stringGood turns false
   })
   return stringGood
 }
 function stripInfo(dbres, keys) {
+  // Remove selected keys from a database call
   d = dbres[0]
   for (let i = 0; i < keys.length; i++) {
     d[keys[i]] = null
@@ -403,6 +407,7 @@ Date.prototype.addHours = function (h) {
   return this;
 }
 function hasData(dbres) {
+  // Checks whether a database response has data
   try {
     return dbres[1]["rowCount"] > 0
   }
