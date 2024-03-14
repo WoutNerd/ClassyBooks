@@ -12,17 +12,6 @@ async function deleteUser(userId) {
   } else { }
 }
 
-
-const sessionId = getCookie('sessionId')
-const body = { sessionId }
-
-
-
-
-
-
-
-
 const ManageUsers = () => {
   Title('Gebruikers beheren')
   checkUser(2)
@@ -53,7 +42,7 @@ const ManageUsers = () => {
 
   let response
 useEffect(() => {
-  const body = {sessionId}
+  const body = {sessionId:getCookie(`sessionId`)}
   const fetchData = async () => { 
     response = await post("/allUsers", body, 'manage users')
   const specifiedUsers = response
