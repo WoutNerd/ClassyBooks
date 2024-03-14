@@ -2,12 +2,51 @@ import { useState } from "react";
 import "../../App.css"
 import { Link } from "react-router-dom";
 import { post, getCookie } from '../../functions'
+const classNames = require('classnames')
 
-
+function getCurrentURL () { 
+    return window.location.pathname
+  }
 
 
 const TeacherNavbar = () => {
     const [admin, setAdmin] = useState(false)
+    const currentUrl = getCurrentURL()
+
+
+    var dashboard = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/leerkracht/overzicht'
+      });
+      var pupils = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/leerkracht/leerlingen'
+      });
+      var library = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/leerkracht/bibliotheek'
+      });
+      var pass = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/leerkracht/verander-wachtwoord'
+      });
+      var users = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/beheer/gebruikers-beheren'
+      });
+      var addUser = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/beheer/gebruiker-toevoegen'
+      });
+      var books = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/beheer/boeken-beheren'
+      });
+      var addBook = classNames({
+        'lkNavbar': true,
+        'active': currentUrl === '/beheer/boek-toevoegen'
+      });
+
 
     const priv = async () => {
         const sessionid = getCookie("sessionId");
@@ -21,60 +60,42 @@ const TeacherNavbar = () => {
         }
     }
     priv()
-
+ 
     return (
         <div className="lkNavbarDiv">
-            
-            {admin ?
-                <ul className="lkNavbar">
-                    <li className="lkNavbar">
+            <ul className="">
+                    <li className={dashboard}>
                         <Link to="../leerkracht/overzicht">Dashboard</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+
+                    <li className={pupils}>
                         <Link to="../leerkracht/leerlingen">Leerlingen</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+
+                    <li className={library}>
                         <Link to="../leerkracht/bibliotheek">Bilbiotheek</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+
+                    <li className={pass}>
                         <Link to='../leerkracht/verander-wachtwoord'>verander wachtwoord</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+                
+            {admin ?<>
+
+                    <li className={users}>
                         <Link to='../beheer/gebruikers-beheren'>gebruikers beheren</Link>
                     </li>
-                    <br/>
-                    <li className="lkNavbar">
+                    <li className={addUser}>
                         <Link to='../beheer/gebruiker-toevoegen'>gebruiker toevoegen</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+                    <li className={books}>
                         <Link to='../beheer/boeken-beheren'>boeken beheren</Link>
                     </li>
-                    <br />
-                    <li className="lkNavbar">
+                    <li className={addBook}>
                         <Link to='../beheer/boek-toevoegen'>boek toevoegen</Link>
-                    </li>
-                    </ul> : <ul className="lkNavbar">
-                    <li className="lkNavbar">
-                        <Link to="../leerkracht/overzicht">Dashboard</Link>
-                    </li>
-                    <br />
-                    <li className="lkNavbar">
-                        <Link to="../leerkracht/leerlingen">Leerlingen</Link>
-                    </li>
-                    <br />
-                    <li className="lkNavbar">
-                        <Link to="../leerkracht/bibliotheek">Bilbiotheek</Link>
-                    </li>
-                    <br />
-                    <li className="lkNavbar">
-                        <Link to='../leerkracht/verander-wachtwoord'>verander wachtwoord</Link>
-                    </li>
-                </ul>}
+                    </li> </>
+                     : <></>}
+                     </ul>
 
         </div>
     );
