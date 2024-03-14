@@ -10,50 +10,67 @@ const { faker } = require('@faker-js/faker/locale/nl_BE');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json());
 
-const leesniveaus = ["AVI-START", "AVI-M3", "AVI-E3", "AVI-M4", "AVI-E4", "AVI-M5", "AVI-E5", "AVI-M6", "AVI-E6", "AVI-M7", "AVI-E7", "AVI-PLUS"]
+const leesniveaus = ['AVI-START', 'AVI-M3', 'AVI-E3', 'AVI-M4', 'AVI-E4', 'AVI-M5', 'AVI-E5', 'AVI-M6', 'AVI-E6', 'AVI-M7', 'AVI-E7', 'AVI-PLUS']
 const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
 //-----------------------------------------------------------------------------------REQUESTS-------//
 
 // Deploy express app
-app.use(express.static(__dirname + "/../client/build/"));
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
-app.get("*", (req, res) => {
-  res.sendFile(__dirname + "/../client/build/index.html");
-});
+try {
+  app.use(express.static(__dirname + "/../client/build/"));
+  app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+  });
+  app.get("*", (req, res) => {
+    res.sendFile(__dirname + "/../client/build/index.html");
+  });
+}
+catch (error) { console.log(error) }
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
 app.post("/loginTeacher", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      // Try login
-      user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
-      sessionid = user[0]
-      userid = user[1]
-      privilege = user[2]
-      if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } //Invalid credentials
-      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) } //Successfully logged in
+    try {
+      if (checkRequest(req)) {
+        // Try login
+        user = await login(req["body"]["name"], req["body"]["surname"], req["body"]["sha256"], req["body"]["md5"])
+        sessionid = user[0]
+        userid = user[1]
+        privilege = user[2]
+        if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } //Invalid credentials
+        else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) } //Successfully logged in
+      }
+      else { res.status(400).send("Invalid credentials") } // Invalid credentials
     }
-    else { res.status(400).send("Invalid credentials") } //Invalid credentials
-
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Server error
+    }
   })();
 })
 app.post("/loginPupil", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      // Get user from server based on class and number
-      let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["clss"]}' AND CLASSNUM=${req["body"]["number"]};`)
-      // Try login
-      user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
-      sessionid = user[0]
-      userid = user[1]
-      privilege = user[2]
-      if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } // Invalid credentials
-      else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) } //Successfully logged in
-    }
-    else { res.status(400).send("Invalid credentials") } // Invalid credentials
+    try {
+      if (checkRequest(req)) {
+        // Get user from server based on class and number
+        let userReq = await request(`SELECT FIRSTNAME, LASTNAME FROM USERS WHERE CLASS='${req["body"]["clss"]}' AND CLASSNUM=${req["body"]["number"]};`)
+        // Try login
+        if (hasData(userReq)) {
+          user = await login(userReq[0][0]["firstname"], userReq[0][0]["lastname"], req["body"]["sha256"], req["body"]["md5"])
+          sessionid = user[0]
+          userid = user[1]
+          privilege = user[2]
+          if (sessionid == "Invalid credentials") { res.status(400).send(sessionid) } // Invalid credentials
+          else { res.status(200).send({ "sessionid": sessionid, "userid": userid, "privilege": privilege }) }
+        }
+        else {
+          res.status(400).send("Invalid credentials") // Invalid credentials
 
+        }
+      }
+      else { res.status(400).send("Invalid credentials") } // Invalid credentials
+    }
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Server error
+    }
   })();
 })
 app.post("/getUser", (req, res) => {
@@ -69,7 +86,7 @@ app.post("/getUser", (req, res) => {
           if (sessionPrivilege >= 1) { res.status(200).send(stripInfo(user[0], ["md5", "sha256", "sessionid", "sessionidexpire"])) } // If admin has privilege, send user details
           else { res.status(200).send(stripInfo(user[0], ["privilege", "sha256", "md5", "sessionid", "sessionidexpire", "history"])) } //If admin is not privileged, send user other user details
         }
-        else res.status(400).send("Invalid user")
+        else res.status(400).send("Invalid user") // Requested user is not real
       }
       else res.status(400).send("Invalid user") // Requested user is not real
     }
@@ -78,176 +95,239 @@ app.post("/getUser", (req, res) => {
 })
 app.post("/createUser", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      session = await getSession(req["body"]["sessionid"]) // Get admin session
+    try {
+      if (checkRequest(req)) {
+        session = await getSession(req["body"]["sessionid"]) // Get admin session
+        if (session['privilege'] == 2) {
+          // Create admin (lvl 1)
+          if (parseInt(req["body"]["privilege"]) >= 1) {
+            await addTeacherWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
+            res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
+          }
+          // Create pupil
+          else {
+            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["history"], req["body"]["readinglevel"])
+            res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
+          }
 
-      if (session['privilege'] == '2') {
-        // Create admin (lvl 1)
-        if (parseInt(req["body"]["privilege"]) >= 1) {
-          await addTeacherWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
-          res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
         }
-        // Create pupil
-        else {
-          await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [])
-          res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
-        }
-
+        else { res.status(400).send("Invalid session") } // Admin is not privileged to create user
       }
-      else { res.status(400).send("Invalid session") } // Admin is not privileged to create user
+      else { res.status(400).send("Invalid request") } // Request is invalid
     }
-    else { res.status(400).send("Invalid request") } // Request is invalid
-
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/getMaterial", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      // Get user session
-      session = await getSession(req["body"]["sessionid"])
+    try {
+      if (checkRequest(req)) {
+        // Get user session
+        session = await getSession(req["body"]["sessionid"])
 
-      // Get material details
-      material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
+        // Get material details
+        material = await request(`SELECT * FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
 
-      // If material is real
-      if (hasData(material)) {
-        if (parseInt(session['privilege']) >= 1) { res.status(200).send(material[0]) } // If user is privileged, send material details
-        else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "lendcount", "startdate"])) } // If user isn't privileged, strip info
+        // If material is real
+        if (hasData(material)) {
+          if (parseInt(session['privilege']) >= 1) { res.status(200).send(material[0]) } // If user is privileged, send material details
+          else { res.status(200).send(stripInfo(material[0], ["lendoutto", "returndate", "lendcount", "startdate"])) } // If user isn't privileged, strip info
+        }
+        else res.status(400).send("Invalid material") // Invalid material
       }
-      else res.status(400).send("Invalid material") // Invalid material
+    }
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 })
 app.post("/createMaterial", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      // Get user session
-      session = await getSession(req["body"]["sessionid"])
-      // If user is privileged (lvl 2), create material
-      if (session['privilege'] == '2') {
-        await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
-        res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
+    try {
+      if (checkRequest(req)) {
+        // Get user session
+        session = await getSession(req["body"]["sessionid"])
+        // If user is privileged (lvl 2), create material
+        if (session['privilege'] == '2') {
+          await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
+          res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
+        }
+        else { res.status(400).send("Invalid session") } // User is not privileged
       }
-      else { res.status(400).send("Invalid session") } // User is not privileged
+      else { res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/lendMaterial", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      // Call lend function
-      let lend = await lendMaterial(req["body"]["userid"], req["body"]["materialid"])
+    try {
+      if (checkRequest(req)) {
+        // Call lend function
+        let lend = await lendMaterial(req["body"]["userid"], req["body"]["materialid"])
 
-      // If lend is valid, give returndate
-      if (lend[0]) {
-        res.setHeader('Content-Type', 'text/plain')
-        res.status(200).send(lend[1])
+        // If lend is valid, give returndate
+        if (lend[0]) {
+          res.setHeader('Content-Type', 'text/plain')
+          res.status(200).send(lend[1])
+        }
+        else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Lend is invalid
       }
-      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Lend is invalid
+      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Request is invalid
     }
-    else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Request is invalid
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/returnMaterial", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      let ret = await returnMaterial(req["body"]["materialid"], req["body"]["score"], req["body"]["fullyread"])
+    try {
+      if (checkRequest(req)) {
+        let ret = await returnMaterial(req["body"]["materialid"], req["body"]["score"], req["body"]["fullyread"])
 
-      // Is return valid
-      if (ret) {
-        // Successful return
-        res.setHeader('Content-Type', 'text/plain')
-        res.status(200).send("Successfully returned material")
+        // Is return valid
+        if (ret) {
+          // Successful return
+          res.setHeader('Content-Type', 'text/plain')
+          res.status(200).send("Successfully returned material")
+        }
+        else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Invalid return
       }
-      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Invalid return
+      else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.setHeader('Content-Type', 'text/plain'); res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/allMaterials", (req, res) => {
   (async () => {
-    // Send all materials (not all details)
-    materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT, RETURNDATE FROM MATERIALS")
-    res.setHeader("Content-Type", "application/json")
-    res.status(200).send(materials[0])
+    try {
+      // Send all materials (not all details)
+      materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT, RETURNDATE FROM MATERIALS")
+      res.setHeader("Content-Type", "application/json")
+      res.status(200).send(materials[0])
+    }
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/allUsers", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      sess = await getSession(req["body"]["sessionId"])
-      if (sess != null) {
-        // If admin is privileged
-        if (parseInt(sess["privilege"]) >= 1) {
-          users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE FROM USERS")
-          res.setHeader("Content-Type", "application/json")
-          res.status(200).send(users[0])
-        } else { res.status(400).send("Invalid request") } // Admin is not privileged
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionId"])
+        if (sess != null) {
+          // If admin is privileged
+          if (parseInt(sess["privilege"]) >= 1) {
+            users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE, READINGLEVEL FROM USERS")
+            res.setHeader("Content-Type", "application/json")
+            res.status(200).send(users[0])
+          } else { res.status(400).send("Invalid request") } // Admin is not privileged
+        } else {
+          res.status(400).send("Invalid request")
+        }
       }
+      else { res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/removeUser", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      sess = await getSession(req["body"]["sessionId"])
-      // If admin is privileged (lvl 2)
-      if (parseInt(sess["privilege"]) == 2) {
-        await request(`DELETE FROM USERS WHERE USERID='${req["body"]["userId"]}'`)
-        res.status(200).send("Successfully removed user")
-        //Successful removal
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionId"])
+        // If admin is privileged (lvl 2)
+        if (parseInt(sess["privilege"]) == 2) {
+          await request(`DELETE FROM USERS WHERE USERID='${req["body"]["userId"]}'`)
+          res.status(200).send("Successfully removed user")
+          //Successful removal
+        }
+        else {
+          res.status(403).send("Invalid request") // Unprivileged
+        }
       }
-      else {
-        res.status(403).send("Invalid request") // Unprivileged
-      }
+      else { res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/removeMaterial", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      sess = await getSession(req["body"]["sessionId"])
-      // If admin is privileged (lvl 2)
-      if (parseInt(sess["privilege"]) == 2) {
-        await request(`DELETE FROM MATERIALS WHERE MATERIALID='${req["body"]["materialId"]}'`)
-        res.status(200).send("Successfully removed material")
-        //Successful removal
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionId"])
+        // If admin is privileged (lvl 2)
+        if (parseInt(sess["privilege"]) == 2) {
+          await request(`DELETE FROM MATERIALS WHERE MATERIALID='${req["body"]["materialId"]}'`)
+          res.status(200).send("Successfully removed material")
+          //Successful removal
+        }
+        else {
+          res.status(403).send("Invalid request") // Unprivileged
+        }
       }
-      else {
-        res.status(403).send("Invalid request") // Unprivileged
-      }
+      else { res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
   })();
 })
 app.post("/changePassword", (req, res) => {
   (async () => {
-    if (checkRequest(req)) {
-      sess = await getSession(req["body"]["sessionId"])
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionId"])
 
-      // If user is lvl 0 or 1, change own password
-      if (parseInt(sess["privilege"]) <= 1) {
-        // If current password is correct, change it to new
-        if (sess["sha256"] == req["body"]["sha256"] && sess["md5"] == req["body"]["md5"]) {
-          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}'`)
-          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}'`)
+        // If user is lvl 0 or 1, change own password
+        if (parseInt(sess["privilege"]) <= 1) {
+          // If current password is correct, change it to new
+          if ((toString(sess["sha256"]) == toString(req["body"]["sha256"])) && (toString(sess["md5"]) == toString(req["body"]["md5"]))) {
+            await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${sess["userid"]}';`)
+            await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${sess["userid"]}';`)
+            res.status(200).send("Changed password")
+          }
+          else { res.status(400).send("Invalid credentials") } // Invalid credentials
+        }
+        // If user is lvl 2, change other user's password
+        else if (parseInt(sess["privilege"]) == 2) {
+          await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${req["body"]["userid"]}';`)
+          await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${req["body"]["userid"]}';`)
           res.status(200).send("Changed password")
         }
-        else { res.status(400).send("Invalid credentials") } // Invalid credentials
       }
-      // If user is lvl 2, change other user's password
-      else if (parseInt(sess["privilege"]) == 2) {
-        await request(`UPDATE USERS SET SHA256='${req["body"]["newSha256"]}' WHERE USERID='${req["body"]["userid"]}'`)
-        await request(`UPDATE USERS SET MD5='${req["body"]["newMd5"]}' WHERE USERID='${req["body"]["userid"]}'`)
-        res.status(200).send("Changed password")
-      }
+      else { res.status(400).send("Invalid request") } // Invalid request
     }
-    else { res.status(400).send("Invalid request") } // Invalid request
+    catch (err) {
+      res.status(400).send("Invalid request") // Internal error
+    }
   })();
 })
+app.post("/logout", (req, res) => {
+  (async () => {
+    try {
+      logout(req["body"]["sessionId"])
+      res.status(200).send("Succesfully logged out")
+    }
+    catch (err) {
+      res.status(500).send("Server error: " + err) // Internal error
+    }
+  })();
+
+})
+
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
 settings = { "url": process.env.DBURL };
@@ -255,6 +335,7 @@ if (settings["url"] == null || settings["url"] == "") {
   settingsFile = fs.readFileSync("./server/settings.json")
   settings = JSON.parse(settingsFile);
 }
+console.log(process.env.DBURL)
 
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
@@ -269,28 +350,52 @@ async function request(request) {
 
 //-------------------------------------------------------------------------------------FUNCTIONS----//
 function generateHashes(name, surname, password) {
+  // Sha256 = sha256(name+surname+password)
   var sha256 = crypto
     .createHash("sha256")
     .update(name + surname + password)
     .digest("hex");
+
+  // Md5 = md5(name+surname+password+sha256)
   var md5 = crypto
     .createHash("md5")
     .update(name + surname + password + sha256.toString())
     .digest("hex");
   return [sha256.toString(), md5.toString()];
 }
-function checkString(str) {
+function checkString(value) {
   //Returns false when string is not good
-  return !(new RegExp(/(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})/, "gi").test(str))
+  var sql_meta = new RegExp('(%27)|(\')|(--)|(%23)|(#)', 'i');
+  if (sql_meta.test(value)) {
+    return false;
+  }
+
+  var sql_meta2 = new RegExp('((%3D)|(=))[^\n]*((%27)|(\')|(--)|(%3B)|(;))', 'i');
+  if (sql_meta2.test(value)) {
+    return false;
+  }
+
+  var sql_typical = new RegExp('w*((%27)|(\'))((%6F)|o|(%4F))((%72)|r|(%52))', 'i');
+  if (sql_typical.test(value)) {
+    return false;
+  }
+
+  var sql_union = new RegExp('((%27)|(\'))union', 'i');
+  if (sql_union.test(value)) {
+    return false;
+  }
+  return true
 }
 function checkRequest(req) {
+  // Returns true if request is good
   let stringGood = true
   Object.keys(req["body"]).forEach((key) => {
-    if (!checkString(req["body"][key])) { stringGood = false }
+    stringGood = checkString(req["body"][key]) && stringGood // If either current check or previous check failed, stringGood turns false
   })
   return stringGood
 }
 function stripInfo(dbres, keys) {
+  // Remove selected keys from a database call
   d = dbres[0]
   for (let i = 0; i < keys.length; i++) {
     d[keys[i]] = null
@@ -302,6 +407,7 @@ Date.prototype.addHours = function (h) {
   return this;
 }
 function hasData(dbres) {
+  // Checks whether a database response has data
   try {
     return dbres[1]["rowCount"] > 0
   }
@@ -329,13 +435,13 @@ async function addTeacherWithPass(name, surname, password, privilege, materials)
   let hashes = generateHashes(name, surname, password);
   await addTeacherWithHash(name, surname, privilege, hashes[0], hashes[1], materials)
 }
-async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history) {
+async function addPupilWithPass(name, surname, password, clsNum, clss, privilege, materials, history, readinglevel) {
   let hashes = generateHashes(clss, clsNum, password);
-  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history)
+  await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history, readinglevel)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
-async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}');`);
+async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history, readinglevel) {
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${readinglevel}');`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {
@@ -390,6 +496,7 @@ async function login(name, surname, sha256, md5) {
 
 }
 async function getSession(sessionId) {
+
   // get user from db
   user = await request(`SELECT * FROM USERS WHERE SESSIONID='${sessionId}'`)
   // does user exist
@@ -436,7 +543,7 @@ async function returnMaterial(materialid, score, fullyread) {
     // Check whether user is valid
     if (hasData(user) && checkSessionValidity(user)) {
       // Write material update to server with score
-      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, STARTDATE=NULL, AVAILABLE='1', AVGSCORE='${((material[0][0]["avgscore"] * material[0][0]["lendcount"]) + score / material[0][0]["lendcount"] + 1)}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}'`)
+      await request(`UPDATE MATERIALS SET LENDOUTTO=NULL, RETURNDATE=NULL, STARTDATE=NULL, AVAILABLE='1', AVGSCORE='${(((parseFloat(material[0][0]["avgscore"]) * parseFloat(material[0][0]["lendcount"])) + score) / (parseFloat(material[0][0]["lendcount"]) + 1))}', LENDCOUNT='${material[0][0]["lendcount"] + 1}' WHERE MATERIALID='${materialid}';`)
       // Remove material from user
       userMaterials = user[0][0]["materials"]
       userMaterials.splice(userMaterials.indexOf(materialid), 1)
@@ -473,7 +580,9 @@ async function checkSessionExpireSweep() {
   });
 
 }
-
+async function logout(sessionid) {
+  await request(`UPDATE USERS SET SESSIONID=null, SESSIONIDEXPIRE=null WHERE SESSIONID='${sessionid}'`)
+}
 //--------------------------------------------------------------------------------------------------//
 
 (async () => {
@@ -484,7 +593,7 @@ async function checkSessionExpireSweep() {
   //   let leesniveau = leesniveaus[Math.floor(Math.random() * leesniveaus.length)]
   //   let clss = classes[Math.floor(Math.random() * classes.length)]
   //   await addTeacherWithPass(faker.name.firstName(), faker.name.lastName(), "password", 1, [])
-  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [], [])
+  //   await addPupilWithPass(faker.name.firstName(), faker.name.lastName(), "password", Math.floor(Math.random() * 25) + 1, clss, 0, [], [], leesniveau)
   //   await addMaterial(faker.word.adjective() + " " + faker.word.noun(), leesniveau, JSON.stringify({ "author": faker.name.fullName(), "pages": Math.floor(Math.random() * 200) + 10, "cover": faker.image.abstract(1080, 1620), "readinglevel": leesniveau }), true)
   //   i++
   // }

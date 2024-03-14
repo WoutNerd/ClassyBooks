@@ -27,8 +27,8 @@ function AddUser() {
 
 
 
-  const request = async (name, surname, sha256, md5, privileged) => {
-    const body = {sessionid, name, surname, sha256, md5, privileged};
+  const request = async (name, surname, sha256, md5, privileged, clss, num, readinglevel) => {
+    const body = {sessionid, name, surname, sha256, md5, privileged, 'cls':clss, 'classNum':num, readinglevel};
      post('/createUser', body)
   
 }
@@ -58,21 +58,27 @@ function AddUser() {
   const handleSubmit = (event) => {
     //Prevent page reload
     event.preventDefault();
-    var { name, surname, pass,} = document.forms[0];
-
-    
-
-    var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
-    var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
-    var privileged = 0
-
-    if (isCheckedA === 1){
+    var { name, surname, pass, clss, num, readinglevel} = document.forms[0];
+    let privileged = 0
+    if (isCheckedA === true){
       privileged = 2
-    } else if (isCheckedT === 1){
+    } else if (isCheckedT === true){
       privileged = 1
     }
+    
+    if(privileged === 0){
+      var sha256 = crypto.SHA256(clss.value+num.value+pass.value).toString();
+      var md5 = crypto.MD5(clss.value+num.value+pass.value+sha256).toString();
+    }else {
+      var sha256 = crypto.SHA256(name.value+surname.value+pass.value).toString();
+      var md5 = crypto.MD5(name.value+surname.value+pass.value+sha256).toString();
+    }
 
-    request(name.value, surname.value, sha256, md5, privileged);
+
+
+
+
+    request(name.value, surname.value, sha256, md5, privileged, clss.value, num.value, readinglevel.value);
     
   };
 
@@ -87,6 +93,15 @@ function AddUser() {
         </div>
         <div className="input-container">
           <input type="text" className="login" name="surname" required placeholder="Achternaam"/>
+        </div>
+        <div className="input-container">
+          <input type="text" name="clss" required={!(isCheckedA || isCheckedT)} placeholder="Klas" className="login" />
+        </div>
+        <div className="input-container">
+          <input type="text" name="num" required={!(isCheckedA || isCheckedT)} placeholder="Nummer" className="login" />
+        </div>
+        <div className="input-container">
+          <input type="text" name="readinglevel" required={!(isCheckedA || isCheckedT)} placeholder="Leesniveau" className="login" />
         </div>
         <div className="input-container">
           <input type="text" name="pass" required placeholder="Wachtwoord" className="login"/>

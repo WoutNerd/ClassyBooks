@@ -17,10 +17,14 @@
     checkUser(2)
 
     const [books, setBooks] = useState(null);
+    const [filterdBooks, setFilterdBooks] = useState(null)
     const [showAll, setShowAll] = useState(true);
     const [selectedBook, setSelectedBook] = useState(null);
     const [sort, setSort] = useState('title')
     const [sortDirection, setSortDirection] = useState('ascending')
+    const [filter, setFilter] = useState('none')
+    const [locations, setLocations] = useState([])
+    const [readinglevels, setReadinglevels] = useState([])
 
 
     useEffect(() => {
@@ -28,6 +32,8 @@
         try {
           const response = await post("/allMaterials")
           setBooks(response);
+          setFilterdBooks(response)
+          
         } catch (error) {
           console.error(error)
         }
@@ -37,10 +43,52 @@
     }, []);
 
 
+    books?.map(book => {
+      if(!locations.includes(book.place)){
+        setLocations([...locations, book.place])
+      }
+    })
+
+    books?.map(book => {
+      if(!readinglevels.includes(book.descr.readinglevel)){
+        setReadinglevels([...readinglevels, book.descr.readinglevel])
+      }
+    })
+
+    console.log(readinglevels)
+    console.log(locations)
+
     if (!books) {
       return <div>Loading...</div>;
     }
 
+    const handleChangeFilter = (event) => {
+      const {
+        selectedIndex,
+        options
+      } = event.currentTarget;
+      const selectedOption = options[selectedIndex];
+      const selectedFilter = selectedOption.value;
+      const selectedFilterGroup = selectedOption.closest('optgroup')?.id;
+
+      setFilter(selectedFilter)
+      if(selectedFilterGroup === 'place'){
+        const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
+        setFilterdBooks(selectedFilterBooks)
+      }
+      if(selectedFilterGroup === 'readinglevel'){
+        const selectedFilterBooks =  books.filter(book => book.descr.readinglevel.includes(selectedFilter))
+        setFilterdBooks(selectedFilterBooks)
+        
+      }
+      if(selectedFilterGroup === 'available'){
+        const selectedFilterBooks = books.filter(book => book.available.includes(selectedFilter))
+        setFilterdBooks(selectedFilterBooks)
+      } 
+
+      if (selectedFilter === 'none') setFilterdBooks(books)
+      
+    }
 
     const handleChangeSort = (event) => {
       const selectedSort = event.target.value; 
@@ -48,7 +96,7 @@
     
       setSort(selectedSort)
     
-      const sortedMaterials = [...books].sort((a, b) => {
+      const sortedMaterials = [...filterdBooks].sort((a, b) => {
         if (selectedDirection === 'ascending') {
           if (a[selectedSort] < b[selectedSort]) return -1;
           if (a[selectedSort] > b[selectedSort]) return 1;
@@ -60,7 +108,7 @@
         } return null
       });
     
-      setBooks(sortedMaterials); // Update the sorted data
+      setFilterdBooks(sortedMaterials); // Update the sorted data
     };
     
     
@@ -71,7 +119,7 @@
     
       setSortDirection(selectedDirection); // Update the sort direction
     
-      const sortedMaterials = [...books].sort((a, b) => {
+      const sortedMaterials = [...filterdBooks].sort((a, b) => {
         if (selectedDirection === 'ascending') {
           if (a[selectedSort] < b[selectedSort]) return -1;
           if (a[selectedSort] > b[selectedSort]) return 1;
@@ -83,7 +131,8 @@
         }
       });
     
-      setBooks(sortedMaterials); // Update the sorted data
+      setFilterdBooks(sortedMaterials);
+      
     };
     
 
@@ -105,16 +154,27 @@
           <option value="ascending">Oplopen</option>
           <option value="descending">Aflopend</option>
         </select>
+        <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
+          <option value="none">Geen filter</option>
+          <optgroup label='Beschikbaarheid' id='available'>
+            <option value="1">Beschikbaar</option>
+            <option value="0">Onbeschikbaar</option>
+          </optgroup>
+          <optgroup label='Locatie' id='place'>
+            {locations.map(location => <option value={location}>{location}</option>)}
+          </optgroup>
+          <optgroup label='Niveau' id='readinglevel'>
+          {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
+          </optgroup>
+        </select>
 
-        {showAll ? <div> <table> 
-          <tbody>{ books.map((book) => (
-        <tr key={book.materialid}>
-        <td className='item'>
+        {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
+        <li className='bookItem'>
+          <img src={book.descr.cover} alt="" className='cover'/>
           <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} >{book.title}</h3>
-        </td>
-        </tr> 
-      ))}</tbody>)
-          </table>
+        </li>
+      ))}
+          
         </div>
 
           : <div>

@@ -1,93 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import "../../App.css";
-import { checkUser, post, Title, getCookie } from '../../functions';
+import { useState, useEffect } from 'react';
+import "../../App.css"
+import {checkUser, getCookie, post, Title} from '../../functions'
 import { useNavigate } from 'react-router-dom';
 
 async function lend(materialid) {
-  const userid = getCookie("userId");
-  const body = { userid, materialid };
-  const resp = await post("/lendMaterial", body);
-  if (resp.statusText === 'OK') {
-    alert('Succesvol uitgeleend. Je moet het terugbrengen voor ' + resp.text);
-  }
+  const userid = getCookie('userId')
+  const body = {materialid, userid}
+  const time = await post('/lendMaterial', body)
+  alert('Je hebt tot '+ time+ ' om het boek terug te brengen.')
 }
 
-async function available(materialid) {
-  const sessionid = getCookie('sessionId');
-  const body = { sessionid, materialid };
-  try {
-    const resp = await post('/getMaterial', body);
-    if (!resp) {
-      return 'Laden...';
-    } else if (resp && resp.available === '1') {
-      return 'Beschikbaar';
-    } else if (resp && resp.available === '0'){
-      return 'Onbeschikbaar';
-    } else {
-      return 'Fout'
-    }
-  } catch (error) {
-    console.error('Error in available function:', error);
-    return 'Fout bij ophalen beschikbaarheid';
-  }
-}
 
-const StudentLib = () => {
-  Title('Bibliotheek');
-  checkUser(0);
-  const navigate = useNavigate();
 
-  const redirectToPage = (path) => {
-    navigate(path); // Use navigate to go to the specified path
-  };
+const StudentLib =  () => {
+  Title('Bibliotheek')
+  checkUser(0)
 
+  //vars
   const [books, setBooks] = useState(null);
+  const [filterdBooks, setFilterdBooks] = useState(null)
   const [showAll, setShowAll] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
-  const [availability, setAvailability] = useState(''); 
-  const [currentBook, setCurrentBook] = useState(null)
-  const [currentBookSelected, setCurrentBookSelected] = useState(false)
   const [sort, setSort] = useState('title')
   const [sortDirection, setSortDirection] = useState('ascending')
+  const [filter, setFilter] = useState('none')
+  const [locations, setLocations] = useState([])
+  const [readinglevels, setReadinglevels] = useState([])
+  const [currentBook, setCurrentBook] = useState(null)
 
-  useEffect(()=>{
-    const getCurrentBook = async () => {
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await post("/allMaterials")
+        setBooks(response);
+        setFilterdBooks(response)
         const sessionid = getCookie('sessionId')
         const userid = getCookie('userId')
-        var body = {sessionid,userid}
-        const resp = await post("/getUser", body)
-        console.log(resp)
-        if(resp.materials !== null){
-        const materialid = resp.materials[0] 
-        body = {sessionid, materialid}
-        const book = await post('/getMaterial',body)
-        setCurrentBook(book)
-        setCurrentBookSelected(true)}
-    }; getCurrentBook()
-  },[])
+        const user = await post('/getUser', {sessionid, userid})
+        const materialid = user.materials[0]
+        const currentMaterial = await post('/getMaterial', {sessionid, materialid})
+        setCurrentBook(currentMaterial)
+        
+      } catch (error) {
+        console.error(error)
+      }
+    };
 
-  useEffect(()=>{
-    const getBooks = async () => {
-        console.log('getBooks')
-        const book = await post('/allMaterials')
-        console.log('books: '+book)
-        setBooks(book)
-    }; getBooks()
-  },[])
+    fetchData();
+  }, []);
 
-  const handleClick = async (materialid) => {
-    const sessionid = getCookie('sessionId');
-    const body = { materialid, sessionid };
-    try {
-      const response = await post("/getMaterial", body)
-      setSelectedBook(response);
-      setShowAll(false); 
-      const bookAvailability = await available(materialid); 
-      setAvailability(bookAvailability);
-    } catch (error) {
-      console.error(error);
+
+  books?.map(book => {
+    if(!locations.includes(book.place)){
+      setLocations([...locations, book.place])
     }
-  };
+  })
+
+  books?.map(book => {
+    if(!readinglevels.includes(book.descr.readinglevel)){
+      setReadinglevels([...readinglevels, book.descr.readinglevel])
+    }
+  })
+
+
+
+  if (!books) {
+    return <div>Loading...</div>;
+  }
+
+  const handleChangeFilter = (event) => {
+    const {
+      selectedIndex,
+      options
+    } = event.currentTarget;
+    const selectedOption = options[selectedIndex];
+    const selectedFilter = selectedOption.value;
+    const selectedFilterGroup = selectedOption.closest('optgroup')?.id;
+
+    setFilter(selectedFilter)
+    if(selectedFilterGroup === 'place'){
+      const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
+      setFilterdBooks(selectedFilterBooks)
+    }
+    if(selectedFilterGroup === 'readinglevel'){
+      const selectedFilterBooks =  books.filter(book => book.descr.readinglevel.includes(selectedFilter))
+      setFilterdBooks(selectedFilterBooks)
+      
+    }
+    if(selectedFilterGroup === 'available'){
+      const selectedFilterBooks = books.filter(book => book.available.includes(selectedFilter))
+      setFilterdBooks(selectedFilterBooks)
+    } 
+
+    if (selectedFilter === 'none') setFilterdBooks(books)
+    
+  }
 
   const handleChangeSort = (event) => {
     const selectedSort = event.target.value; 
@@ -95,7 +104,7 @@ const StudentLib = () => {
   
     setSort(selectedSort)
   
-    const sortedMaterials = [...books].sort((a, b) => {
+    const sortedMaterials = [...filterdBooks].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
         if (a[selectedSort] > b[selectedSort]) return 1;
@@ -104,10 +113,10 @@ const StudentLib = () => {
         if (a[selectedSort] > b[selectedSort]) return -1;
         if (a[selectedSort] < b[selectedSort]) return 1;
         return 0;
-      }
+      } return null
     });
   
-    setBooks(sortedMaterials); // Update the sorted data
+    setFilterdBooks(sortedMaterials); // Update the sorted data
   };
   
   
@@ -118,7 +127,7 @@ const StudentLib = () => {
   
     setSortDirection(selectedDirection); // Update the sort direction
   
-    const sortedMaterials = [...books].sort((a, b) => {
+    const sortedMaterials = [...filterdBooks].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
         if (a[selectedSort] > b[selectedSort]) return 1;
@@ -130,53 +139,68 @@ const StudentLib = () => {
       }
     });
   
-    setBooks(sortedMaterials); // Update the sorted data
+    setFilterdBooks(sortedMaterials);
+    
   };
+  
 
-  return (
-    <div>
-              <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="title">Titel</option>
-          <option value="avgscore">Score</option>
-          <option value="available">Beschikbaar</option>
-          <option value="place">Locatie</option>
-        </select>
-        <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-          <option value="ascending">Oplopen</option>
-          <option value="descending">Aflopend</option>
-        </select>
-      <div>{currentBookSelected ? (
-        <div className="return">
-          <button className='button' onClick={()=>{document.cookie='materialid='+currentBook.materialid;redirectToPage('/leerling/lever-in')}}>Dien {currentBook?.title} terug in</button>
-        </div>):<div/>}
-        {showAll ? (
-          <div>
-            {books &&
-              books.map((book) => (
-                <div key={book.materialid}>
-                  <h3 onClick={() => handleClick(book.materialid)} className='item'>{book.title}</h3>
-                </div>
-              ))}
-          </div>
-        ) : (
-          <div>
-            <h2>{selectedBook?.title}</h2>
-            <h3>Auteur: {selectedBook?.descr?.author}</h3>
-            <img src={selectedBook?.descr?.cover} alt="" />
-            <p>Locatie: {selectedBook?.place}</p>
-            <p>Paginas: {selectedBook?.descr?.pages}</p>
-            <p>{availability}</p> {/* Render the availability state */}
-            {availability !== 'Onbeschikbaar' && ( // Conditionally render the button
-              <button onClick={() => lend(selectedBook?.materialid)}>Leen uit</button>
-            )}
-            <button onClick={() => setShowAll(true)} className="button">
-              Toon alle boeken
-            </button>
-          </div>
-        )}
+
+
+ 
+
+  return (<div>
+    <div className='content'> 
+      <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
+        <option value="title" >Titel</option>
+        <option value="avgscore">Score</option>
+        <option value="lendcount">Aantal keer uitgeleend</option>
+        <option value="available">Beschikbaar</option>
+        <option value="place">Locatie</option>
+      </select>
+      <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
+        <option value="ascending">Oplopen</option>
+        <option value="descending">Aflopend</option>
+      </select>
+      <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
+        <option value="none">Geen filter</option>
+        <optgroup label='Beschikbaarheid' id='available'>
+          <option value="1">Beschikbaar</option>
+          <option value="0">Onbeschikbaar</option>
+        </optgroup>
+        <optgroup label='Locatie' id='place'>
+          {locations.map(location => <option value={location}>{location}</option>)}
+        </optgroup>
+        <optgroup label='Niveau' id='readinglevel'>
+        {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
+        </optgroup>
+      </select>
+
+      {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button">Dien {currentBook.title} in</button></div>:<></>}
+
+      {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
+      <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false)}}>
+        <img src={book.descr.cover} alt="" className='cover'/>
+        <h3>{book.title}</h3>
+      </li>
+    ))}
+        
       </div>
+
+        : <div>
+          <h2>{selectedBook.title}</h2>
+          <h3>Auteur: {selectedBook.descr.author}</h3>
+          <img src={selectedBook.descr.cover} alt="" />
+          <p>Locatie: {selectedBook.place}</p>
+          <p>Paginas: {selectedBook.descr.pages}</p>
+          <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
+          <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
+          <button onClick={() => lend(selectedBook.materialid)} className="button">Leen uit</button>
+        </div>
+      }
     </div>
-  );
+  </div>
+  )
 };
+
 
 export default StudentLib;

@@ -31,10 +31,10 @@ const Navbar = () => {
         const sessionid = getCookie("sessionId");
         const userid = getCookie("userId");
         const body = { sessionid, userid };
-        const response = await post('/getUser', body)
-        if (typeof(response) === 'undefined') {
+        const response = await post('/getUser', body, 'navbar')
+        if (response == null) {
             setUser(false)
-        } else if (typeof(response) === 'object') {
+        } else if (response != null) {
             setUser(true);
             if (response.privilege === 2) setHome('../beheer/gebruikers-beheren')
             else if (response.privilege === 1) setHome('../leerkracht/overzicht')

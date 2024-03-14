@@ -1,16 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, Title, post, checkUser } from '../../functions';
-import { useNavigate } from 'react-router'
 import TeacherNavbar from '../teacher/teacherNavbar';
-
-async function deleteUser(userId) {
-  const sessionId = getCookie('sessionId')
-  const body = { sessionId, userId }
-  if (window.confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?')) {
-    post('/removeUser', body)
-  } else { }
-}
 
 
 const sessionId = getCookie('sessionId')
@@ -18,87 +9,72 @@ const body = { sessionId }
 
 
 
+const Pupils = () => {
 
-
-
-
-
-const ManageUsers = () => {
-  Title('Gebruikers beheren')
-  checkUser(2)
-
-
-
-  const navigate = useNavigate();
-
-  const redirectToPage = (path) => {
-    navigate(path); // Use navigate to go to the specified path
-  };
-
-  function handlePw(userid) {
-    document.cookie = 'changePwUser=' + userid
-    redirectToPage('/beheer/verander-gebruiker-wachtwoord')
-  }
+  checkUser(1);
+  Title('Leerlingen')
 
   const [selectedUser, setSelectedUser] = useState(null)
   const [showAll, setShowAll] = useState(true)
   const [sort, setSort] = useState('name')
   const [sortDirection, setSortDirection] = useState('ascending')
+  const [material, setMaterial] = useState({})
+  const [filter, setFilter] = useState('none')
   const [sortedClss, setSortedCllss] = useState([])
   const [sortedReadingLvl, setSortedReadingLvl] = useState([])
   const [filterdUsers, setFilterdUsers] = useState([])
   const [users, setUsers] = useState([])
-  const [sortedPrivs, setSortedprivs] = useState([])
-  const [filter, setFilter] = useState('none')
 
-  let response
-useEffect(() => {
-  const body = {sessionId}
-  const fetchData = async () => { 
-    response = await post("/allUsers", body, 'manage users')
-  const specifiedUsers = response
-  setUsers(specifiedUsers)
-  setFilterdUsers(specifiedUsers)
 
-  
-let readinglevels = []
-specifiedUsers?.map(user => {
-  if (!readinglevels.includes(user.readinglevel)) {
-    readinglevels = [...readinglevels, user.readinglevel]
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await post("/allUsers", body, 'teacher pupils')
+      const specifiedUsers = response.filter(function (user) { return user.privilege === 0 })
+      setUsers(specifiedUsers)
+      setFilterdUsers(specifiedUsers)
+
+      let readinglevels = []
+      specifiedUsers?.map(user => {
+        if (!readinglevels.includes(user.readinglevel)) {
+          readinglevels = [...readinglevels, user.readinglevel]
+        }
+      })
+      readinglevels.sort()
+      setSortedReadingLvl(readinglevels)
+
+      let allClss = []
+      specifiedUsers?.map(user => {
+        if (!allClss.includes(user.class)) {
+          allClss = [...allClss, user.class]
+        }
+      })
+      allClss.sort()
+      setSortedCllss(allClss)
+    }
+  fetchData()}, [])
+
+
+
+
+
+
+
+  const HandleClick = () => {
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const sessionid = getCookie('sessionId')
+          const body = { 'materialid': selectedUser.Users, sessionid }
+          const resp = await post('/getMaterial', body)
+          setMaterial(resp)
+        } catch (error) {
+          console.error(error)
+        }
+      };
+
+      fetchData();
+    }, []);
   }
-})
-readinglevels.sort()
-const indexReadinglvl = readinglevels.indexOf(null);
-if (indexReadinglvl > -1) { // only splice array when item is found
-  readinglevels.splice(indexReadinglvl, 1); // 2nd parameter means remove one item only
-}
-setSortedReadingLvl(readinglevels)
-
-let allClss = []
-specifiedUsers?.map(user => {
-  if (!allClss.includes(user.class)) {
-    allClss = [...allClss, user.class]
-  }
-})
-allClss.sort()
-
-const indexClss = allClss.indexOf(null);
-if (indexClss > -1) { // only splice array when item is found
-  allClss.splice(indexClss, 1); // 2nd parameter means remove one item only
-}
-setSortedCllss(allClss)
-let privs = []
-specifiedUsers?.map(user => {
-  if (!privs.includes(user.privilege)) {
-    privs = [...privs, user.privilege]
-  }
-})
-privs.sort()
-setSortedprivs(privs)
-} 
-  fetchData()
-  
-},[])
 
 
 
@@ -111,7 +87,7 @@ setSortedprivs(privs)
     const selectedDirection = sortDirection;
     setSort(selectedSort)
 
-    const sortedMaterials = [...users].sort((a, b) => {
+    const sortedUsers = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
         if (a[selectedSort] > b[selectedSort]) return 1;
@@ -122,9 +98,8 @@ setSortedprivs(privs)
         return 0;
       }
     });
-    console.log(users)
 
-    setUsers(sortedMaterials); // Update the sorted data
+    users = sortedUsers; // Update the sorted data
   };
 
 
@@ -135,7 +110,7 @@ setSortedprivs(privs)
 
     setSortDirection(selectedDirection); // Update the sort direction
 
-    const sortedMaterials = [...users].sort((a, b) => {
+    const sortedUsers = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
         if (a[selectedSort] > b[selectedSort]) return 1;
@@ -147,8 +122,9 @@ setSortedprivs(privs)
       }
     });
 
-    setUsers(sortedMaterials); // Update the sorted data
+    users = sortedUsers; // Update the sorted data
   };
+
 
   const handleChangeFilter = (event) => {
     const {
@@ -169,15 +145,8 @@ setSortedprivs(privs)
       setFilterdUsers(selectedFilterUsers)
 
     }
-    if (selectedFilterGroup === 'privilege') {
-
-      const selectedFilterUsers = users.filter(user => user.privilege === selectedFilter)
-      setFilterdUsers(selectedFilterUsers)
-
-    }
 
     if (selectedFilter === 'none') setFilterdUsers(users)
-
 
   }
 
@@ -202,21 +171,17 @@ setSortedprivs(privs)
         <optgroup label='Niveau' id='readinglevel'>
           {sortedReadingLvl.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
         </optgroup>
-        <optgroup label='Privilege' id='privilege'>
-          {sortedPrivs.map(priv => <option value={priv}>{priv}</option>)}
-        </optgroup>
       </select>
       <div className='itemList'>
         {showAll ?
-          users.map((user) => (
-            <li key={user.userid} onClick={() => { setSelectedUser(user); setShowAll(false); }} className='item'>
+          filterdUsers.map((user) => (
+            <li key={user.userid} onClick={() => { setSelectedUser(user); setShowAll(false); HandleClick() }} className='item'>
               <h3>{user.firstname + ' ' + user.lastname}</h3>
             </li>
           ))
           : <div>
             <h2>{selectedUser.firstname + ' ' + selectedUser.lastname}</h2>
-            <button onClick={() => { handlePw(selectedUser.userid) }} className="button">Verander wachtwoord van {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
-            <button onClick={() => { deleteUser(selectedUser.userid) }} className="button">Verwijder {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
+            <p>{ }</p>
             <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
           </div>
         }
@@ -225,4 +190,4 @@ setSortedprivs(privs)
   )
 };
 
-export default ManageUsers;
+export default Pupils;

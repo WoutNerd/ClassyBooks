@@ -2,7 +2,7 @@
 
 ### Database
 
-Classybooks is configured to usebelow. CockroachDB, a cloud-hosted SQL-solution, this makes it compatible with PostgreSQL. More information on configuring the SQL Database below.
+Classybooks is configured to CockroachDB, a cloud-hosted SQL-solution, this makes it compatible with PostgreSQL. More information on configuring the SQL Database below.
 To initialise the database, we recommend using the following SQL statement:
 
 ```SQL
@@ -24,6 +24,7 @@ CREATE TABLE USERS(
   LASTNAME TEXT,
   CLASS TEXT,
   CLASSNUM INT2,
+  READINGLEVEL TEXT,
   PRIVILEGE INT2,
   SHA256 TEXT,
   MD5 TEXT,
@@ -43,26 +44,13 @@ Classybooks is available through a docker-image on ghcr.io, to pull the image, u
 docker pull ghcr.io/jasperdg828/classybooks:latest-dev
 ```
 
-To configure the database-url, there are 2 possibilities:
-
-#### settings.json
-
-When running the container, assign a volume `/server/settings.json`, this file has a layout like this:
-
-```json
-{
-  "url": "postgresql://database_name:password@databasedomain:port/database?sslmode=verify-full"
-}
-```
-
-You can find the connection-url in your database's dashboard
-
 #### Environment variables
 
-When running the container, assign the connection-url to the `DBURL`-environment table.
+When running the container, assign the connection-url to the `DBURL`-environment variable.
+This URL follows the following pattern: ```postgresql://user:password@databasedomain:port/database?sslmode=verify-full```
 
 #### Port
 
 Make sure to open port 8080 through docker, you can map this to any local port using the port parameters in docker.
 
-<img src="https://github.com/JasperDG828/classybooks/blob/develop/art/logo_long.png?raw=true" width="600"/>
+<img src="https://github.com/JasperDG828/classybooks/blob/develop/client/src/art/logo_long.png?raw=true" width="600"/>
