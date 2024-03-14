@@ -168,7 +168,7 @@ app.post("/returnMaterial", (req, res) => {
 app.post("/allMaterials", (req, res) => {
   (async () => {
     // Send all materials (not all details)
-    materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT FROM MATERIALS")
+    materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT, RETURNDATE FROM MATERIALS")
     res.setHeader("Content-Type", "application/json")
     res.status(200).send(materials[0])
   })();
