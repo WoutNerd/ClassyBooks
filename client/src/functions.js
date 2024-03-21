@@ -45,12 +45,12 @@ export async function post(url, body, func) {
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json' ,'Function':func },
+      headers: { 'Content-Type': 'application/json', 'Function': func },
     });
-    
+
     const respType = await response.headers.get('Content-Type')
-    
-    let data = null
+
+    let data
 
     if (respType.includes('application/json')) {
       data = response.json()
