@@ -7,7 +7,7 @@ async function lend(materialid) {
   const userid = getCookie('userId')
   const body = {materialid, userid}
   const time = await post('/lendMaterial', body)
-  alert('Je hebt tot '+ time+ ' om het boek terug te brengen.')
+  time.text().then((t)=>{alert(`Je hebt tot ${t} om het boek terug te brengen.`)})
 }
 
 
