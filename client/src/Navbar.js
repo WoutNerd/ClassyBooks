@@ -14,6 +14,8 @@ const Navbar = () => {
       navigate(path); // Use navigate to go to the specified path
     };
     function handleLogOut() {
+        const body = {sessionId: getCookie("sessionId")}
+        post('/logout', body, 'navbar')
         document.cookie.split(";").forEach(function(c) { document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); });
         priv()
         redirectToPage('../#')
