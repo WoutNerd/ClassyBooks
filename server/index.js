@@ -318,14 +318,35 @@ app.post("/changePassword", (req, res) => {
 app.post("/logout", (req, res) => {
   (async () => {
     try {
-      logout(req["body"]["sessionId"])
-      res.status(200).send("Succesfully logged out")
+      if (checkRequest(res)) {
+        logout(req["body"]["sessionId"])
+        res.status(200).send("Succesfully logged out")
+      }
+      else { res.status(400).send("Invalid request") }
     }
     catch (err) {
       res.status(500).send("Server error: " + err) // Internal error
     }
   })();
 
+})
+app.post("/changeUser", (req, res) => {
+  (async () => {
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionid"])
+        if (sess != null) {
+          succ = await changeUser(req["body"]["key"], req["body"]["value"], req["body"]["userid"], sess["privilege"])
+        }
+        if (succ) { res.status(200).send("Statement executed correctly") }
+        else { res.status(400).send("Invalid request") }
+
+      }
+      else { res.status(400).send("Invalid request") }
+    } catch (err) {
+      res.status(500).send("Server error: " + err)
+    }
+  })();
 })
 
 //------------------------------------------------------------------------------------SQL-----------//
@@ -440,6 +461,26 @@ async function addPupilWithPass(name, surname, password, clsNum, clss, privilege
   await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history, readinglevel)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
+async function changeUser(key, value, userid, privilege) {
+  if (["readinglevel", "firstname", "lastname", "class", "classnum"].includes(key.toLowerCase())) {
+    userPriv = await getUserPriv(userid)
+    if ((userPriv == 0 && privilege >= 1) || (userPriv != 0 && privilege == 2)) {
+      await request(`UPDATE USERS SET ${key}='${value}' WHERE userid='${userid}'`)
+      return true
+    }
+    else return false
+  }
+  else return false
+}
+
+async function getUserPriv(id) {
+  let d = await request(`SELECT privilege FROM USERS WHERE userid='${id}'`)
+  if (hasData(d)) {
+    return d[0][0]['privilege']
+  }
+  else return false
+}
+
 async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history, readinglevel) {
   await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${readinglevel}');`);
 
