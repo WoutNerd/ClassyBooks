@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import '../../App.css'
 import { getCookie, Title, post, checkUser } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
+import { useNavigate } from 'react-router-dom';
 
 
 const sessionId = getCookie('sessionId')
@@ -10,7 +11,12 @@ const body = { sessionId }
 
 
 const Pupils = () => {
+  const navigate = useNavigate();
+  
 
+  const redirectToPage = (path) => {
+    navigate(path); // Use navigate to go to the specified path
+  };
   checkUser(1);
   Title('Leerlingen')
 
@@ -60,7 +66,7 @@ const Pupils = () => {
 
 
   const HandleClick = () => {
-    useEffect(() => {
+    
       const fetchData = async () => {
         try {
           const sessionid = getCookie('sessionId')
@@ -73,7 +79,7 @@ const Pupils = () => {
       };
 
       fetchData();
-    }, []);
+    
   }
 
 
@@ -149,7 +155,11 @@ const Pupils = () => {
     if (selectedFilter === 'none') setFilterdUsers(users)
 
   }
-
+ 
+  const handleChangeUser = () => {
+    document.cookie = 'changeUser='+selectedUser.userid+';path=/'
+    redirectToPage('bewerken')
+  }
   return (<div>
     <nav><TeacherNavbar /></nav>
     <div className='content'>
@@ -181,7 +191,7 @@ const Pupils = () => {
           ))
           : <div>
             <h2>{selectedUser.firstname + ' ' + selectedUser.lastname}</h2>
-            <p>{ }</p>
+            <button className='button' onClick={() => handleChangeUser()}>Bewerk {selectedUser.firstname}</button>
             <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
           </div>
         }
