@@ -319,8 +319,10 @@ app.post("/logout", (req, res) => {
   (async () => {
     try {
       if (checkRequest(res)) {
-        logout(req["body"]["sessionId"])
-        res.status(200).send("Succesfully logged out")
+        if (logout(req["body"]["sessionId"])) {
+          res.status(200).send("Succesfully logged out")
+        }
+        else { res.status(400).send("Invalid request") }
       }
       else { res.status(400).send("Invalid request") }
     }
@@ -436,6 +438,14 @@ function hasData(dbres) {
     return false
   }
 }
+function requestSucceeded(res) {
+  try {
+    return parseInt(res[1]["rowCount"]) > 0
+  }
+  catch {
+    return false
+  }
+}
 function dateInPast(firstDate, secondDate) {
   return firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)
 }
@@ -465,8 +475,8 @@ async function changeUser(key, value, userid, privilege) {
   if (["readinglevel", "firstname", "lastname", "class", "classnum"].includes(key.toLowerCase())) {
     userPriv = await getUserPriv(userid)
     if ((userPriv == 0 && privilege >= 1) || (userPriv != 0 && privilege == 2)) {
-      await request(`UPDATE USERS SET ${key}='${value}' WHERE userid='${userid}'`)
-      return true
+      let resp = await request(`UPDATE USERS SET ${key}='${value}' WHERE userid='${userid}'`)
+      return requestSucceeded(resp)
     }
     else return false
   }
@@ -622,7 +632,8 @@ async function checkSessionExpireSweep() {
 
 }
 async function logout(sessionid) {
-  await request(`UPDATE USERS SET SESSIONID=null, SESSIONIDEXPIRE=null WHERE SESSIONID='${sessionid}'`)
+  let resp = await request(`UPDATE USERS SET SESSIONID=null, SESSIONIDEXPIRE=null WHERE SESSIONID='${sessionid}'`)
+  return requestSucceeded(resp)
 }
 //--------------------------------------------------------------------------------------------------//
 
