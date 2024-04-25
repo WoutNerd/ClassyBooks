@@ -31,7 +31,7 @@ export async function checkUser(privilege) {
   const response = await post('/getUser', body, 'checkuser')
 
   if (response.privilege >= privilege) { }
-  else if (response.privilege === null && privilege === 0) { }
+  else if (response.privilege == null && privilege === 0) { }
   else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
     window.location.replace('./#')

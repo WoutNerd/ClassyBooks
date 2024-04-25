@@ -36,11 +36,12 @@ const Navbar = () => {
         const response = await post('/getUser', body, 'navbar')
         if (response == null) {
             setUser(false)
+            setHome('../#')
         } else if (response != null) {
             setUser(true);
             if (response.privilege === 2) setHome('../beheer/gebruikers-beheren')
             else if (response.privilege === 1) setHome('../leerkracht/overzicht')
-            else if (response.privilege === null) setHome('../leerling/bibliotheek')
+            else if (response.privilege == null) setHome('../leerling/bibliotheek')
         }else {
             const type = typeof(response)
             console.log(type)
