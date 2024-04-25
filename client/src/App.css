@@ -17,7 +17,9 @@ body {
 }
 
 h2{
-  color: var(--master);
+  color: var(--accent2);
+  font-family:Arial;
+
 }
 
 code {
@@ -30,17 +32,24 @@ code {
 }
 
 input.login {
-  margin:0.5%;
-  padding: 2px;
   font-size: 16px;
   border-width: 2px;
   border-color: var(--accent3);
   background-color: #ffffff;
   color: #000000;
   border-style: solid;
-  border-radius: 6px;
-  box-shadow: 0px 0px 5px rgba(66,66,66,.75);
-  text-shadow: 0px 0px 5px rgba(66,66,66,.75);
+  border-radius: 4px;
+  padding: 5px;
+  margin: 5px;
+  width: 170px;
+  transition: all 0.5s;
+}
+input.login:hover{
+  width: 210px;
+}
+input.login:focus{
+  width: 210px;
+  border-color: var(--accent3);
 }
 
 /* ---------------------------------- https://uiverse.io/zjssun/curly-seahorse-76 ----------------------------------*/
@@ -350,24 +359,100 @@ img.lkNavbar{
 .itemList li{
   float: left;
   margin: 1%;
-  background-color: var(--master);
 }
 
-.item{
-  background:linear-gradient(to bottom, var(--buttonHover) 5%, var(--master) 100%);
-	background-color:var(--master);
-	border-radius:5px;
-	cursor:pointer;
-	color:var(--accent2);
-	font-family:Arial;
-	font-size:21px;
-	font-weight:bold;
-	padding:1px 19px;
-	text-decoration:none;
-  width: 50%; 
-  height: 100px;
+.item {
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.2) 0 2px 4px,rgba(45, 35, 66, 0.15) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  display: inline-flex;
+  font-family:Arial;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
   position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 18px;
+ }
+ 
+ .item:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+ }
+ 
+ .item:hover {
+  box-shadow: rgba(45, 35, 66, 0.3) 0 4px 8px, rgba(45, 35, 66, 0.2) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+ }
+ 
+ .item:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+ }
+
+.bookItem img {
+  width: 200px;
+  margin: 10px;
+  border-radius: 4px;
+  border-width: 0;
 }
+
+ .bookItem {
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.2) 0 2px 4px,rgba(45, 35, 66, 0.15) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  font-family:Arial;
+  justify-content: center;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  will-change: box-shadow,transform;
+  font-size: 18px;
+ }
+ 
+ .bookItem:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+ }
+ 
+ .bookItem:hover {
+  box-shadow: rgba(45, 35, 66, 0.3) 0 4px 8px, rgba(45, 35, 66, 0.2) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+ }
+ 
+ .bookItem:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+ }
+
 .item h3{
   margin: 0;
   position: absolute;
@@ -417,6 +502,63 @@ img.lkNavbar{
   color: #FDE16D;
 
 }
+
+.navbtn {
+  align-items: center;
+  appearance: none;
+  background-color: #FCFCFD;
+  border-radius: 4px;
+  border-width: 0;
+  box-shadow: rgba(45, 35, 66, 0.2) 0 2px 4px,rgba(45, 35, 66, 0.15) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-sizing: border-box;
+  color: #36395A;
+  cursor: pointer;
+  display: inline-flex;
+  font-family:Arial;
+  height: 25px;
+  justify-content: center;
+  line-height: 1;
+  list-style: none;
+  overflow: hidden;
+  padding-left: 16px;
+  padding-right: 16px;
+  position: relative;
+  text-align: left;
+  text-decoration: none;
+  transition: box-shadow .15s,transform .15s;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  will-change: box-shadow,transform;
+  font-size: 14px;
+  margin: 5px;
+ }
+ 
+ .navbtn:focus {
+  box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+ }
+ 
+ .navbtn:hover {
+  box-shadow: rgba(45, 35, 66, 0.3) 0 4px 8px, rgba(45, 35, 66, 0.2) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  transform: translateY(-2px);
+ }
+ 
+ .navbtn:active {
+  box-shadow: #D6D6E7 0 3px 7px inset;
+  transform: translateY(2px);
+ }
+
+
+ .title{
+  font-size: large;
+  font-weight: bold;
+  color: var(--accent2);
+ }
+.login-form{
+  margin: 20px;
+}
+
 
 @media (min-width: 600px) {
   .itemList { grid-template-columns: repeat(2, 1fr); }
