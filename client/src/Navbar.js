@@ -52,7 +52,7 @@ const Navbar = () => {
         <nav className="navbar">
             <img src={logo_long} alt="ClassyBooks"></img>
             <br/>
-            <button className="navbtm" onClick={()=>{handleHome()}}>Thuis</button>
+            <button className="navbtn" onClick={()=>{handleHome()}}>Thuis</button>
             <button className="navbtn" onClick={()=>{handleAbout()}}>Over Ons</button>
             {user ? <>
             <button className="navbtn" onClick={() => {handleLogOut()}}>Afmelden</button>
