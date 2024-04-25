@@ -73,7 +73,7 @@ const TeacherNavbar = () => {
                     </li>
 
                     <li className={library}>
-                        <Link to="../leerkracht/bibliotheek">Bilbiotheek</Link>
+                        <Link to="../leerkracht/bibliotheek">Bibliotheek</Link>
                     </li>
 
                     <li className={pass}>
