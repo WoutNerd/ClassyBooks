@@ -4,12 +4,6 @@ import { getCookie, Title, post, checkUser } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
 import { useNavigate } from 'react-router-dom';
 
-
-const sessionId = getCookie('sessionId')
-const body = { sessionId }
-
-
-
 const Pupils = () => {
   const navigate = useNavigate();
   
@@ -34,6 +28,8 @@ const Pupils = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const sessionId = getCookie('sessionId')
+      const body = { sessionId }
       const response = await post("/allUsers", body, 'teacher pupils')
       const specifiedUsers = response.filter(function (user) { return user.privilege === 0 })
       setUsers(specifiedUsers)
