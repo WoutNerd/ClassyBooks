@@ -38,17 +38,17 @@ const AddMaterial = () => {
     return ( <div>
         <nav><TeacherNavbar/></nav>
         <form >
-            <input type="text" name='title' placeholder='Titel' />
+            <input type="text" name='title' placeholder='Titel' class='login'/>
             <br />
-            <input type="text" name='place' placeholder='Locatie' />
+            <input type="text" name='place' placeholder='Locatie' class='login'/>
             <br />
-            <input type="text" name='author' placeholder='Auteur' />
+            <input type="text" name='author' placeholder='Auteur' class='login'/>
             <br />
-            <input type="url" name='cover' placeholder='Url van de cover' />
+            <input type="url" name='cover' placeholder='Url van de cover' class='login'/>
             <br />
-            <input type="number" name='pages' placeholder='Aantal paginas'/>
+            <input type="number" name='pages' placeholder='Aantal paginas' class='login'/>
             <br />
-            <input type="text" name='readinglevel' placeholder='Lees niveau'/>
+            <input type="text" name='readinglevel' placeholder='Lees niveau' class='login'/>
             <br />
             <input type="checkbox"  placeholder='Beschikbaar' checked={isChecked} onChange={handleChange}/>
             <label htmlFor="">Beschikbaar</label>
