@@ -358,7 +358,6 @@ if (settings["url"] == null || settings["url"] == "") {
   settingsFile = fs.readFileSync("./server/settings.json")
   settings = JSON.parse(settingsFile);
 }
-console.log(process.env.DBURL)
 
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
