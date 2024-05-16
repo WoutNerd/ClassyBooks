@@ -45,10 +45,10 @@ const ReturnBooks = () => {
   const handleClick = async () => {
     const body = {'materialid': book.materialid, 'score': rating, 'fullyread': isChecked}
     if(rating === null) alert('Geef je boek eerst een score')
-    else if(window.confirm('Bent u seker dat u '+book.title+' wilt inleveren met een score van '+rating+'/4?')){
+    else if(window.confirm('Bent u zeker dat u '+book.title+' wilt inleveren met een score van '+rating+'/4?')){
       const resp = await post('/returnMaterial', body)
       if(resp === 'Successfully returned material') alert('Succesvol ingeleverd');
-      else if(resp === 'Invalid request') alert('Inleveren mislukt probeer later opnieuw');//redirectToPage('../leerling/bibliotheek')
+      else if(resp === 'Invalid request') alert('Inleveren mislukt probeer later opnieuw'); redirectToPage('../leerling/bibliotheek')
     }
   }
 
@@ -69,7 +69,7 @@ const ReturnBooks = () => {
           }}
         />
         <input type="checkbox" name="fullyRead" id="fullyRead" checked={isChecked} onChange={handleChange}/>
-        <label htmlFor="fullyRead">Volldig gelezen?</label>
+        <label htmlFor="fullyRead">Volledig gelezen?</label>
         <button className="button" onClick={() => {handleClick()}}>Lever {book.title} in</button>
       </Box> : <div></div>}
     </div>
