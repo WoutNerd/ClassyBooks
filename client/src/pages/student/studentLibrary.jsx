@@ -7,7 +7,10 @@ async function lend(materialid) {
   const userid = getCookie('userId')
   const body = {materialid, userid}
   const time = await post('/lendMaterial', body)
-  time.text().then((t)=>{alert(`Je hebt tot ${t} om het boek terug te brengen.`)})
+  time.text().then((t)=>{
+    let time= new Date(t)
+    let timeText=`${time.getDate()}/${time.getMonth()+1}/${time.getFullYear()}`
+    alert(`Je hebt tot ${timeText} om het boek terug te brengen.`)})
 }
 
 
