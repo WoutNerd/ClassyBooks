@@ -625,3 +625,8 @@ button.big{
   height: 40px;
   font-size: large;
 }
+#sort, #sortDirection, #filter{
+  width: 150px;
+  height: 30px;
+  font-size: medium;
+}
