@@ -25,6 +25,7 @@
     const [filter, setFilter] = useState('none')
     const [locations, setLocations] = useState([])
     const [readinglevels, setReadinglevels] = useState([])
+    const [lendTo, setLendTo] = useState(null);
 
 
     useEffect(() => {
@@ -137,14 +138,31 @@
     
 
 
+  const handleSelect = async (bookid) => {
+    setShowAll(false);
+    const sessionid = getCookie('sessionId');
 
-   
+    try {
+      const bookResponse = await post('/getMaterial', { materialid: bookid, sessionid }, 'manageMaterial');
+      const book = bookResponse[0];
 
-    return (<div>
-      <div><TeacherNavbar></TeacherNavbar></div>
-      <div className='content'> 
+      const userId = book?.lendoutto;
+      const lenderResponse = userId ? await post('/getUser', { userid: userId, sessionid }, 'manageMaterial') : null;
+
+      setSelectedBook(book);
+      setLendTo(lenderResponse);
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div>
+      <div><TeacherNavbar /></div>
+      <div className='content'>
         <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="title" >Titel</option>
+          <option value="title">Titel</option>
           <option value="avgscore">Score</option>
           <option value="lendcount">Aantal keer uitgeleend</option>
           <option value="available">Beschikbaar</option>
@@ -161,36 +179,39 @@
             <option value="0">Onbeschikbaar</option>
           </optgroup>
           <optgroup label='Locatie' id='place'>
-            {locations.map(location => <option value={location}>{location}</option>)}
+            {locations.map(location => <option key={location} value={location}>{location}</option>)}
           </optgroup>
           <optgroup label='Niveau' id='readinglevel'>
-          {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
+            {readinglevels.map(readinglevel => <option key={readinglevel} value={readinglevel}>{readinglevel}</option>)}
           </optgroup>
         </select>
 
-        {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
-        <li className='bookItem'>
-          <img src={book.descr.cover} alt="" className='cover'/>
-          <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} >{book.title}</h3>
-        </li>
-      ))}
-          
-        </div>
-
-          : <div>
-            <h2>{selectedBook.title}</h2>
-            <h3>Auteur: {selectedBook.descr.author}</h3>
-            <img src={selectedBook.descr.cover} alt="" />
-            <p>Locatie: {selectedBook.place}</p>
-            <p>Paginas: {selectedBook.descr.pages}</p>
-            <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
-            <button onClick={() => del(selectedBook.materialid)} className="button">Verwijder Boek</button>
-            <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
+        {showAll ? (
+          <div className='itemList'>
+            {filterdBooks.map((book) => (
+              <li key={book.materialid} className='bookItem' onClick={() => { handleSelect(book.materialid) }}>
+                <img src={book.descr.cover} alt="" className='cover' />
+                <h3>{book.title}</h3>
+              </li>
+            ))}
           </div>
-        }
+        ) : (
+          selectedBook && (
+            <div>
+              <h2>{selectedBook.title}</h2>
+              <h3>Auteur: {selectedBook.descr.author}</h3>
+              <img src={selectedBook.descr.cover} alt="" />
+              <p>Locatie: {selectedBook.place}</p>
+              <p>Pagina's: {selectedBook.descr.pages}</p>
+              <p>{lendTo ? `Is uitgeleend door: `+lendTo.firstname + ' '+ lendTo.lastname : ''}</p>
+              <button onClick={() => del(selectedBook.materialid)} className="button">Verwijder Boek</button>
+              <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
+            </div>
+          )
+        )}
       </div>
     </div>
-    )
-  };
+  );
+};
 
-  export default ManageMaterials;
+export default ManageMaterials;
