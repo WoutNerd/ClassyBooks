@@ -611,3 +611,17 @@ img.lkNavbar{
   .itemList { grid-template-columns: repeat(4, 1fr); }
 }
 
+
+input.big{
+  width: 150px;
+  height: 25px;
+  font-size: large;
+}
+input[type="submit"].big{
+  height: 40px;
+}
+button.big{
+  width: 150px;
+  height: 40px;
+  font-size: large;
+}

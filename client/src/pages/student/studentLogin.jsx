@@ -41,17 +41,17 @@ const StudentLogin = () => {
         <div className="form">
           <form onSubmit={HandleSubmit}>
             <div className="input-container">
-              <input type="text" name="clss" required placeholder="Klas" className="login" autoFocus/>
+              <input type="text" name="clss" required placeholder="Klas" className="login big" autoFocus/>
             </div>
             <div className="input-container">
-              <input type="number" className="login" name="number" required placeholder="Klasnummer"/>
+              <input type="number" className="login big" name="number" required placeholder="Klasnummer"/>
             </div>
             <div className="input-container">
-              <input type="password" name="pass" required placeholder="Wachtwoord" className="login"/>
+              <input type="password" name="pass" required placeholder="Wachtwoord" className="login big"/>
 
             </div>
             <div className="button-container">
-              <input type="submit" value={"Login"} className="login-button"/>
+              <input type="submit" value={"Login"} className="login-button big"/>
             </div>
           </form>
         </div>

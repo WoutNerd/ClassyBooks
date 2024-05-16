@@ -15,8 +15,8 @@ const navigate = useNavigate();
     return ( 
         <div>
             <h2>Als wie wil je inloggen?</h2>
-            <button onClick={() => redirectToPage('./leerkracht')} className='button'>Leerkracht</button>
-            <button onClick={() => redirectToPage('./leerling')} className='button'>Leerling</button>
+            <button onClick={() => redirectToPage('./leerkracht')} className='button big'>Leerkracht</button>
+            <button onClick={() => redirectToPage('./leerling')} className='button big'>Leerling</button>
         </div>
      );
 }
