@@ -77,22 +77,22 @@ const TeacherNavbar = () => {
                     </li>
 
                     <li className={pass}>
-                        <Link to='../leerkracht/verander-wachtwoord'>verander wachtwoord</Link>
+                        <Link to='../leerkracht/verander-wachtwoord'>Verander wachtwoord</Link>
                     </li>
                 
             {admin ?<>
 
                     <li className={users}>
-                        <Link to='../beheer/gebruikers-beheren'>gebruikers beheren</Link>
+                        <Link to='../beheer/gebruikers-beheren'>Gebruikers beheren</Link>
                     </li>
                     <li className={addUser}>
-                        <Link to='../beheer/gebruiker-toevoegen'>gebruiker toevoegen</Link>
+                        <Link to='../beheer/gebruiker-toevoegen'>Gebruiker toevoegen</Link>
                     </li>
                     <li className={books}>
-                        <Link to='../beheer/boeken-beheren'>boeken beheren</Link>
+                        <Link to='../beheer/boeken-beheren'>Boeken beheren</Link>
                     </li>
                     <li className={addBook}>
-                        <Link to='../beheer/boek-toevoegen'>boek toevoegen</Link>
+                        <Link to='../beheer/boek-toevoegen'>Boek toevoegen</Link>
                     </li> </>
                      : <></>}
                      </ul>
