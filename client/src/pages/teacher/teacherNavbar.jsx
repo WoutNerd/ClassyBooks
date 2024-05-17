@@ -64,35 +64,35 @@ const TeacherNavbar = () => {
     return (
         <div className="lkNavbarDiv">
             <ul className="">
-                    <li className={dashboard}>
-                        <Link to="../leerkracht/overzicht">Dashboard</Link>
+                    <li>
+                        <Link className={dashboard} to="../leerkracht/overzicht">Dashboard</Link>
                     </li>
 
-                    <li className={pupils}>
-                        <Link to="../leerkracht/leerlingen">Leerlingen</Link>
+                    <li>
+                        <Link className={pupils} to="../leerkracht/leerlingen">Leerlingen</Link>
                     </li>
 
-                    <li className={library}>
-                        <Link to="../leerkracht/bibliotheek">Bibliotheek</Link>
+                    <li>
+                        <Link className={library} to="../leerkracht/bibliotheek">Bibliotheek</Link>
                     </li>
 
-                    <li className={pass}>
-                        <Link to='../leerkracht/verander-wachtwoord'>Verander wachtwoord</Link>
+                    <li>
+                        <Link className={pass} to='../leerkracht/verander-wachtwoord'>Verander wachtwoord</Link>
                     </li>
                 
             {admin ?<>
 
-                    <li className={users}>
-                        <Link to='../beheer/gebruikers-beheren'>Gebruikers beheren</Link>
+                    <li>
+                        <Link className={users} to='../beheer/gebruikers-beheren'>Gebruikers beheren</Link>
                     </li>
-                    <li className={addUser}>
-                        <Link to='../beheer/gebruiker-toevoegen'>Gebruiker toevoegen</Link>
+                    <li>
+                        <Link className={addUser} to='../beheer/gebruiker-toevoegen'>Gebruiker toevoegen</Link>
                     </li>
-                    <li className={books}>
-                        <Link to='../beheer/boeken-beheren'>Boeken beheren</Link>
+                    <li>
+                        <Link className={books} to='../beheer/boeken-beheren'>Boeken beheren</Link>
                     </li>
-                    <li className={addBook}>
-                        <Link to='../beheer/boek-toevoegen'>Boek toevoegen</Link>
+                    <li>
+                        <Link className={addBook} to='../beheer/boek-toevoegen'>Boek toevoegen</Link>
                     </li> </>
                      : <></>}
                      </ul>
