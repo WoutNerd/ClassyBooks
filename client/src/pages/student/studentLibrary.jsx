@@ -151,7 +151,9 @@ const StudentLib =  () => {
 
  
 
-  return (<div>
+  return (
+    <center><div>
+    
     <div className='content'> 
       <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
         <option value="title" >Titel</option>
@@ -178,7 +180,7 @@ const StudentLib =  () => {
         </optgroup>
       </select>
 
-      {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button">Dien {currentBook.title} in</button></div>:<></>}
+      {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button big2">Dien {currentBook.title} in</button></div>:<></>}
 
       {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
       <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false)}}>
@@ -201,7 +203,9 @@ const StudentLib =  () => {
         </div>
       }
     </div>
+    
   </div>
+  </center>
   )
 };
 

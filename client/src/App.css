@@ -76,7 +76,7 @@ select{
 
 /* ---------------------------------- https://uiverse.io/zjssun/curly-seahorse-76 ----------------------------------*/
 .button {
-  margin: 10px;
+  margin: 30px;
   position: relative;
   padding: 10px 22px;
   border-radius: 6px;
@@ -629,4 +629,16 @@ button.big{
   width: 150px;
   height: 30px;
   font-size: medium;
+}
+
+.big2{
+  width: 250px;
+  height: 50px;
+  font-size: medium;
+}
+
+.page{
+  
+  margin-right: auto;
+  margin-left:auto;
 }
