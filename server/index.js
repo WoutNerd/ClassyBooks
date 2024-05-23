@@ -337,8 +337,12 @@ app.post("/changeUser", (req, res) => {
     try {
       if (checkRequest(req)) {
         sess = await getSession(req["body"]["sessionid"])
+        let i = 0
         if (sess != null) {
-          succ = await changeUser(req["body"]["key"], req["body"]["value"], req["body"]["userid"], sess["privilege"])
+          while (i < req["body"]["keys"].length) {
+            succ = await changeUser(req["body"]["keys"][i], req["body"]["values"][i], req["body"]["userid"], sess["privilege"])
+            i += 1
+          }
         }
         if (succ) { res.status(200).send("Statement executed correctly") }
         else { res.status(400).send("Invalid request") }
