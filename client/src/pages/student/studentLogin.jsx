@@ -15,11 +15,7 @@ const StudentLogin = () => {
 
     const request = async (body) => {
       const response = await post('/loginPupil', body)
-      
-      if (response == undefined){
-        alert('Ongeldige login. Probeer opnieuw.')
-      }
-      else if (response.privilege !== 0) {
+      if (response.privilege !== 0) {
           alert("Leerkrachten en beheerders moeten zich inloggen via de loginpagina voor leerkrachten")
       }else if (response.privilege === 0) {
           document.cookie = "sessionId=" + response.sessionid + ";path=/";

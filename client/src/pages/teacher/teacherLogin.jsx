@@ -19,9 +19,9 @@ const redirectToPage = (path) => {
 
       document.cookie = "sessionId=" + response.sessionid + ";path=/";
       document.cookie = "userId=" + response.userid + ";path=/"
-      if (response == undefined){
-        alert('Ongeldige login. Probeer opnieuw.')
-      }else if (response.privilege === 1) {
+
+    
+      if (response.privilege === 1) {
         redirectToPage("../leerkracht/overzicht")
       }
       if (response.privilege === 2) {
