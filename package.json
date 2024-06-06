@@ -1,7 +1,7 @@
 {
   "name": "classybooks",
-  "version": "1.0.0",
-  "description": "",
+  "version": "alpha0.1",
+  "email": "jasperdegus@gmail.com",
   "main": "index.js",
   "scripts": {
     "build": "cd client && npm i && npm run build",
@@ -13,8 +13,8 @@
     "url": "git+https://github.com/JasperDG828/classybooks.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jasper De Gussemé; Wout Van den Bossche",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/JasperDG828/classybooks/issues"
   },
