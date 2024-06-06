@@ -58,7 +58,7 @@ export async function post(url, body, func) {
         throw new Error(response);
       }
     }
-    else if (respType.includes('text/plain')) {
+    else if (respType.includes('text')) {
       data = response
     }
 
