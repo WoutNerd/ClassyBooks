@@ -34,7 +34,7 @@ const Navbar = () => {
         const userid = getCookie("userId");
         const body = { sessionid, userid };
         const response = await post('/getUser', body, 'navbar')
-        if (response == null) {
+        if (response.ok === false) {
             setUser(false)
             setHome('../#')
         } else if (response != null) {
