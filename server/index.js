@@ -106,7 +106,7 @@ app.post("/createUser", (req, res) => {
           }
           // Create pupil
           else {
-            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["history"], req["body"]["readinglevel"])
+            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["readinglevel"])
             res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
           }
 

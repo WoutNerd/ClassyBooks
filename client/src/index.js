@@ -24,6 +24,8 @@ import ManageMaterials from './pages/admin/manageMaterial';
 import ReturnBooks from './pages/student/return';
 import Pupils from './pages/teacher/teacherPupils';
 import TeacherChangeUser from './pages/teacher/teacherChangeUsers';
+import JsonImport from './pages/admin/jsonimport';
+
 
 
 
@@ -48,6 +50,7 @@ root.render(
                                 <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
                                 <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass />} />
                                 <Route path='beheer/boeken-beheren' element={<ManageMaterials />} />
+                                <Route path='beheer/json-upload' element={<JsonImport />} />
 
                                 <Route path='leerling/bibliotheek' element={<StudentLib />} />
                                 <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />

@@ -2,6 +2,7 @@ import '../../App.css'
 import { post, Title, getCookie, checkUser } from '../../functions'
 import { useState } from 'react'
 import TeacherNavbar from '../teacher/teacherNavbar'
+import { useNavigate } from 'react-router-dom'
 
 async function addMaterial(isChecked) {
     
@@ -29,6 +30,14 @@ const AddMaterial = () => {
     Title('Boeken toevoegen')
     checkUser(2)
 
+
+    const navigate = useNavigate();
+
+    const redirectToPage = (path) => {
+      navigate(path); // Use navigate to go to the specified path
+    };
+
+
     const [isChecked, setIsChecked] = useState(false);
 
     function handleChange(e) {
@@ -55,6 +64,7 @@ const AddMaterial = () => {
             <br />
             <button placeholder='Voeg toe' onClick={() => addMaterial(isChecked)} className='button'><p>Voeg toe</p></button>
         </form>
+        <button onClick={() => redirectToPage(`../beheer/json-upload`)}>Importeren</button>
     </div> );
 }
  

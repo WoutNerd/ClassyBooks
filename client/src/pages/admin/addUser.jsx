@@ -78,7 +78,7 @@ function AddUser() {
 
 
 
-    request(name.value, surname.value, sha256, md5, privileged, clss.value, num.value, readinglevel.value);
+    request(name.value, surname.value, sha256, md5, parseInt(privileged), clss.value, parseInt(num.value), readinglevel.value);
     
   };
 
@@ -130,6 +130,7 @@ function AddUser() {
       <div className="login-form">
         <div className="title">Voeg gebruiker toe</div>
         {isSubmitted ? redirectToPage("overzicht") : renderForm}
+        <button onClick={() => redirectToPage(`../beheer/json-upload`)}>Importeren</button>
       </div>
     </div>
   );
