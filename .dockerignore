@@ -3,7 +3,6 @@ node_modules
 classybooks-testserver-session.sql
 serverlogin.txt
 server/init.sql
-server/settings.json
 .env
 client/node_modules
 client/README.md

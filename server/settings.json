@@ -1,0 +1,3 @@
+{
+    "url": "postgresql://app:classybooks@localhost:5432/defaultdb"
+}
