@@ -37,7 +37,9 @@ const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [sortedPrivs, setSortedprivs] = useState([]);
   const [filter, setFilter] = useState('none');
-  const [isFilterd, setIsFilterd] = useState(false);
+  const [selectedMaterials, setSelectedMaterials] = useState([]);
+  const [selectedHistory, setSelectedHistory] = useState([]);
+
 
   useEffect(() => {
     const body = { sessionId: getCookie('sessionId') };
@@ -160,6 +162,36 @@ const ManageUsers = () => {
     setFilterdUsers(selectedFilterUsers);
   };
 
+  const handleSelect = async (user) => {
+    const sessionid = getCookie(`sessionId`);
+    const body = { sessionid, userid: user.userid };
+
+    setSelectedUser(await post(`/getUser`, body, `selected user`));
+    setShowAll(false);
+
+    const historyPromises = user.history?.map(async e => {
+      const material = await post(`/getMaterial`, { sessionid, materialid: e.material });
+      return material[0].title;
+    });
+    const materialPromises = user.matrials?.map(async e => {
+      const material = await post(`/getMaterial`, { sessionid, materialid: e.material });
+      return material[0].title;
+    });
+
+    let history
+    let material
+    // Resolve all promises
+    if (historyPromises !== undefined) history = await Promise.all(historyPromises);
+    if (materialPromises !== undefined) material = await Promise.all(materialPromises);
+
+
+
+    setSelectedHistory(history);
+    setSelectedMaterials(material)
+  };
+
+
+
   return (
     <div>
       <nav><TeacherNavbar /></nav>
@@ -186,15 +218,23 @@ const ManageUsers = () => {
             {sortedPrivs.map(priv => <option key={priv} value={priv}>{priv}</option>)}
           </optgroup>
         </select>
-        <div className='itemList'>
+        <div className=''>
           {showAll ?
-            filterdUsers.map((user) => (
-              <li key={user.userid} onClick={() => { setSelectedUser(user); setShowAll(false); }} className='item'>
-                <h3>{user.firstname + ' ' + user.lastname}</h3>
-              </li>
-            ))
+            <div className="itemList">{
+              filterdUsers.map((user) => (
+                <li key={user.userid} onClick={() => { handleSelect(user) }} className='item'>
+                  <h3>{user.firstname + ' ' + user.lastname}</h3>
+                </li>
+              ))}
+            </div>
             : <div>
               <h2>{selectedUser.firstname + ' ' + selectedUser.lastname}</h2>
+              <p>Klas: {selectedUser.class}</p>
+              <p>Klas nummer: {selectedUser.classnum}</p>
+              <h3>Geschiedenis:</h3>
+              {selectedHistory ? <div className='history'>{selectedHistory?.map(book => <p>{book}</p>)}</div> : <p>Geen geschiedenis</p>}
+              <h3>Boeken in bezit:</h3>
+              {selectedMaterials ? <div className='materials'>{selectedMaterials?.map(book => <p>{book}</p>)}</div> : <p>Geen boeken in bezit</p>}
               <button onClick={() => { handlePw(selectedUser.userid) }} className="button">Verander wachtwoord van {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
               <button onClick={() => { deleteUser(selectedUser.userid) }} className="button">Verwijder {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
               <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>

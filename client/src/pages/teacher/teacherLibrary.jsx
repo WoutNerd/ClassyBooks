@@ -160,9 +160,9 @@ const TeacherLib =  () => {
       </select>
 
       {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
-      <li className='bookItem'>
+      <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false); }} >
         <img src={book.descr.cover} alt="" className='cover'/>
-        <h3 onClick={() => { setSelectedBook(book); setShowAll(false); }} >{book.title}</h3>
+        <h3 >{book.title}</h3>
       </li>
     ))}
         

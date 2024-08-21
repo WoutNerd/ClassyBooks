@@ -106,7 +106,7 @@ app.post("/createUser", (req, res) => {
           }
           // Create pupil
           else {
-            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], req["body"]["privilege"], req["body"]["sha256"], req["body"]["md5"], [], req["body"]["readinglevel"])
+            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], 0, req["body"]["sha256"], req["body"]["md5"],[], [], req["body"]["readinglevel"])
             res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
           }
 
@@ -226,7 +226,7 @@ app.post("/allUsers", (req, res) => {
         if (sess != null) {
           // If admin is privileged
           if (parseInt(sess["privilege"]) >= 1) {
-            users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE, READINGLEVEL FROM USERS")
+            users = await request("SELECT USERID, FIRSTNAME, LASTNAME, MATERIALS, CLASS, CLASSNUM, PRIVILEGE, READINGLEVEL, HISTORY FROM USERS")
             res.setHeader("Content-Type", "application/json")
             res.status(200).send(users[0])
           } else { res.status(400).send("Invalid request") } // Admin is not privileged
@@ -495,7 +495,7 @@ async function getUserPriv(id) {
 }
 
 async function addPupilWithHash(name, surname, clsNum, clss, privilege, sha256, md5, materials, history, readinglevel) {
-  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', '${readinglevel}');`);
+  await request(`INSERT INTO USERS (firstname, lastname, class, classnum, privilege, sha256, md5, materials, history, readinglevel) VALUES ('${name}', '${surname}', '${clss}', '${clsNum}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}', '${JSON.stringify(history)}', ${readinglevel});`);
 
 }
 async function addTeacherWithHash(name, surname, privilege, sha256, md5, materials) {

@@ -27,8 +27,8 @@ function AddUser() {
 
 
 
-  const request = async (name, surname, sha256, md5, privileged, clss, num, readinglevel) => {
-    const body = {sessionid, name, surname, sha256, md5, privileged, 'cls':clss, 'classNum':num, readinglevel};
+  const request = async (name, surname, sha256, md5, privilege, clss, num, readinglevel) => {
+    const body = {sessionid, name, surname, sha256, md5, privilege, 'cls':clss, 'classNum':num, readinglevel};
      post('/createUser', body)
   
 }

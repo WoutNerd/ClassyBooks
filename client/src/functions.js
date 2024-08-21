@@ -34,7 +34,7 @@ export async function checkUser(privilege) {
   else if (response.privilege == null && privilege === 0) { }
   else {
     alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
-    window.location.replace('./#')
+    window.location.replace('../#')
   }
 }
 
