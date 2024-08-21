@@ -3,7 +3,11 @@ import "../../App.css";
 import TeacherNavbar from '../teacher/teacherNavbar';
 import { getCookie, post } from "../../functions";
 import crypto from "crypto-js";
-const SubtractObject = require("subtract-object");
+import excelToJson from "convert-excel-to-json"
+import subtractObject from "subtract-object";
+import * as XLSX from "xlsx";
+
+
 
 const gebruikers = [``, `Voornaam`, `Achternaam`, `Wachtwoord`, `Klas`, `Nummer`, `Leesniveau`, `Gebruikerstype`]
 const boeken = [``, `Titel`, `Locatie`, `Auteur`, `Url naar afbeelding cover`, `Aantal pagina's`, `Leesniveau`]
@@ -16,6 +20,7 @@ const JsonImport = () => {
     const [dataType, setDataType] = useState(`users`)
     const [all, setAll] = useState(gebruikers)
     const [used, setUsed] = useState([])
+    const [jsonData, setJsonData] = useState("")
 
 
     async function fetchData(url) {
@@ -36,12 +41,30 @@ const JsonImport = () => {
         const selectedFile = event.target.files[0]; // Access the file from the input element
         setFile(selectedFile); // Set the file state
 
-        // Create object URL for preview
-        const url = URL.createObjectURL(selectedFile);
-        setFileUrl(url); // Set the fileUrl state to the object URL
+        let url = URL.createObjectURL(selectedFile)
 
-        // Fetch data from the created object URL
-        fetchData(url);
+        console.log(selectedFile)
+
+        if (selectedFile.type === `application/json`) {
+
+            setFileUrl(url);
+            fetchData(url)
+        } else if (selectedFile.type === `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` || `application/vnd.ms-excel` || `.csv`) {
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = e.target.result;
+                const workbook = XLSX.read(data, { type: "binary" });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+                setData(json);
+            };
+            reader.readAsBinaryString(selectedFile);
+
+
+            
+        }
     }
 
     function getAllKeys(data) {
@@ -56,11 +79,11 @@ const JsonImport = () => {
         if (!Array.isArray(data) || data.length === 0) return null; // Return early if data is not an array or is empty
 
         const keys = getAllKeys(data);
-        console.log("Headings:", keys); // Log headings for debugging
+
 
         return keys.map(key => {
             return <th><select name={keys.indexOf(key)} id={keys.indexOf(key)}>
-                {SubtractObject(used, all).map(e => {
+                {subtractObject(used, all).map(e => {
                     return <option value={e}>{e}
                     </option>
                 })}</select></th>;
@@ -69,14 +92,14 @@ const JsonImport = () => {
     function getRows(data) {
         if (!Array.isArray(data)) return null; // Return early if data is not an array
 
-        console.log("Rows Data:", data); // Log rows data for debugging
+
         return data.map((obj, index) => {
             return <tr key={index}>{getCells(obj)}</tr>;
         });
     }
 
     function getCells(obj) {
-        console.log("Cells Data:", obj); // Log cells data for debugging
+
         return Object.values(obj).map((value, index) => {
             return <td key={index}>{value}</td>;
         });
@@ -187,7 +210,7 @@ const JsonImport = () => {
         alert(`Gebruikers toegevoegd`)
 
     }
-    
+
     async function handleSubmitM() {
         const e0 = document.getElementById('0')?.value
         const e1 = document.getElementById('1')?.value
@@ -253,7 +276,7 @@ const JsonImport = () => {
 
             body.pages = parseInt(body.pages)
 
-            body.description = { author: `body.author`,cover:  `body.cover`,pages: `body.pages`,readinglevel: `body.readinglevel`}
+            body.description = { author: `body.author`, cover: `body.cover`, pages: `body.pages`, readinglevel: `body.readinglevel` }
 
             body.available = 1
             await post('/createMaterial', body)
@@ -281,13 +304,15 @@ const JsonImport = () => {
                     type="file"
                     name="file"
                     id="fileInput"
-                    accept=".json"
+                    accept="application/json, .csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                     onChange={handleFile}
                 />
 
-                <button type="button" onClick={() => {if(dataType === `users`) {
-                    handleSubmitU()
-                    }else if (dataType === `materials`){handleSubmitM()}}}>importeren</button>
+                <button type="button" onClick={() => {
+                    if (dataType === `users`) {
+                        handleSubmitU()
+                    } else if (dataType === `materials`) { handleSubmitM() }
+                }}>importeren</button>
 
                 <div id="preview">
                     {data ? (

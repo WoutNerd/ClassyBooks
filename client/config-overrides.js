@@ -6,7 +6,10 @@ module.exports = function override(config, env) {
         fs: require.resolve("graceful-fs"),
         buffer: require.resolve("buffer"),
         stream: require.resolve("stream-browserify"),
-        'process/browser': require.resolve('process/browser')
+        'process/browser': require.resolve('process/browser'),
+        "util": require.resolve("util/"),
+        "constants": require.resolve("constants-browserify"),
+        "assert": require.resolve("assert/")
         
     };
     config.plugins.push(
