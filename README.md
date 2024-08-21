@@ -34,6 +34,48 @@ CREATE TABLE USERS(
   SESSIONID TEXT,
   SESSIONIDEXPIRE TIMESTAMP
 );
+INSERT INTO USERS (firstname, lastname, privilege, sha256, md5, materials) VALUES ('Admin', 'Admin', '2', '3e765698a86a9aedee4f669380cdd5c467eaa54a82887224171042205450b387', '084a2af815cfc0e3481a474bbc2d51c1', '[]');
+```
+For local databases insert in psql:
+```SQL
+CREATE USER app WITH
+LOGIN
+SUPERUSER
+PASSWORD 'classybooks';
+
+CREATE DATABASE defaultdb;
+
+\c defaultdb
+
+CREATE TABLE MATERIALS(
+  MATERIALID UUID NOT NULL DEFAULT gen_random_uuid(),
+  TITLE TEXT,
+  PLACE TEXT,
+  DESCR JSONB,
+  AVAILABLE BIT,
+  LENDOUTTO UUID,
+  STARTDATE DATE,
+  RETURNDATE DATE,
+  LENDCOUNT INT,
+  AVGSCORE FLOAT
+);
+CREATE TABLE USERS(
+  USERID UUID NOT NULL DEFAULT gen_random_uuid(),
+  FIRSTNAME TEXT,
+  LASTNAME TEXT,
+  CLASS TEXT,
+  CLASSNUM INT2,
+  READINGLEVEL TEXT,
+  PRIVILEGE INT2,
+  SHA256 TEXT,
+  MD5 TEXT,
+  MATERIALS JSONB,
+  HISTORY JSONB,
+  HOWMUCHLATE INT DEFAULT 0,
+  SESSIONID TEXT,
+  SESSIONIDEXPIRE TIMESTAMP
+);
+INSERT INTO USERS (firstname, lastname, privilege, sha256, md5, materials) VALUES ('Admin', 'Admin', '2', '3e765698a86a9aedee4f669380cdd5c467eaa54a82887224171042205450b387', '084a2af815cfc0e3481a474bbc2d51c1', '[]');
 ```
 
 ### Configuration
@@ -41,7 +83,7 @@ CREATE TABLE USERS(
 Classybooks is available through a docker-image on ghcr.io, to pull the image, use:
 
 ```
-docker pull ghcr.io/jasperdg828/classybooks:latest-dev
+docker pull ghcr.io/jasperdg828/classybooks:latest-alpha
 ```
 
 #### Environment variables
