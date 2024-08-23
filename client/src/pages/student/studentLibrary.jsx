@@ -1,213 +1,233 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
-import {checkUser, getCookie, post, Title} from '../../functions'
+import { checkUser, getCookie, post, Title } from '../../functions';
 import { useNavigate } from 'react-router-dom';
 
 async function lend(materialid) {
-  const userid = getCookie('userId')
-  const body = {materialid, userid}
-  const time = await post('/lendMaterial', body)
-  time.text().then((t)=>{
-    let time= new Date(t)
-    let timeText=`${time.getDate()}/${time.getMonth()+1}/${time.getFullYear()}`
-    alert(`Je hebt tot ${timeText} om het boek terug te brengen.`)})
+  const userid = getCookie('userId');
+  const body = { materialid, userid };
+  const time = await post('/lendMaterial', body);
+  time.text().then((t) => {
+    let time = new Date(t);
+    let timeText = `${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+    alert(`Je hebt tot ${timeText} om het boek terug te brengen.`);
+  });
 }
 
+const StudentLib = () => {
+  Title('Bibliotheek');
+  checkUser(0);
 
-
-const StudentLib =  () => {
-  Title('Bibliotheek')
-  checkUser(0)
-
-  //vars
+  // vars
   const [books, setBooks] = useState(null);
-  const [filterdBooks, setFilterdBooks] = useState(null)
+  const [filteredBooks, setFilteredBooks] = useState(null);
   const [showAll, setShowAll] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
-  const [sort, setSort] = useState('title')
-  const [sortDirection, setSortDirection] = useState('ascending')
-  const [filter, setFilter] = useState('none')
-  const [locations, setLocations] = useState([])
-  const [readinglevels, setReadinglevels] = useState([])
-  const [currentBook, setCurrentBook] = useState(null)
-
-
+  const [sort, setSort] = useState('title');
+  const [sortDirection, setSortDirection] = useState('ascending');
+  const [filter, setFilter] = useState('none');
+  const [locations, setLocations] = useState([]);
+  const [readingLevels, setReadingLevels] = useState([]);
+  const [currentBook, setCurrentBook] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(''); // New search state
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await post("/allMaterials")
+        const response = await post("/allMaterials");
         setBooks(response);
-        setFilterdBooks(response)
-        const sessionid = getCookie('sessionId')
-        const userid = getCookie('userId')
-        const user = await post('/getUser', {sessionid, userid})
-        const materialid = user.materials[0]
-        const currentMaterial = await post('/getMaterial', {sessionid, materialid})
-        setCurrentBook(currentMaterial)
-        
+        setFilteredBooks(response);
+        const sessionid = getCookie('sessionId');
+        const userid = getCookie('userId');
+        const user = await post('/getUser', { sessionid, userid });
+        const materialid = user.materials[0];
+        const currentMaterial = await post('/getMaterial', { sessionid, materialid });
+        setCurrentBook(currentMaterial);
+
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     };
 
     fetchData();
   }, []);
 
-
-  books?.map(book => {
-    if(!locations.includes(book.place)){
-      setLocations([...locations, book.place])
+  // Make sure to initialize 'locations' and 'readingLevels' with all available options from books
+  books?.forEach(book => {
+    if (book.place && !locations.includes(book.place)) {
+      setLocations([...locations, book.place]);
     }
-  })
-
-  books?.map(book => {
-    if(!readinglevels.includes(book.descr.readinglevel)){
-      setReadinglevels([...readinglevels, book.descr.readinglevel])
+    if (book.descr?.readinglevel && !readingLevels.includes(book.descr.readinglevel)) {
+      setReadingLevels([...readingLevels, book.descr.readinglevel]);
     }
-  })
-
-
+  });
 
   if (!books) {
     return <div>Loading...</div>;
   }
 
   const handleChangeFilter = (event) => {
-    const {
-      selectedIndex,
-      options
-    } = event.currentTarget;
+    const { selectedIndex, options } = event.currentTarget;
     const selectedOption = options[selectedIndex];
     const selectedFilter = selectedOption.value;
     const selectedFilterGroup = selectedOption.closest('optgroup')?.id;
 
-    setFilter(selectedFilter)
-    if(selectedFilterGroup === 'place'){
-      const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
-      setFilterdBooks(selectedFilterBooks)
-    }
-    if(selectedFilterGroup === 'readinglevel'){
-      const selectedFilterBooks =  books.filter(book => book.descr.readinglevel.includes(selectedFilter))
-      setFilterdBooks(selectedFilterBooks)
-      
-    }
-    if(selectedFilterGroup === 'available'){
-      const selectedFilterBooks = books.filter(book => book.available.includes(selectedFilter))
-      setFilterdBooks(selectedFilterBooks)
-    } 
+    setFilter(selectedFilter);
 
-    if (selectedFilter === 'none') setFilterdBooks(books)
-    
-  }
+    let selectedFilterBooks = books;
+
+    if (selectedFilterGroup === 'place') {
+      selectedFilterBooks = books.filter(book => book.place?.includes(selectedFilter));
+    } else if (selectedFilterGroup === 'readinglevel') {
+      selectedFilterBooks = books.filter(book => book.descr?.readinglevel?.includes(selectedFilter));
+    } else if (selectedFilterGroup === 'available') {
+      selectedFilterBooks = books.filter(book => book.available?.includes(selectedFilter));
+    }
+
+    if (selectedFilter === 'none') selectedFilterBooks = books;
+
+    setFilteredBooks(selectedFilterBooks);
+  };
 
   const handleChangeSort = (event) => {
-    const selectedSort = event.target.value; 
-    const selectedDirection = sortDirection; 
-  
-    setSort(selectedSort)
-  
-    const sortedMaterials = [...filterdBooks].sort((a, b) => {
+    const selectedSort = event.target.value;
+    const selectedDirection = sortDirection;
+
+    setSort(selectedSort);
+
+    const sortedMaterials = [...filteredBooks].sort((a, b) => {
+      const aValue = a[selectedSort] || '';
+      const bValue = b[selectedSort] || '';
+
       if (selectedDirection === 'ascending') {
-        if (a[selectedSort] < b[selectedSort]) return -1;
-        if (a[selectedSort] > b[selectedSort]) return 1;
-        return 0;
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else if (selectedDirection === 'descending') {
-        if (a[selectedSort] > b[selectedSort]) return -1;
-        if (a[selectedSort] < b[selectedSort]) return 1;
-        return 0;
-      } return null
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+      return 0;
     });
-  
-    setFilterdBooks(sortedMaterials); // Update the sorted data
+
+    setFilteredBooks(sortedMaterials); // Update the sorted data
   };
-  
-  
-  
+
   const handleChangeDirection = (event) => {
     const selectedSort = sort; // Get the currently selected sort key
     const selectedDirection = event.target.value; // Get the newly selected sort direction
-  
+
     setSortDirection(selectedDirection); // Update the sort direction
-  
-    const sortedMaterials = [...filterdBooks].sort((a, b) => {
+
+    const sortedMaterials = [...filteredBooks].sort((a, b) => {
+      const aValue = a[selectedSort] || '';
+      const bValue = b[selectedSort] || '';
+
       if (selectedDirection === 'ascending') {
-        if (a[selectedSort] < b[selectedSort]) return -1;
-        if (a[selectedSort] > b[selectedSort]) return 1;
-        return 0;
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
       } else if (selectedDirection === 'descending') {
-        if (a[selectedSort] > b[selectedSort]) return -1;
-        if (a[selectedSort] < b[selectedSort]) return 1;
-        return 0;
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
       }
+      return 0;
     });
+
+    setFilteredBooks(sortedMaterials);
+  };
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase().split("").map(e => {
+      if(e === '&') {return '1'} else
+      if(e === 'é') {return '2'} else
+      if(e === '"') {return '3'} else
+      if(e === "'") {return '4'} else
+      if(e === '(') {return '5'} else
+      if(e === '§') {return '6'} else
+      if(e === 'è') {return '7'} else
+      if(e === '!') {return '8'} else
+      if(e === 'ç') {return '9'} else
+      if(e === 'ç') {return '9'} else
+      if(e === 'à') {return '0'}
+      else {console.log(e);return e}
+  }).join("")
   
-    setFilterdBooks(sortedMaterials);
+    setSearchQuery(query);
+
     
+  console.log(books)
+    const searchedBooks = books.filter(book =>
+      
+      
+      (book.title?.includes(query)) ||  // Check if title exists
+      (book.descr?.author?.includes(query)) ||  // Check if descr and author exist
+      (book.ISBN?.includes(query))  // Check if ISBN exists
+    );
+  
+    setFilteredBooks(searchedBooks);
   };
   
-
-
-
- 
+  
 
   return (
     <center><div>
-    
-    <div className='content'> 
-      <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-        <option value="title" >Titel</option>
-        <option value="avgscore">Score</option>
-        <option value="lendcount">Aantal keer uitgeleend</option>
-        <option value="available">Beschikbaar</option>
-        <option value="place">Locatie</option>
-      </select>
-      <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-        <option value="ascending">Oplopen</option>
-        <option value="descending">Aflopend</option>
-      </select>
-      <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
-        <option value="none">Geen filter</option>
-        <optgroup label='Beschikbaarheid' id='available'>
-          <option value="1">Beschikbaar</option>
-          <option value="0">Onbeschikbaar</option>
-        </optgroup>
-        <optgroup label='Locatie' id='place'>
-          {locations.map(location => <option value={location}>{location}</option>)}
-        </optgroup>
-        <optgroup label='Niveau' id='readinglevel'>
-        {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
-        </optgroup>
-      </select>
+      <div className='content'>
+        <input 
+          id='search'
+          type="text" 
+          placeholder="Zoek op titel, auteur, of ISBN..." 
+          value={searchQuery} 
+          onChange={handleSearch} 
+          className="search-bar" 
+        />
 
-      {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button big2">Dien {currentBook.title} in</button></div>:<></>}
+        <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
+          <option value="title">Titel</option>
+          <option value="avgscore">Score</option>
+          <option value="lendcount">Aantal keer uitgeleend</option>
+          <option value="available">Beschikbaar</option>
+          <option value="place">Locatie</option>
+        </select>
+        <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
+          <option value="ascending">Oplopen</option>
+          <option value="descending">Aflopend</option>
+        </select>
+        <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
+          <option value="none">Geen filter</option>
+          <optgroup label='Beschikbaarheid' id='available'>
+            <option value="1">Beschikbaar</option>
+            <option value="0">Onbeschikbaar</option>
+          </optgroup>
+          <optgroup label='Locatie' id='place'>
+            {locations.map(location => <option key={location} value={location}>{location}</option>)}
+          </optgroup>
+          <optgroup label='Niveau' id='readinglevel'>
+            {readingLevels.map(readinglevel => <option key={readinglevel} value={readinglevel}>{readinglevel}</option>)}
+          </optgroup>
+        </select>
 
-      {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
-      <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false)}}>
-        <img src={book.descr.cover} alt="" className='cover'/>
-        <h3>{book.title}</h3>
-      </li>
-    ))}
-        
+        {currentBook ? <div><button onClick={() => window.location.replace('lever-in')} className="button big2">Dien {currentBook.title} in</button></div> : <></>}
+
+        {showAll ? <div className='itemList'> {filteredBooks.map((book) => (
+          <li key={book.materialid} className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false) }}>
+            <img src={book.descr?.cover} alt="" className='cover' />
+            <h3>{book.title}</h3>
+          </li>
+        ))}
+
+        </div>
+
+          : <div>
+            <h2>{selectedBook.title}</h2>
+            <h3>Auteur: {selectedBook.descr?.author}</h3>
+            <img src={selectedBook.descr?.cover} alt="" />
+            <p>Locatie: {selectedBook.place}</p>
+            <p>Paginas: {selectedBook.descr?.pages}</p>
+            <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
+            <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
+            <button onClick={() => lend(selectedBook.materialid)} className="button">Leen uit</button>
+          </div>
+        }
       </div>
 
-        : <div>
-          <h2>{selectedBook.title}</h2>
-          <h3>Auteur: {selectedBook.descr.author}</h3>
-          <img src={selectedBook.descr.cover} alt="" />
-          <p>Locatie: {selectedBook.place}</p>
-          <p>Paginas: {selectedBook.descr.pages}</p>
-          <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
-          <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
-          <button onClick={() => lend(selectedBook.materialid)} className="button">Leen uit</button>
-        </div>
-      }
     </div>
-    
-  </div>
-  </center>
-  )
+    </center>
+  );
 };
-
 
 export default StudentLib;

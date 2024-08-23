@@ -625,7 +625,7 @@ button.big{
   height: 40px;
   font-size: large;
 }
-#sort, #sortDirection, #filter{
+#sort, #sortDirection, #filter, #search{
   width: 150px;
   height: 30px;
   font-size: medium;

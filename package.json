@@ -1,6 +1,6 @@
 {
   "name": "classybooks",
-  "version": "alpha0.1",
+  "version": "alpha0.2",
   "email": "jasperdegus@gmail.com",
   "main": "index.js",
   "scripts": {

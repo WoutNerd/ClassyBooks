@@ -151,7 +151,7 @@ app.post("/createMaterial", (req, res) => {
         session = await getSession(req["body"]["sessionid"])
         // If user is privileged (lvl 2), create material
         if (session['privilege'] == '2') {
-          await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"])
+          await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"], req["body"]["ISBN"])
           res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
         }
         else { res.status(400).send("Invalid session") } // User is not privileged
@@ -209,7 +209,7 @@ app.post("/allMaterials", (req, res) => {
   (async () => {
     try {
       // Send all materials (not all details)
-      materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT, RETURNDATE FROM MATERIALS")
+      materials = await request("SELECT MATERIALID, TITLE, PLACE, DESCR, AVGSCORE, AVAILABLE, LENDCOUNT, RETURNDATE, ISBN FROM MATERIALS")
       res.setHeader("Content-Type", "application/json")
       res.status(200).send(materials[0])
     }
@@ -270,7 +270,7 @@ app.post("/removeMaterial", (req, res) => {
         sess = await getSession(req["body"]["sessionId"])
         // If admin is privileged (lvl 2)
         if (parseInt(sess["privilege"]) == 2) {
-          await request(`DELETE FROM MATERIALS WHERE MATERIALID='${req["body"]["materialId"]}'`)
+          await request(`DELETE FROM MATERIALS WHERE MATERIALID='${req["body"]["materialid"]}'`)
           res.status(200).send("Successfully removed material")
           //Successful removal
         }
@@ -502,13 +502,13 @@ async function addTeacherWithHash(name, surname, privilege, sha256, md5, materia
   await request(`INSERT INTO USERS (firstname, lastname, privilege, sha256, md5, materials) VALUES ('${name}', '${surname}', '${privilege}', '${sha256}', '${md5}', '${JSON.stringify(materials)}');`);
 
 }
-async function addMaterial(title, place, description, available) {
+async function addMaterial(title, place, description, available, ISBN) {
 
   let availableBit = 0;
   if (available) {
     availableBit = 1;
   }
-  await request(`INSERT INTO MATERIALS (title, place, descr, available, lendcount, avgscore) VALUES ('${title}', '${place}', '${description}', '${availableBit}', '0', '0.0')`);
+  await request(`INSERT INTO MATERIALS (title, place, descr, available, lendcount, avgscore, isbn) VALUES ('${title}', '${place}', '${description}', '${availableBit}', '0', '0.0', '${ISBN}');`);
 }
 async function login(name, surname, sha256, md5) {
   // Get trying user from database
