@@ -82,3 +82,28 @@ export async function changePassword(sha256, md5, newSha256, newMd5) {
     window.location.replace('../../#')
   }
 }
+
+export async function getISBN(isbn) {
+
+  if (isbn == null || isbn == ``) {console.error(`Lege ISBN`); return null}
+  else{
+  const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`;
+
+  try {
+      const response = await fetch(url);
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+
+      if (data.totalItems === 0) {
+          throw new Error('No book found with the provided ISBN.');
+      }
+
+      return data.items[0].volumeInfo;  // Return the first book's volume info
+  } catch (error) {
+      console.error('Error fetching book data:', error);
+      return null;
+  }}
+}
+

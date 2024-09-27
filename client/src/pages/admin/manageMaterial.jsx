@@ -190,7 +190,7 @@
           <div className='itemList'>
             {filterdBooks.map((book) => (
               <li key={book.materialid} className='bookItem' onClick={() => { handleSelect(book.materialid) }}>
-                <img src={book.descr.cover} alt="" className='cover' />
+                <img src={book.descr.cover} alt={book.descr.cover} className='cover' />
                 <h3>{book.title}</h3>
               </li>
             ))}

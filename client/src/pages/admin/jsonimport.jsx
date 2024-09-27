@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../../App.css";
 import TeacherNavbar from '../teacher/teacherNavbar';
-import { getCookie, post } from "../../functions";
+import { getCookie, getISBN, post } from "../../functions";
 import crypto from "crypto-js";
 import excelToJson from "convert-excel-to-json"
 import subtractObject from "subtract-object";
@@ -10,7 +10,7 @@ import * as XLSX from "xlsx";
 
 
 const gebruikers = [``, `Voornaam`, `Achternaam`, `Wachtwoord`, `Klas`, `Nummer`, `Leesniveau`, `Gebruikerstype`]
-const boeken = [``, `Titel`, `Locatie`, `Auteur`, `Url naar afbeelding cover`, `Aantal pagina's`, `Leesniveau`]
+const boeken = [``, `Titel`, `Locatie`, `Auteur`, `Url naar afbeelding cover`, `Aantal pagina's`, `Leesniveau`, `ISBN`, `Booksource id`]
 
 
 const JsonImport = () => {
@@ -20,7 +20,7 @@ const JsonImport = () => {
     const [dataType, setDataType] = useState(`users`)
     const [all, setAll] = useState(gebruikers)
     const [used, setUsed] = useState([])
-    const [jsonData, setJsonData] = useState("")
+    const [countKeys, setCountKeys] = useState(0)
 
 
     async function fetchData(url) {
@@ -30,7 +30,6 @@ const JsonImport = () => {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const jsonData = await response.json();
-            console.log("Fetched JSON Data:", jsonData); // Log fetched data for debugging
             setData(jsonData); // Update state with fetched JSON data
         } catch (error) {
             console.error("Unable to fetch data:", error);
@@ -42,8 +41,6 @@ const JsonImport = () => {
         setFile(selectedFile); // Set the file state
 
         let url = URL.createObjectURL(selectedFile)
-
-        console.log(selectedFile)
 
         if (selectedFile.type === `application/json`) {
 
@@ -79,6 +76,7 @@ const JsonImport = () => {
         if (!Array.isArray(data) || data.length === 0) return null; // Return early if data is not an array or is empty
 
         const keys = getAllKeys(data);
+
 
 
         return keys.map(key => {
@@ -212,74 +210,48 @@ const JsonImport = () => {
     }
 
     async function handleSubmitM() {
-        const e0 = document.getElementById('0')?.value
-        const e1 = document.getElementById('1')?.value
-        const e2 = document.getElementById('2')?.value
-        const e3 = document.getElementById('3')?.value
-        const e4 = document.getElementById('4')?.value
-        const e5 = document.getElementById('5')?.value
-
 
         const sessionid = getCookie(`sessionId`)
 
+
         for (let i = 0; i < data.length; i++) {
             const element = Object.values(data[i]);
+            let Bvin
+            let body = {sessionid, description:{}}
 
+            const keys = getAllKeys(data).length
 
-            let body = { sessionid, title: ``, place: ``, sha256: ``, md5: ``, privilege: ``, cover: ``, pages: ``, readinglevel: `` }
-            if (e0 === `Titel`) body.title = element[0]
-            if (e0 === `Locatie`) body.place = element[0]
-            if (e0 === `Auteur`) body.author = element[0]
-            if (e0 === `Url naar afbeelding cover`) body.cover = element[0]
-            if (e0 === `Aantal pagina's`) body.pages = element[0]
-            if (e0 === `Leesniveau`) body.readinglevel = element[0]
-
-
-            if (e1 === `Titel`) body.title = element[1]
-            if (e1 === `Locatie`) body.place = element[1]
-            if (e1 === `Auteur`) body.author = element[1]
-            if (e1 === `Url naar afbeelding cover`) body.cover = element[1]
-            if (e1 === `Aantal pagina's`) body.pages = element[1]
-            if (e1 === `Leesniveau`) body.readinglevel = element[1]
-
-
-            if (e2 === `Titel`) body.title = element[2]
-            if (e2 === `Locatie`) body.place = element[2]
-            if (e2 === `Auteur`) body.author = element[2]
-            if (e2 === `Url naar afbeelding cover`) body.cover = element[2]
-            if (e2 === `Aantal pagina's`) body.pages = element[2]
-            if (e2 === `Leesniveau`) body.readinglevel = element[2]
-
-
-            if (e3 === `Titel`) body.title = element[3]
-            if (e3 === `Locatie`) body.place = element[3]
-            if (e3 === `Auteur`) body.author = element[3]
-            if (e3 === `Url naar afbeelding cover`) body.cover = element[3]
-            if (e3 === `Aantal pagina's`) body.pages = element[3]
-            if (e3 === `Leesniveau`) body.readinglevel = element[3]
-
-
-            if (e4 === `Titel`) body.title = element[4]
-            if (e4 === `Locatie`) body.place = element[4]
-            if (e4 === `Auteur`) body.author = element[4]
-            if (e4 === `Url naar afbeelding cover`) body.cover = element[4]
-            if (e4 === `Aantal pagina's`) body.pages = element[4]
-            if (e4 === `Leesniveau`) body.readinglevel = element[4]
-
-
-            if (e5 === `Titel`) body.title = element[5]
-            if (e5 === `Locatie`) body.place = element[5]
-            if (e5 === `Auteur`) body.author = element[5]
-            if (e5 === `Url naar afbeelding cover`) body.cover = element[5]
-            if (e5 === `Aantal pagina's`) body.pages = element[5]
-            if (e5 === `Leesniveau`) body.readinglevel = element[5]
-
-            body.pages = parseInt(body.pages)
-
-            body.description = { author: `body.author`, cover: `body.cover`, pages: `body.pages`, readinglevel: `body.readinglevel` }
-
+            //gets all info it can get
+        for (let i = 0; i < keys; i++) {
+            const e = document.getElementById(i)?.value
+            if (e === `ISBN`) body.isbn = element[i]
+            if (e === `Booksource id`) Bvin = element[i]
+            
+        }
             body.available = 1
-            await post('/createMaterial', body)
+            
+            if(Bvin != null){
+                body.description.cover = (`https://classroom.booksource.com/Classroom/DisplayCustomImage.aspx?BC2019=true&img=`+Bvin+`&classid=be221081-74ac-4fdf-af8c-5802f9e38e5e`)
+            }
+            
+            const response = await getISBN(body.isbn)
+            console.log(!!response)
+            if(!!response){body.title = response.title
+            body.description.author = await response.authors?.toString()
+            body.description.pages = response.pageCount}
+
+            //replaces hardcoded info
+            for (let i = 0; i < keys; i++) {
+                const e = document.getElementById(i)?.value
+                if (e === `Titel`) body.title = element[i]
+                if (e === `Locatie`) body.place = element[i]
+                if (e === `Auteur`) body.description.author = element[i]
+                if (e === `Url naar afbeelding cover`) body.description.cover = element[i]
+                if (e === `Aantal pagina's`) body.description.pages = parseInt(element[i])
+                if (e === `Leesniveau`) body.description.readinglevel = element[i]
+            }
+            console.log(body)
+           // console.log(await post('/createMaterial', body))
         }
 
         alert(`Boeken toegevoegd`)
