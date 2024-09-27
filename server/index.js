@@ -355,6 +355,31 @@ app.post("/changeUser", (req, res) => {
   })();
 })
 
+app.post("/changeMaterial", (req, res) => {
+  (async () => {
+    try {
+      if (checkRequest(req)) {
+        sess = await getSession(req["body"]["sessionid"])
+        let i = 0
+        if (sess != null) {
+          
+          while (i < req["body"]["keys"].length) {
+            succ = await changeMaterial(req["body"]["keys"][i], req["body"]["values"][i], req["body"]["materialid"], sess["privilege"])
+            i += 1
+            
+          }
+        }
+        if (succ) { res.status(200).send("Statement executed correctly") }
+        else { res.status(400).send("Invalid request"+succ) }
+
+      }
+      else { res.status(400).send("Invalid request") }
+    } catch (err) {
+      res.status(500).send("Server error: " + err)
+    }
+  })();
+})
+
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
 settings = { "url": process.env.DBURL };
@@ -482,6 +507,18 @@ async function changeUser(key, value, userid, privilege) {
       return requestSucceeded(resp)
     }
     else return false
+  }
+  else return false
+}
+
+async function changeMaterial(key, value, materialid) {
+  console.log([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase()))
+  if ([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase())) {
+
+      let resp = await request(`UPDATE MATERIALS SET ${key}='${value}' WHERE MATERIALID='${materialid}'`)
+      
+      return requestSucceeded(resp)
+    
   }
   else return false
 }
