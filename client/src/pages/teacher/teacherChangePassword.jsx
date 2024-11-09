@@ -1,10 +1,15 @@
 import "../../App.css";
 import crypto from "crypto-js";
-import { Title, changePassword } from "../../functions";
+import { Title, changePassword, Toast } from "../../functions";
 import TeacherNavbar from "./teacherNavbar";
+import { useState } from "react";
 
 function TeacherChangePassword() {
   Title("Verander wachtwoord")
+
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
 
 
   const handleSubmit = (event) => {
@@ -20,9 +25,20 @@ function TeacherChangePassword() {
       var newSha256 = crypto.SHA256(name.value + surname.value + Newpass.value).toString();
       var newMd5 = crypto.MD5(name.value + surname.value + Newpass.value + newSha256).toString();
 
-      changePassword(sha256, md5, newSha256, newMd5)
+      const resp = changePassword(sha256, md5, newSha256, newMd5)
+      if (resp) {
+        setShowToast(true)
+        setToastMessage(`Wachtwoord succesvol veranderd.`)
+        setToastType(`succes`)
+      } else {
+        setShowToast(true)
+        setToastMessage(`Wachtwoord veranderen mislukt. Probeer opnieuw.`)
+        setToastType(`error`)
+      }
     } else {
-      alert('Wachtwoorden komen niet overeen')
+      setShowToast(true)
+      setToastMessage(`Wachtwoorden komen niet overeen`)
+      setToastType(`error`)
 
 
     }
@@ -62,8 +78,16 @@ function TeacherChangePassword() {
 
   return (
     <div className="app">
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <nav className="navbar">
-        <TeacherNavbar/>      </nav>
+        <TeacherNavbar />      </nav>
       <div className="login-form">
         <div className="title">Verander wachtwoord</div>
         {renderForm}

@@ -1,18 +1,9 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
-import { checkUser, getCookie, post, Title } from '../../functions';
-import { useNavigate } from 'react-router-dom';
+import { checkUser, getCookie, post, Title, Toast } from '../../functions';
 
-async function lend(materialid) {
-  const userid = getCookie('userId');
-  const body = { materialid, userid };
-  const time = await post('/lendMaterial', body);
-  time.text().then((t) => {
-    let time = new Date(t);
-    let timeText = `${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
-    alert(`Je hebt tot ${timeText} om het boek terug te brengen.`);
-  });
-}
+
+
 
 const StudentLib = () => {
   Title('Bibliotheek');
@@ -30,6 +21,10 @@ const StudentLib = () => {
   const [readingLevels, setReadingLevels] = useState([]);
   const [currentBook, setCurrentBook] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // New search state
+
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +60,34 @@ const StudentLib = () => {
   if (!books) {
     return <div>Loading...</div>;
   }
+
+
+
+  async function lend(materialid) {
+    const userid = getCookie('userId');
+    const body = { materialid, userid };
+    const resp = await post('/lendMaterial', body);
+  
+  
+    if (resp.status === 200) {
+      let timeText
+      resp.text().then((t) => {
+        let time = new Date(t);
+        timeText = `${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+      })
+      setShowToast(true)
+      setToastMessage(`Je hebt tot ${timeText} om het boek terug te brengen.`)
+      setToastType(`succes`)
+  
+    } else {
+      setShowToast(true)
+      setToastMessage(`Uitlenen mislukt. Probeer opnieuw.`)
+      setToastType(`error`)
+    }
+    
+  }
+
+
 
   const handleChangeFilter = (event) => {
     const { selectedIndex, options } = event.currentTarget;
@@ -133,47 +156,55 @@ const StudentLib = () => {
 
   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase().split("").map(e => {
-      if(e === '&') {return '1'} else
-      if(e === 'é') {return '2'} else
-      if(e === '"') {return '3'} else
-      if(e === "'") {return '4'} else
-      if(e === '(') {return '5'} else
-      if(e === '§') {return '6'} else
-      if(e === 'è') {return '7'} else
-      if(e === '!') {return '8'} else
-      if(e === 'ç') {return '9'} else
-      if(e === 'ç') {return '9'} else
-      if(e === 'à') {return '0'}
-      else {console.log(e);return e}
-  }).join("")
-  
+      if (e === '&') { return '1' } else
+        if (e === 'é') { return '2' } else
+          if (e === '"') { return '3' } else
+            if (e === "'") { return '4' } else
+              if (e === '(') { return '5' } else
+                if (e === '§') { return '6' } else
+                  if (e === 'è') { return '7' } else
+                    if (e === '!') { return '8' } else
+                      if (e === 'ç') { return '9' } else
+                        if (e === 'ç') { return '9' } else
+                          if (e === 'à') { return '0' }
+                          else { console.log(e); return e }
+    }).join("")
+
     setSearchQuery(query);
 
-    
-  console.log(books)
+
+    console.log(books)
     const searchedBooks = books.filter(book =>
-      
-      
+
+
       (book.title?.includes(query)) ||  // Check if title exists
       (book.descr?.author?.includes(query)) ||  // Check if descr and author exist
       (book.ISBN?.includes(query))  // Check if ISBN exists
     );
-  
+
     setFilteredBooks(searchedBooks);
   };
-  
-  
 
-  return (
+
+
+  return (<div>
+    {showToast && (
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        duration={3000}
+        onClose={() => setShowToast(false)}
+      />
+    )}
     <center><div>
       <div className='content'>
-        <input 
+        <input
           id='search'
-          type="text" 
-          placeholder="Zoek op titel, auteur, of ISBN..." 
-          value={searchQuery} 
-          onChange={handleSearch} 
-          className="search-bar" 
+          type="text"
+          placeholder="Zoek op titel, auteur, of ISBN..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="search-bar"
         />
 
         <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
@@ -227,6 +258,7 @@ const StudentLib = () => {
 
     </div>
     </center>
+  </div>
   );
 };
 

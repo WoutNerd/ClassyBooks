@@ -1,9 +1,8 @@
 import { useState } from "react";
 import "../../App.css";
 import TeacherNavbar from '../teacher/teacherNavbar';
-import { getCookie, getISBN, post } from "../../functions";
+import { getCookie, getISBN, post, Toast } from "../../functions";
 import crypto from "crypto-js";
-import excelToJson from "convert-excel-to-json"
 import subtractObject from "subtract-object";
 import * as XLSX from "xlsx";
 
@@ -20,7 +19,9 @@ const JsonImport = () => {
     const [dataType, setDataType] = useState(`users`)
     const [all, setAll] = useState(gebruikers)
     const [used, setUsed] = useState([])
-    const [countKeys, setCountKeys] = useState(0)
+    const [showToast, setShowToast] = useState(false)
+    const [toastMessage, setToastMessage] = useState(``)
+    const [toastType, setToastType] = useState(``)
 
 
     async function fetchData(url) {
@@ -47,7 +48,7 @@ const JsonImport = () => {
             setFileUrl(url);
             fetchData(url)
         } else if (selectedFile.type === `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` || `application/vnd.ms-excel` || `.csv`) {
-            
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 const data = e.target.result;
@@ -60,7 +61,7 @@ const JsonImport = () => {
             reader.readAsBinaryString(selectedFile);
 
 
-            
+
         }
     }
 
@@ -205,7 +206,9 @@ const JsonImport = () => {
             await post('/createUser', body)
         }
 
-        alert(`Gebruikers toegevoegd`)
+        setShowToast(true)
+        setToastMessage(`Gebruikers toegevoegd`)
+        setToastType(`info`)
 
     }
 
@@ -217,28 +220,30 @@ const JsonImport = () => {
         for (let i = 0; i < data.length; i++) {
             const element = Object.values(data[i]);
             let Bvin
-            let body = {sessionid, description:{}}
+            let body = { sessionid, description: {} }
 
             const keys = getAllKeys(data).length
 
             //gets all info it can get
-        for (let i = 0; i < keys; i++) {
-            const e = document.getElementById(i)?.value
-            if (e === `ISBN`) body.isbn = element[i]
-            if (e === `Booksource id`) Bvin = element[i]
-            
-        }
-            body.available = 1
-            
-            if(Bvin != null){
-                body.description.cover = (`https://classroom.booksource.com/Classroom/DisplayCustomImage.aspx?BC2019=true&img=`+Bvin+`&classid=be221081-74ac-4fdf-af8c-5802f9e38e5e`)
+            for (let i = 0; i < keys; i++) {
+                const e = document.getElementById(i)?.value
+                if (e === `ISBN`) body.isbn = element[i]
+                if (e === `Booksource id`) Bvin = element[i]
+
             }
-            
+            body.available = 1
+
+            if (Bvin != null) {
+                body.description.cover = (`https://classroom.booksource.com/Classroom/DisplayCustomImage.aspx?BC2019=true&img=` + Bvin + `&classid=be221081-74ac-4fdf-af8c-5802f9e38e5e`)
+            }
+
             const response = await getISBN(body.isbn)
             console.log(!!response)
-            if(!!response){body.title = response.title
-            body.description.author = await response.authors?.toString()
-            body.description.pages = response.pageCount}
+            if (!!response) {
+                body.title = response.title
+                body.description.author = await response.authors?.toString()
+                body.description.pages = response.pageCount
+            }
 
             //replaces hardcoded info
             for (let i = 0; i < keys; i++) {
@@ -251,15 +256,25 @@ const JsonImport = () => {
                 if (e === `Leesniveau`) body.description.readinglevel = element[i]
             }
             console.log(body)
-           // console.log(await post('/createMaterial', body))
+            console.log(await post('/createMaterial', body))
         }
 
-        alert(`Boeken toegevoegd`)
+        setShowToast(true)
+        setToastMessage(`Boeken toegevoegd`)
+        setToastType(`info`)
 
     }
 
     return (
         <div>
+            {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() =>setShowToast(false)}
+        />
+      )}
             <nav><TeacherNavbar /></nav>
             <div>
                 <select name="type" id="type" onChange={handleType} value={dataType}>

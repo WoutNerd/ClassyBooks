@@ -1,5 +1,6 @@
+import './App.css';
 import fetch from 'node-fetch'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 //extracs cookie zith given name
 export function getCookie(cookieName) {
@@ -78,9 +79,8 @@ export async function changePassword(sha256, md5, newSha256, newMd5) {
   const resp = await post('/changePassword', body)
 
   if (resp === 'Changed password') {
-    alert('Wachtwoord succesvol veranderd')
-    window.location.replace('../../#')
-  }
+    return true
+  }else return false
 }
 
 export async function getISBN(isbn) {
@@ -108,6 +108,28 @@ export async function getISBN(isbn) {
   }
 }
 
-export function toast(e) {
-  alert(e)
-}
+export const Toast = ({ message, type = 'info', duration = 30000, onClose }) => {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    // Auto-hide the toast after the specified duration
+    const timer = setTimeout(() => {
+      setVisible(false);
+      onClose && onClose(); // Call onClose function when the toast hides
+    }, duration);
+
+    return () => clearTimeout(timer); // Clean up the timer on unmount
+  }, [duration, onClose]);
+
+  if (!visible) return null; // Render nothing if the toast is hidden
+
+  return (
+    <div className={`toast toast-${type}`}>
+      <span>{message}</span>
+      <button className="toast-close" onClick={() => setVisible(false)}>
+        &times;
+      </button>
+    </div>
+  );
+};
+

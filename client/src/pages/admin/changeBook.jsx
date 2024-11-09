@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../App.css'
-import { Title, checkUser, getCookie, post } from '../../functions';
+import { Title, Toast, checkUser, getCookie, post } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +8,10 @@ const ChangeMaterial = () => {
   const [material, setMaterial] = useState([])
   const [isChecked, setIsChecked] = useState(0)
   const [isbn, setIsbn] = useState()
+
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
 
   const navigate = useNavigate();
 
@@ -35,10 +39,10 @@ const ChangeMaterial = () => {
 
 
     let [title, place, author, cover, pages, readinglevel, isbn] = document.forms[0]
-    
+
     const available = isChecked
-    
-    if (title?.value == ``) {title = material.title} else title = title.value; console.log(title == ``)
+
+    if (title?.value == ``) { title = material.title } else title = title.value; console.log(title == ``)
     if (place?.value == ``) place = material.place; else place = place.value
     if (author.value == null) author = material.description.author; else author = author.value
     if (cover?.value == null) cover = material.description.cover; else cover = cover.value
@@ -58,32 +62,40 @@ const ChangeMaterial = () => {
 
     const body = { sessionid, materialid, keys, values }
     post('/changeMaterial', body, 'changeMaterial').then((resp) => resp.text().then((resp) => {
-      if (resp == 'Statement executed correctly') alert('Boek succesvol aangepast.')
-      else alert('De boek is niet succesvol aangepast. Probeer later opnieuw.')
-      redirectToPage('../beheer/boeken-beheren')
+      if (resp == 'Statement executed correctly') {
+        setShowToast(true)
+        setToastMessage(`Boek succesvol aangepast.`)
+        setToastType(`succes`)
+      }
+      else {
+        setShowToast(true)
+        setToastMessage(`De boek is niet succesvol aangepast. Probeer later opnieuw.`)
+        setToastType(`error`)
+      }
+      
     }))
 
   }
 
   function handleIsbn(value) {
     const decoded = value.split('').map(e => {
-        if(e === '&') {return '1'} else
-        if(e === 'é') {return '2'} else
-        if(e === '"') {return '3'} else
-        if(e === "'") {return '4'} else
-        if(e === '(') {return '5'} else
-        if(e === '§') {return '6'} else
-        if(e === 'è') {return '7'} else
-        if(e === '!') {return '8'} else
-        if(e === 'ç') {return '9'} else
-        if(e === 'ç') {return '9'} else
-        if(e === 'à') {return '0'}
-        else return e
+      if (e === '&') { return '1' } else
+        if (e === 'é') { return '2' } else
+          if (e === '"') { return '3' } else
+            if (e === "'") { return '4' } else
+              if (e === '(') { return '5' } else
+                if (e === '§') { return '6' } else
+                  if (e === 'è') { return '7' } else
+                    if (e === '!') { return '8' } else
+                      if (e === 'ç') { return '9' } else
+                        if (e === 'ç') { return '9' } else
+                          if (e === 'à') { return '0' }
+                          else return e
     }).join("")
 
     setIsbn(decoded)
-    
-}
+
+  }
 
   const renderForm = (
     <div className="form">
@@ -114,6 +126,14 @@ const ChangeMaterial = () => {
 
   return (
     <div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <nav><TeacherNavbar /></nav>
       <div className="content">
         <h2>Verander gegevens van {material.title}</h2>
