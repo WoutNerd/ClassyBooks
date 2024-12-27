@@ -17,8 +17,8 @@ const ReturnBooks = () => {
   const [isChecked, setIsChecked] = useState(false)
 
   const [showToast, setShowToast] = useState(false)
-const [toastMessage, setToastMessage] = useState(``)
-const [toastType, setToastType] = useState(``)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,18 +50,24 @@ const [toastType, setToastType] = useState(``)
     console.log(book)
     const body = { 'materialid': book.materialid, 'score': rating, 'fullyread': isChecked }
     console.log(body)
-    if (rating === null) {setShowToast(true)
+    if (rating === null) {
+      setShowToast(true)
       setToastMessage(`Geef uw boek eerst een score.`)
-      setToastType(`warning`)}
+      setToastType(`warning`)
+    }
     else if (window.confirm('Bent u zeker dat u ' + book.title + ' wilt inleveren met een score van ' + rating + '/4?')) {
       const resp = await post('/returnMaterial', body)
       console.log(resp)
-      if (resp.status === 200) {setShowToast(true)
+      if (resp.status === 200) {
+        setShowToast(true)
         setToastMessage(`Boek succesvol`)
-        setToastType(`succes`)}
-      else  {setShowToast(true)
+        setToastType(`succes`)
+        redirectToPage('../leerling/bibliotheek')
+      }
+      else {
+        setShowToast(true)
         setToastMessage(`Inleveren mislukt. Probeer opnieuw`)
-        setToastType(`error`);// redirectToPage('../leerling/bibliotheek')
+        setToastType(`error`); redirectToPage('../leerling/bibliotheek')
       }
     }
   }

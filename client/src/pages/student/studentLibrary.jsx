@@ -67,24 +67,30 @@ const StudentLib = () => {
     const userid = getCookie('userId');
     const body = { materialid, userid };
     const resp = await post('/lendMaterial', body);
-  
-  
+
+
     if (resp.status === 200) {
       let timeText
       resp.text().then((t) => {
-        let time = new Date(t);
-        timeText = `${time.getDate()}/${time.getMonth() + 1}/${time.getFullYear()}`;
+        const date = new Date(t);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Maanden starten bij 0
+        const year = date.getFullYear();
+        timeText = day+`/`+month+`/`+year
+
+        setShowToast(true)
+        setToastMessage(`Je hebt tot ${timeText} om het boek terug te brengen.`)
+        setToastType(`succes`)
+        
       })
-      setShowToast(true)
-      setToastMessage(`Je hebt tot ${timeText} om het boek terug te brengen.`)
-      setToastType(`succes`)
-  
+      
+
     } else {
       setShowToast(true)
       setToastMessage(`Uitlenen mislukt. Probeer opnieuw.`)
       setToastType(`error`)
     }
-    
+
   }
 
 
