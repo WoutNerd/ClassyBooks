@@ -84,29 +84,56 @@ export async function changePassword(sha256, md5, newSha256, newMd5) {
 }
 
 export async function getISBN(isbn) {
-
-  if (isbn == null || isbn == ``) { console.error(`Lege ISBN`); return null }
-  else {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=AIzaSyDk85GonrKmFwTl2Iy9WxEdI-Z-Yh34oP4`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-
-      if (data.totalItems === 0) {
-        throw new Error('No book found with the provided ISBN.');
-      }
-
-      return data.items[0].volumeInfo;  // Return the first book's volume info
-    } catch (error) {
-      console.error('Error fetching book data:', error);
-      return null;
-    }
+  if (!isbn || isbn.trim() === '') {
+    console.error('Lege ISBN');
+    return null;
   }
+
+  try {
+    // Zoek in Google Books API
+    const googleBooksUrl = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=AIzaSyDk85GonrKmFwTl2Iy9WxEdI-Z-Yh34oP4`;
+    const googleBooksResponse = await fetch(googleBooksUrl);
+
+    if (!googleBooksResponse.ok) {
+      throw new Error(`Google Books API fout: ${googleBooksResponse.status}`);
+    }
+
+    const googleBooksData = await googleBooksResponse.json();
+
+    if (googleBooksData.totalItems > 0) {
+      return googleBooksData.items[0].volumeInfo; // Retourneer het eerste resultaat
+    } else {
+      console.warn('Geen boek gevonden in Google Books. Nu zoeken in OpenLibrary...');
+    }
+  } catch (error) {
+    console.error('Fout bij het ophalen van data uit Google Books:', error);
+  }
+
+  try {
+    // Zoek in OpenLibrary API
+    const openLibraryUrl = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
+    const openLibraryResponse = await fetch(openLibraryUrl);
+
+    if (!openLibraryResponse.ok) {
+      throw new Error(`OpenLibrary API fout: ${openLibraryResponse.status}`);
+    }
+
+    const openLibraryData = await openLibraryResponse.json();
+    const bookData = openLibraryData[`ISBN:${isbn}`];
+
+    if (bookData) {
+      console.log('Boek gevonden in OpenLibrary:', bookData);
+      return bookData; // Retourneer de OpenLibrary data
+    } else {
+      console.warn('Geen boek gevonden in OpenLibrary.');
+    }
+  } catch (error) {
+    console.error('Fout bij het ophalen van data uit OpenLibrary:', error);
+  }
+
+  return null; // Retourneer null als geen enkel boek is gevonden
 }
+
 
 export const Toast = ({ message, type = 'info', duration = 30000, onClose }) => {
   const [visible, setVisible] = useState(true);

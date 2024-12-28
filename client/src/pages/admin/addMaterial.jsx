@@ -30,6 +30,7 @@ const AddMaterial = () => {
     const [showToast, setShowToast] = useState(false)
     const [toastMessage, setToastMessage] = useState(``)
     const [toastType, setToastType] = useState(``)
+    const [loader, setLoader] = useState(false)
 
 
     async function addMaterial(isChecked) {
@@ -51,9 +52,9 @@ const AddMaterial = () => {
             setShowToast(true)
             setToastMessage(`Je moet de velden Titel, Locatie en Auteur invullen`)
             setToastType(`error`)
-        }//else await post('/createMaterial', body)
+        } else await post('/createMaterial', body)
 
-        
+
     }
 
     function handleIsbn(value) {
@@ -86,21 +87,22 @@ const AddMaterial = () => {
 
         const isbnData = await getISBN(isbn)
         console.log(isbnData)
+        setLoader(!isbnData)
         setAuthor(await isbnData?.authors[0])
         setTitle(await isbnData?.title)
-        setCover(await isbnData?.imageLinks?.thumbnail)
+        setCover(`https://webservices.bibliotheek.be/index.php?func=cover&ISBN=${isbn}&amp;coversize=large`)
         setPages(await isbnData?.pageCount)
     }
 
     return (<div>
         {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          duration={3000}
-          onClose={() =>setShowToast(false)}
-        />
-      )}
+            <Toast
+                message={toastMessage}
+                type={toastType}
+                duration={3000}
+                onClose={() => setShowToast(false)}
+            />
+        )}
         <nav><TeacherNavbar /></nav>
         <form onSubmit={e => e.preventDefault}>
             <input type="text" name='title' placeholder='Titel' class='login' value={title} onInput={e => setTitle(e.target.value)} />
@@ -118,6 +120,8 @@ const AddMaterial = () => {
             <input type="text" name='readinglevel' placeholder='Lees niveau' class='login' />
             <br />
             <input type="text" name='isbn' placeholder='ISBN' class='login' value={isbn} onInput={(e) => handleIsbn(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleIsbnEnter(e) }} />
+            <br />
+            <div className="loader login" style={{ display: loader ? 'block' : 'none' }}></div>
             <br />
             <input type="checkbox" placeholder='Beschikbaar' checked={isChecked} onChange={handleChange} />
             <label htmlFor="">Beschikbaar</label>
