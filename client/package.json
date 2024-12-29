@@ -14,6 +14,7 @@
     "axios": "^1.2.3",
     "buffer": "^6.0.3",
     "cfb": "^1.2.2",
+    "cheerio": "^1.0.0",
     "classnames": "^2.3.2",
     "codepage": "^1.15.0",
     "constants-browserify": "^1.0.0",

@@ -27,6 +27,19 @@ try {
 catch (error) { console.log(error) }
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
+app.post('/getBibInfo', async (req, res) => {
+  
+  try {
+      const apiUrl = 'https://bibliotheek.be/catalogus?q=isbn%3A%22'+req['body']['isbn']+'%22';
+      const response = await fetch(apiUrl);
+      const data = await response.text();
+      res.set('Content-Type', 'text/html'); // Ensure proper content-type if HTML
+      res.send(data);
+  } catch (error) {
+      res.status(500).send({ error: 'Error fetching data' });
+  }
+});
+
 app.post("/loginTeacher", (req, res) => {
   (async () => {
     try {

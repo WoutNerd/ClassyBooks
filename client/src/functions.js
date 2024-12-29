@@ -1,6 +1,7 @@
 import './App.css';
 import fetch from 'node-fetch'
 import { useEffect, useState } from 'react';
+const cheerio = require('cheerio');
 
 //extracs cookie zith given name
 export function getCookie(cookieName) {
@@ -80,7 +81,7 @@ export async function changePassword(sha256, md5, newSha256, newMd5) {
 
   if (resp === 'Changed password') {
     return true
-  }else return false
+  } else return false
 }
 
 export async function getISBN(isbn) {
@@ -129,6 +130,24 @@ export async function getISBN(isbn) {
     }
   } catch (error) {
     console.error('Fout bij het ophalen van data uit OpenLibrary:', error);
+  }
+
+  try {
+    const resp = await post('/getBibInfo', {isbn})
+    const htmlResp = await resp.text()
+    const $ = cheerio.load(await htmlResp);
+
+    // Extract the title
+    const title =  $('h3.catalog-item-title').text().trim();
+
+    // Extract the authors
+    const authors = [];
+    $('div.catalog-item__authors a').each((i, el) => {
+      authors.push($(el).text().trim());
+    });
+    return {title, authors}
+  }catch (error) {
+    console.error('Fout bij het ophalen van data uit bibliotheek vlaanderen:', error);
   }
 
   return null; // Retourneer null als geen enkel boek is gevonden
