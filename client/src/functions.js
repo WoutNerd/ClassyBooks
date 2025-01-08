@@ -85,7 +85,7 @@ export async function changePassword(sha256, md5, newSha256, newMd5) {
 }
 
 export async function getISBN(isbn) {
-  if (!isbn || isbn.trim() === '') {
+  if (!isbn || isbn === '') {
     console.error('Lege ISBN');
     return null;
   }
