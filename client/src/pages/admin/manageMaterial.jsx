@@ -29,9 +29,10 @@ const ManageMaterials = () => {
   const [locations, setLocations] = useState([])
   const [readinglevels, setReadinglevels] = useState([])
   const [lendTo, setLendTo] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(''); // New search state
 
   const navigate = useNavigate();
-  
+
 
   const redirectToPage = (path) => {
     navigate(path); // Use navigate to go to the specified path
@@ -56,26 +57,26 @@ const ManageMaterials = () => {
 
 
   function change(id) {
-    document.cookie = "changeMaterial = "+ id
+    document.cookie = "changeMaterial = " + id
     redirectToPage(`bewerken`)
 
   }
 
-
+//get locations
   books?.map(book => {
     if (!locations.includes(book.place)) {
       setLocations([...locations, book.place])
     }
   })
 
+  //get readinglevels
   books?.map(book => {
     if (!readinglevels.includes(book.descr.readinglevel)) {
       setReadinglevels([...readinglevels, book.descr.readinglevel])
     }
   })
 
-  console.log(readinglevels)
-  console.log(locations)
+
 
   if (!books) {
     return <div>Loading...</div>;
@@ -175,10 +176,50 @@ const ManageMaterials = () => {
     }
   };
 
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase().split("").map(e => {
+      if (e === '&') { return '1' } else
+        if (e === 'é') { return '2' } else
+          if (e === '"') { return '3' } else
+            if (e === "'") { return '4' } else
+              if (e === '(') { return '5' } else
+                if (e === '§') { return '6' } else
+                  if (e === 'è') { return '7' } else
+                    if (e === '!') { return '8' } else
+                      if (e === 'ç') { return '9' } else
+                        if (e === 'ç') { return '9' } else
+                          if (e === 'à') { return '0' }
+                          else { console.log(e); return e }
+    }).join("")
+
+    setSearchQuery(query);
+
+
+    console.log(books)
+    const searchedBooks = books.filter(book =>
+
+
+      (book.title?.includes(query)) ||  // Check if title exists
+      (book.descr?.author?.includes(query)) ||  // Check if descr and author exist
+      (book.isbn?.includes(query))  // Check if ISBN exists
+    );
+    setFilterdBooks(searchedBooks);
+  };
+
+
   return (
     <div>
       <div><TeacherNavbar /></div>
       <div className='content'>
+      <input
+          id='search'
+          type="text"
+          placeholder="Zoek op titel, auteur, of ISBN..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="search-bar"
+        />
         <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
           <option value="title">Titel</option>
           <option value="avgscore">Score</option>
