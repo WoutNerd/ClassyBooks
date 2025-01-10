@@ -83,8 +83,8 @@ function AddUser() {
       var sha256 = crypto.SHA256(clss.value + num.value + pass.value).toString();
       var md5 = crypto.MD5(clss.value + num.value + pass.value + sha256).toString();
     } else {
-      var sha256 = crypto.SHA256(name.value + surname.value + pass.value).toString();
-      var md5 = crypto.MD5(name.value + surname.value + pass.value + sha256).toString();
+      sha256 = crypto.SHA256(name.value + surname.value + pass.value).toString();
+      md5 = crypto.MD5(name.value + surname.value + pass.value + sha256).toString();
     }
 
 

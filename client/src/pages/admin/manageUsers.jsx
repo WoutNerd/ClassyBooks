@@ -1,4 +1,4 @@
-import { useState, useEffect, Component } from 'react';
+import { useState, useEffect } from 'react';
 import '../../App.css';
 import { getCookie, Title, post, checkUser } from '../../functions';
 import { useNavigate } from 'react-router';
@@ -95,7 +95,7 @@ const ManageUsers = () => {
     const selectedSort = event.target.value;
     const selectedDirection = sortDirection;
     setSort(selectedSort);
-
+// eslint-disable-next-line
     const sortedMaterials = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
@@ -116,7 +116,7 @@ const ManageUsers = () => {
     const selectedDirection = event.target.value; // Get the newly selected sort direction
 
     setSortDirection(selectedDirection); // Update the sort direction
-
+// eslint-disable-next-line
     const sortedMaterials = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;

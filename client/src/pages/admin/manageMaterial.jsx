@@ -63,6 +63,7 @@ const ManageMaterials = () => {
   }
 
 //get locations
+// eslint-disable-next-line
   books?.map(book => {
     if (!locations.includes(book.place)) {
       setLocations([...locations, book.place])
@@ -70,6 +71,7 @@ const ManageMaterials = () => {
   })
 
   //get readinglevels
+  // eslint-disable-next-line
   books?.map(book => {
     if (!readinglevels.includes(book.descr.readinglevel)) {
       setReadinglevels([...readinglevels, book.descr.readinglevel])
@@ -138,7 +140,7 @@ const ManageMaterials = () => {
     const selectedDirection = event.target.value; // Get the newly selected sort direction
 
     setSortDirection(selectedDirection); // Update the sort direction
-
+// eslint-disable-next-line
     const sortedMaterials = [...filterdBooks].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;

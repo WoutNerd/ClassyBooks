@@ -16,7 +16,9 @@ const TeacherChangeUser = () => {
   const redirectToPage = (path) => {
     navigate(path); // Use navigate to go to the specified path
   };
-
+  function timeout(delay) {
+    return new Promise( res => setTimeout(res, delay) );
+}
   useEffect(() => {
     const fetchData = async () => {
       const body = { sessionid: getCookie('sessionId'), userid: getCookie('changeUser') }
@@ -58,11 +60,15 @@ const TeacherChangeUser = () => {
       setShowToast(true)
       setToastMessage(`Gebruiker succesvol aangepast.`)
       setToastType(`succes`)
+      await timeout(1000);
+      redirectToPage('../')
     } else {
       setShowToast(true)
       setToastMessage(`De gebruiker is niet succesvol aangepast. Probeer opnieuw.`)
       setToastType(`error`)
     }
+
+    
 
   }
 

@@ -13,8 +13,6 @@ const boeken = [``, `Titel`, `Locatie`, `Auteur`, `Url naar afbeelding cover`, `
 
 
 const JsonImport = () => {
-    const [file, setFile] = useState(null); // State for holding the file object
-    const [fileUrl, setFileUrl] = useState(""); // State for holding the object URL
     const [data, setData] = useState(null); // State for holding JSON data
     const [dataType, setDataType] = useState(`users`)
     const [all, setAll] = useState(gebruikers)
@@ -39,13 +37,13 @@ const JsonImport = () => {
 
     function handleFile(event) {
         const selectedFile = event.target.files[0]; // Access the file from the input element
-        setFile(selectedFile); // Set the file state
+
 
         let url = URL.createObjectURL(selectedFile)
 
         if (selectedFile.type === `application/json`) {
 
-            setFileUrl(url);
+
             fetchData(url)
         } else if (selectedFile.type === `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` || `application/vnd.ms-excel` || `.csv`) {
 

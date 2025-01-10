@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import '../../App.css'
 import { Title, Toast, checkUser, getCookie, post } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
-import { useNavigate } from 'react-router-dom';
+
 
 const ChangeMaterial = () => {
   const [material, setMaterial] = useState([])
@@ -13,12 +13,6 @@ const ChangeMaterial = () => {
   const [toastMessage, setToastMessage] = useState(``)
   const [toastType, setToastType] = useState(``)
 
-  const navigate = useNavigate();
-
-
-  const redirectToPage = (path) => {
-    navigate(path); // Use navigate to go to the specified path
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,13 +36,13 @@ const ChangeMaterial = () => {
 
     const available = isChecked
 
-    if (title?.value == ``) { title = material.title } else title = title.value; console.log(title == ``)
-    if (place?.value == ``) place = material.place; else place = place.value
-    if (author.value == null) author = material.description.author; else author = author.value
-    if (cover?.value == null) cover = material.description.cover; else cover = cover.value
-    if (readinglevel?.value == null) readinglevel = material.description.readinglevel; else readinglevel = readinglevel.value
-    if (pages?.value == null) pages = material.description.pages; else pages = pages.value
-    if (isbn?.value == ``) isbn = material.isbn; else isbn = isbn.value
+    if (title?.value === ``) { title = material.title } else title = title.value; console.log(title === ``)
+    if (place?.value === ``) place = material.place; else place = place.value
+    if (author.value === null) author = material.description.author; else author = author.value
+    if (cover?.value === null) cover = material.description.cover; else cover = cover.value
+    if (readinglevel?.value === null) readinglevel = material.description.readinglevel; else readinglevel = readinglevel.value
+    if (pages?.value === null) pages = material.description.pages; else pages = pages.value
+    if (isbn?.value === ``) isbn = material.isbn; else isbn = isbn.value
     const description = { author, cover, pages, readinglevel }
 
 
@@ -62,7 +56,7 @@ const ChangeMaterial = () => {
 
     const body = { sessionid, materialid, keys, values }
     post('/changeMaterial', body, 'changeMaterial').then((resp) => resp.text().then((resp) => {
-      if (resp == 'Statement executed correctly') {
+      if (resp === 'Statement executed correctly') {
         setShowToast(true)
         setToastMessage(`Boek succesvol aangepast.`)
         setToastType(`succes`)
