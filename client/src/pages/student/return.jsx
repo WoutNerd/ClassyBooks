@@ -28,10 +28,10 @@ const ReturnBooks = () => {
         const userBody = { sessionid, userid }
         const user = await post('/getUser', userBody)
 
-        const materialid = user.materials[0]
+        const materialid = await user.materials[0]
         const body = { materialid, sessionid }
         const response = await post("/getMaterial", body);
-        setBook(response[0]);
+        setBook(await response);
       } catch (error) {
         console.error(error);
       }
