@@ -181,13 +181,12 @@ const StudentLib = () => {
 
     console.log(books)
     const searchedBooks = books.filter(book =>
-
+      
 
       (book.title?.includes(query)) ||  // Check if title exists
       (book.descr?.author?.includes(query)) ||  // Check if descr and author exist
-      (book.ISBN?.includes(query))  // Check if ISBN exists
+      (book.isbn?.includes(query))  // Check if ISBN exists
     );
-
     setFilteredBooks(searchedBooks);
   };
 
