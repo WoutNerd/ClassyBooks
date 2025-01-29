@@ -527,9 +527,11 @@ async function changeUser(key, value, userid, privilege) {
 async function changeMaterial(key, value, materialid) {
   console.log([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase()))
   if ([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase())) {
-
+    if (key === "descr"){
       let resp = await request(`UPDATE MATERIALS SET ${key}='${value}' WHERE MATERIALID='${materialid}'`)
-      
+    }else {
+      let resp = await request(`UPDATE MATERIALS SET ${key}=${value} WHERE MATERIALID='${materialid}'`)}
+
       return requestSucceeded(resp)
     
   }
