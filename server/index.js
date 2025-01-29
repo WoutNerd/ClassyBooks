@@ -27,6 +27,50 @@ try {
 catch (error) { console.log(error) }
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
+const storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+
+      callback(null, "./uploads")
+  },
+  filename: function (req, file, callback) {
+      let imgid = "img-" + uuidv4()
+      let extension = file.originalname.split(".").splice(-1)[0]
+      if (["png", "jpg", "jpeg", "gif", "bmp", "tif"].includes(extension.toLowerCase())) {
+          callback(null, `${imgid}.${extension}`)
+      } else {
+          callback(null, "badfile")
+      }
+
+  }
+})
+var upload = multer({ storage: storage })
+
+app.post("/uploadimg", upload.single('uploaded_file'), (req, res) => {
+  try {
+      console.log(req.file)
+      if (!req.file) {
+          res.status(400).send("No file uploaded");
+      }
+      else if (req.file["filename"] == "badfile") {
+          fs.unlink("./uploads/badfile", (err) => { console.log(err) })
+          res.status(400).send("Invalid file, use an image format")
+      } else {
+          res.status(200).send("/getimg/" + req.file.filename);
+      }
+  } catch (error) {
+      res.status(500).send("Internal server error");
+  }
+});
+
+app.get("/getimg/:imgid", (req, res) => {
+  if (checkRequest(req)) {
+      if (fs.existsSync("./uploads/" + req.params.imgid)) {
+          res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
+      } else { res.status(404).send("File not found") }
+  }
+  else { res.status(400).send("Invalid request") }
+})
+
 app.post('/getBibInfo', async (req, res) => {
   
   try {
