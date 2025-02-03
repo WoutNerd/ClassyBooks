@@ -94,6 +94,23 @@ const AddMaterial = () => {
         setPages(await isbnData?.pageCount)
     }
 
+    
+    async function handleImg(e) {
+        e.preventDefault()
+        let [, , uploaded_img] = document.forms[0]
+        console.log(uploaded_img.files[0])
+        let data = new FormData()
+        data.append('uploaded_file', uploaded_img.files[0])
+        let resp = await fetch('/uploadimg', {
+            method: 'POST',
+            body: data,
+            'content-type': 'multipart/form-data'
+        })
+        resp = await resp.text()
+        console.log(resp)
+        setCover(resp)
+    }
+
     return (<div>
         {showToast && (
             <Toast
@@ -111,7 +128,9 @@ const AddMaterial = () => {
             <br />
             <input type="text" name='author' placeholder='Auteur' class='login' value={author} onInput={e => setAuthor(e.target.value)} />
             <br />
-            <input type="url" name='cover' placeholder='Url van de cover' class='login' value={cover} onInput={e => setCover(e.target.value)} />
+            <input type="file" name="uploaded_file" accept='.png, .jpg, .jpeg, .gif, .bmp, .tif' />
+            <button type="button" onClick={(e) => handleImg(e)}>Cover uploaden</button>
+            <input type="url" style={{ visibility: "hidden" }} name='cover' placeholder='Url van de cover' class='login' value={cover} onInput={e => setCover(e.target.value)} />
             <br />
             <img src={cover} alt="" className='cover bookitem' />
             <br />
