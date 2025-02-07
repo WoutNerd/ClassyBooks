@@ -1,6 +1,5 @@
 node_modules
 ngrok.exe
-.gitignore
 .vscode
 testData
 data
@@ -11,4 +10,4 @@ classybooks-testserver.session.sql
 art/*.ai
 build
 .env
-settings.json
+server/settings.json

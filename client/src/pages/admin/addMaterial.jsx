@@ -97,8 +97,7 @@ const AddMaterial = () => {
     
     async function handleImg(e) {
         e.preventDefault()
-        let [, , uploaded_img] = document.forms[0]
-        console.log(uploaded_img.files[0])
+        let [,,, uploaded_img] = document.forms[0]
         let data = new FormData()
         data.append('uploaded_file', uploaded_img.files[0])
         let resp = await fetch('/uploadimg', {

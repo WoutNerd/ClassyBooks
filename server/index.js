@@ -9,6 +9,7 @@ const { Sequelize } = require("sequelize-cockroachdb");
 const { faker } = require('@faker-js/faker/locale/nl_BE');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json());
+const multer = require(`multer`)
 
 const leesniveaus = ['AVI-START', 'AVI-M3', 'AVI-E3', 'AVI-M4', 'AVI-E4', 'AVI-M5', 'AVI-E5', 'AVI-M6', 'AVI-E6', 'AVI-M7', 'AVI-E7', 'AVI-PLUS']
 const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
@@ -30,7 +31,7 @@ catch (error) { console.log(error) }
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
 
-      callback(null, "./uploads")
+      callback(null, "./server/uploads")
   },
   filename: function (req, file, callback) {
       let imgid = "img-" + uuidv4()
