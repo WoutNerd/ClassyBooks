@@ -11,3 +11,4 @@ art/*.ai
 build
 .env
 server/settings.json
+uploads/img*
