@@ -9,23 +9,14 @@ const { Sequelize } = require("sequelize-cockroachdb");
 const { faker } = require('@faker-js/faker/locale/nl_BE');
 const { v4: uuidv4 } = require('uuid');
 app.use(express.json());
-const multer = require(`multer`)
+const multer = require(`multer`);
+const path = require('path');
+
 
 const leesniveaus = ['AVI-START', 'AVI-M3', 'AVI-E3', 'AVI-M4', 'AVI-E4', 'AVI-M5', 'AVI-E5', 'AVI-M6', 'AVI-E6', 'AVI-M7', 'AVI-E7', 'AVI-PLUS']
 const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A", "6B"]
 //-----------------------------------------------------------------------------------REQUESTS-------//
-
-// Deploy express app
-try {
-  app.use(express.static(__dirname + "/../client/build/"));
-  app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-  });
-  app.get("*", (req, res) => {
-    res.sendFile(__dirname + "/../client/build/index.html");
-  });
-}
-catch (error) { console.log(error) }
+app.use(express.static(__dirname + "/../client/build/"));
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
 const storage = multer.diskStorage({
@@ -65,9 +56,12 @@ app.post("/uploadimg", upload.single('uploaded_file'), (req, res) => {
 
 app.get("/getimg/:imgid", (req, res) => {
   if (checkRequest(req)) {
-      if (fs.existsSync("./uploads/" + req.params.imgid)) {
-          res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
-      } else { res.status(404).send("File not found") }
+    res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
+      // if (fs.existsSync("./uploads/" + req.params.imgid)) {
+      //     res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
+      // } else { res.status(404).send("File not found: "+__dirname + "/uploads/" + req.params.imgid)
+      //   console.log(fs.existsSync("./uploads/" + req.params.imgid))
+      //  }
   }
   else { res.status(400).send("Invalid request") }
 })
@@ -438,6 +432,13 @@ app.post("/changeMaterial", (req, res) => {
   })();
 })
 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
+
+  app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+  });
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
 settings = { "url": process.env.DBURL };
