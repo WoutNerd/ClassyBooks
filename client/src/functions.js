@@ -90,6 +90,18 @@ export async function getISBN(isbn) {
     return null;
   }
 
+
+  try {
+    const titelbankResp = await fetch(`/getTitelbank/${isbn}`)
+    if(titelbankResp.status === 200){
+      let data = await titelbankResp.json()
+      data[0].authors = [data[0].author]
+      return data[0]
+    }
+  } catch (error) {
+    throw new Error(`titelbank error: ${error}`)
+  }
+
   try {
     // Zoek in Google Books API
     const googleBooksUrl = `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=AIzaSyDk85GonrKmFwTl2Iy9WxEdI-Z-Yh34oP4`;

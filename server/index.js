@@ -78,7 +78,19 @@ app.post('/getBibInfo', async (req, res) => {
       res.status(500).send({ error: 'Error fetching data' });
   }
 });
-
+app.get('/getTitelbank/:isbn', async (req, res) => {
+  
+  try {
+      const apiUrl = 'http://classybooks.woutvdb.uk/api/getIsbn.php?isbn='+req['params']['isbn'];
+      console.log(apiUrl)
+      const response = await fetch(apiUrl);
+      const data = await response.json()
+      console.log(data)
+      res.send(data);
+  } catch (error) {
+      res.status(500).send({ error: 'Error fetching data: '+error });
+  }
+});
 app.post("/loginTeacher", (req, res) => {
   (async () => {
     try {
