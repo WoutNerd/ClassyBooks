@@ -203,7 +203,7 @@ app.post("/createMaterial", (req, res) => {
         session = await getSession(req["body"]["sessionid"])
         // If user is privileged (lvl 2), create material
         if (session['privilege'] == '2') {
-          await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"], req["body"]["ISBN"])
+          await addMaterial(req["body"]["title"], req["body"]["place"], JSON.stringify(req["body"]["description"]), req["body"]["available"], req["body"]["isbn"])
           res.setHeader('Content-Type', 'text/plain'); res.status(200).send("Successfully added material")
         }
         else { res.status(400).send("Invalid session") } // User is not privileged

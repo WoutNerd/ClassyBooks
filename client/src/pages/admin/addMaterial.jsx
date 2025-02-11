@@ -37,11 +37,10 @@ const AddMaterial = () => {
 
 
         const sessionid = getCookie('sessionId')
-        var [title, place, author, cover, pages, readinglevel, isbn] = document.forms[0]
+        var [title, place, author, ,,, pages, readinglevel, isbn] = document.forms[0]
         title = title.value
         place = place.value
         author = author.value
-        cover = cover.value
         pages = pages.value
         readinglevel = readinglevel.value
         isbn = isbn.value
@@ -52,7 +51,14 @@ const AddMaterial = () => {
             setShowToast(true)
             setToastMessage(`Je moet de velden Titel, Locatie en Auteur invullen`)
             setToastType(`error`)
-        } else await post('/createMaterial', body)
+        } else {
+            const resp = await post('/createMaterial', body)
+            if(resp.status === 200){
+                setShowToast(true)
+                setToastMessage(`Boek succesvol toegevoegd`)
+                setToastType(`succes`)
+            }
+        }
 
 
     }
