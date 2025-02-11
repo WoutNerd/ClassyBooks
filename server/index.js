@@ -450,7 +450,9 @@ if (settings["url"] == null || settings["url"] == "") {
 const sequelize = new Sequelize(settings["url"]);
 async function request(request) {
   try {
-
+    const now = new Date
+    process.stdout.write(`${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()} ` +
+                      `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()} | `)
     const [results, metadata] = await sequelize.query(request);
     return [results, metadata];
   } catch (err) {
@@ -573,6 +575,7 @@ async function changeUser(key, value, userid, privilege) {
 async function changeMaterial(key, value, materialid) {
   console.log([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase()))
   if ([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase())) {
+    let resp
     if (key === "descr"){
       resp = await request(`UPDATE MATERIALS SET ${key}='${JSON.stringify(value)}' WHERE MATERIALID='${materialid}'`)
     }else {
