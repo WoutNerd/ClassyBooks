@@ -37,7 +37,7 @@ const AddMaterial = () => {
 
 
         const sessionid = getCookie('sessionId')
-        var [title, place, author, ,,, pages, readinglevel, isbn] = document.forms[0]
+        var [title, place, author, , , , pages, readinglevel, isbn] = document.forms[0]
         title = title.value
         place = place.value
         author = author.value
@@ -53,7 +53,7 @@ const AddMaterial = () => {
             setToastType(`error`)
         } else {
             const resp = await post('/createMaterial', body)
-            if(resp.status === 200){
+            if (resp.status === 200) {
                 setShowToast(true)
                 setToastMessage(`Boek succesvol toegevoegd`)
                 setToastType(`succes`)
@@ -92,18 +92,42 @@ const AddMaterial = () => {
         e.preventDefault()
 
         const isbnData = await getISBN(isbn)
-        console.log(isbnData)
+
         setLoader(!isbnData)
         setAuthor(await isbnData?.authors[0])
         setTitle(await isbnData?.title)
-        setCover(`https://webservices.bibliotheek.be/index.php?func=cover&ISBN=${isbn}&amp;coversize=large`)
+        let img = new Image()
+        
+        img.src = `http://classybooks.woutvdb.uk/api/getImage.php?imageId=${isbn}`
+        img.onload = function () {
+            console.log(`Testing bib cover:`);
+            console.log(img.naturalHeight);
+            console.log(img.naturalWidth);
+            console.log(img.src);
+            if (img.naturalHeight !== 0 && img.naturalWidth !== 0) {
+                setCover(img.src)
+            } else {
+                img.src = `https://webservices.bibliotheek.be/index.php?func=cover&ISBN=${isbn}&amp;coversize=large`
+                img.onload = function () {
+                    console.log(`Testing titelbank cover:`);
+                    console.log(img.naturalHeight);
+                    console.log(img.naturalWidth);
+                    console.log(img.src);
+                    if (img.naturalHeight !== 0 && img.naturalWidth !== 0) {
+                        setCover(img.src)
+                    }
+                }
+            }
+
+        };
+
         setPages(await isbnData?.pageCount)
     }
 
-    
+
     async function handleImg(e) {
         e.preventDefault()
-        let [,,, uploaded_img] = document.forms[0]
+        let [, , , uploaded_img] = document.forms[0]
         let data = new FormData()
         data.append('uploaded_file', uploaded_img.files[0])
         let resp = await fetch('/uploadimg', {
