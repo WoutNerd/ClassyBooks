@@ -201,9 +201,9 @@ const ManageMaterials = () => {
     
     const searchedBooks = books.filter(book =>
 
-      console.log(book.author)
+      console.log(book)
       (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
-      (book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
+      //(book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
       (book.isbn?.includes(query))  // Check if ISBN exists
     );
     setFilterdBooks(searchedBooks);
