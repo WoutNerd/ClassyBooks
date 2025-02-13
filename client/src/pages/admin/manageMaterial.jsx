@@ -198,10 +198,10 @@ const ManageMaterials = () => {
     setSearchQuery(query);
 
 
-    console.log(books)
+    
     const searchedBooks = books.filter(book =>
 
-
+      console.log(book.author)
       (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
       (book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
       (book.isbn?.includes(query))  // Check if ISBN exists
