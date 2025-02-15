@@ -192,19 +192,19 @@ const ManageMaterials = () => {
                       if (e === 'ç') { return '9' } else
                         if (e === 'ç') { return '9' } else
                           if (e === 'à') { return '0' }
-                          else { console.log(e); return e }
+                          else {return e }
     }).join("")
 
     setSearchQuery(query);
 
 
-    
+    console.log(query)
     const searchedBooks = books.filter(book =>
 
-      console.log(book)
-      (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
-      //(book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
-      (book.isbn?.includes(query))  // Check if ISBN exists
+      console.log(book?.descr)
+      (book?.title?.toLowerCase().includes(query)) ||  // Check if title exists
+      (book?.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
+      (book?.isbn?.includes(query))  // Check if ISBN exists
     );
     setFilterdBooks(searchedBooks);
   };
