@@ -1,6 +1,6 @@
 import "../../App.css"
 import TeacherNavbar from "./teacherNavbar";
-import { checkUser, getCookie, post, Title } from '../../functions'
+import { getCookie, post, Title } from '../../functions'
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {

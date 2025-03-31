@@ -38,7 +38,7 @@ root.render(
                                 <Route index element={<UserTyperChoise />} />
                                 <Route path='*' element={<NoPage />} />
                                 <Route path='leerling' element={<StudentLogin />} />
-                                <Route path='leerkracht' element={<TeacherLogin />} />
+                                <Route path='leerkracht-login' element={<TeacherLogin />} />
 
                                 <Route path='leerkracht/overzicht' element={<Dashboard />} />
                                 <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />

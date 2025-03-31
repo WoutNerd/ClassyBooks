@@ -26,7 +26,14 @@ export function Title(title) {
 }
 
 //checks if user is privileged to the page
-export async function checkUser(privilege) {
+export async function checkUser() {
+  const url = window.location.href
+  let privilege = 0
+  if(url.includes('beheer')){
+    privilege = 2
+  }else if (url.includes('leerkracht')){
+    privilege = 1
+  }
   const sessionid = getCookie("sessionId");
   const userid = getCookie("userId");
   const body = { sessionid, userid };

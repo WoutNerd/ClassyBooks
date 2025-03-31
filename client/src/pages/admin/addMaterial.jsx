@@ -1,5 +1,5 @@
 import '../../App.css'
-import { post, Title, getCookie, checkUser, Toast, getISBN } from '../../functions'
+import { post, Title, getCookie, Toast, getISBN } from '../../functions'
 import { useState } from 'react'
 import TeacherNavbar from '../teacher/teacherNavbar'
 import { useNavigate } from 'react-router-dom'
@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 
 const AddMaterial = () => {
     Title('Boeken toevoegen')
-    checkUser(2)
+    
 
 
 

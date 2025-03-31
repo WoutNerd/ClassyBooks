@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../../App.css';
-import { getCookie, Title, post, checkUser } from '../../functions';
+import { getCookie, Title, post } from '../../functions';
 import { useNavigate } from 'react-router';
 import TeacherNavbar from '../teacher/teacherNavbar';
 
@@ -14,7 +14,6 @@ async function deleteUser(userId) {
 
 const ManageUsers = () => {
   Title('Gebruikers beheren');
-  checkUser(2);
 
   const navigate = useNavigate();
 

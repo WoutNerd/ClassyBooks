@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../../App.css'
-import { getCookie, Title, post, checkUser } from '../../functions';
+import { getCookie, Title, post } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,6 @@ const Pupils = () => {
   const redirectToPage = (path) => {
     navigate(path); // Use navigate to go to the specified path
   };
-  checkUser(1);
   Title('Leerlingen')
 
   const [selectedUser, setSelectedUser] = useState(null)

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "./teacherNavbar"
-import {checkUser, post, Title} from '../../functions'
+import { post, Title} from '../../functions'
 
 
 const TeacherLib =  () => {
   Title('Bibliotheek')
-  checkUser(1)
   const [books, setBooks] = useState(null);
   const [filterdBooks, setFilterdBooks] = useState(null)
   const [showAll, setShowAll] = useState(true);

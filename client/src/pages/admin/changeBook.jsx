@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../App.css'
-import { Title, Toast, checkUser, getCookie, post } from '../../functions';
+import { Title, Toast, getCookie, post } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
 
 
@@ -29,7 +29,7 @@ const ChangeMaterial = () => {
   }
 
   Title('Bewerk Boek ' + material.title)
-  checkUser(2)
+  
 
 
   function handleIsbn(value) {

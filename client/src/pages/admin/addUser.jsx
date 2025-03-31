@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import "../../App.css";
 import crypto from "crypto-js";
-import { checkUser, getCookie, Title, post, Toast } from "../../functions";
+import { getCookie, Title, post, Toast } from "../../functions";
 import { useNavigate } from 'react-router'
 import TeacherNavbar from "../teacher/teacherNavbar";
 
 
 function AddUser() {
   Title('Gebruiker Toevoegen')
-  checkUser(2);
+
 
 
   const navigate = useNavigate();

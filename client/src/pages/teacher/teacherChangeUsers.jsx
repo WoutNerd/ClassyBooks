@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../App.css'
-import { Title, checkUser, getCookie, post, Toast } from '../../functions';
+import { Title, getCookie, post, Toast } from '../../functions';
 import TeacherNavbar from './teacherNavbar';
 import { useNavigate } from 'react-router-dom';
 
@@ -29,7 +29,6 @@ const TeacherChangeUser = () => {
   }, [])
 
   Title('Bewerk gebruiker ' + user.firstname + ' ' + user.lastname)
-  checkUser(1)
 
   const handleSubmit = async (event) => {
     event.preventDefault()

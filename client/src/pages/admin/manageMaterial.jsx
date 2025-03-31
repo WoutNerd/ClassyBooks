@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "../teacher/teacherNavbar"
-import { checkUser, post, Title, getCookie } from '../../functions'
+import { post, Title, getCookie } from '../../functions'
 import { useNavigate } from 'react-router-dom';
 
 async function del(materialid) {
@@ -17,7 +17,7 @@ async function del(materialid) {
 
 const ManageMaterials = () => {
   Title('Beheer boeken')
-  checkUser(2)
+  
 
   const [books, setBooks] = useState(null);
   const [filterdBooks, setFilterdBooks] = useState(null)
