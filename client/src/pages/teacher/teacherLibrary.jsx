@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "./teacherNavbar"
-import { post, Title} from '../../functions'
+import { post, Title } from '../../functions'
 
 
-const TeacherLib =  () => {
+const TeacherLib = () => {
   Title('Bibliotheek')
   const [books, setBooks] = useState(null);
   const [filterdBooks, setFilterdBooks] = useState(null)
@@ -18,35 +18,31 @@ const TeacherLib =  () => {
 
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
-        const response = await post("/allMaterials")
-        setBooks(response);
-        setFilterdBooks(response)
-        
+        const response = await post("/allMaterials");
+        if (isMounted) {
+          setBooks(response);
+          setFilterdBooks(response);
+        }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     };
 
     fetchData();
+    return () => { isMounted = false }; // Cleanup functie
   }, []);
 
 
-  books?.map(book => {
-    if(!locations.includes(book.place)){
-      setLocations([...locations, book.place])
+  useEffect(() => {
+    if (books) {
+      setLocations([...new Set(books.map(book => book.place))]);
+      setReadinglevels([...new Set(books.map(book => book.descr.readinglevel))]);
     }
-  })
+  }, [books]);
 
-  books?.map(book => {
-    if(!readinglevels.includes(book.descr.readinglevel)){
-      setReadinglevels([...readinglevels, book.descr.readinglevel])
-    }
-  })
-
-  console.log(readinglevels)
-  console.log(locations)
 
   if (!books) {
     return <div>Loading...</div>;
@@ -62,30 +58,30 @@ const TeacherLib =  () => {
     const selectedFilterGroup = selectedOption.closest('optgroup')?.id;
 
     setFilter(selectedFilter)
-    if(selectedFilterGroup === 'place'){
+    if (selectedFilterGroup === 'place') {
       const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
     }
-    if(selectedFilterGroup === 'readinglevel'){
-      const selectedFilterBooks =  books.filter(book => book.descr.readinglevel.includes(selectedFilter))
+    if (selectedFilterGroup === 'readinglevel') {
+      const selectedFilterBooks = books.filter(book => book.descr.readinglevel.includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
-      
+
     }
-    if(selectedFilterGroup === 'available'){
+    if (selectedFilterGroup === 'available') {
       const selectedFilterBooks = books.filter(book => book.available.includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
-    } 
+    }
 
     if (selectedFilter === 'none') setFilterdBooks(books)
-    
+
   }
 
   const handleChangeSort = (event) => {
-    const selectedSort = event.target.value; 
-    const selectedDirection = sortDirection; 
-  
+    const selectedSort = event.target.value;
+    const selectedDirection = sortDirection;
+
     setSort(selectedSort)
-  
+
     const sortedMaterials = [...filterdBooks].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
@@ -97,42 +93,37 @@ const TeacherLib =  () => {
         return 0;
       } return null
     });
-  
+
     setFilterdBooks(sortedMaterials); // Update the sorted data
   };
-  
-  
-  
+
+
+
   const handleChangeDirection = (event) => {
     const selectedSort = sort; // Get the currently selected sort key
     const selectedDirection = event.target.value; // Get the newly selected sort direction
-  
+
     setSortDirection(selectedDirection); // Update the sort direction
-  
-    const sortedMaterials = [...filterdBooks].sort((a, b) => {
-      if (selectedDirection === 'ascending') {
-        if (a[selectedSort] < b[selectedSort]) return -1;
-        if (a[selectedSort] > b[selectedSort]) return 1;
+
+    if (filterdBooks) {
+      setFilterdBooks([...filterdBooks].sort((a, b) => {
+        if (selectedDirection === 'ascending') return a[selectedSort] > b[selectedSort] ? 1 : -1;
+        if (selectedDirection === 'descending') return a[selectedSort] < b[selectedSort] ? 1 : -1;
         return 0;
-      } else if (selectedDirection === 'descending') {
-        if (a[selectedSort] > b[selectedSort]) return -1;
-        if (a[selectedSort] < b[selectedSort]) return 1;
-        return 0;
-      }
-    });
-  
-    setFilterdBooks(sortedMaterials);
-    
+      }));
+    }
+
+
   };
-  
 
 
 
- 
+
+
 
   return (<div>
     <div><TeacherNavbar></TeacherNavbar></div>
-    <div className='content'> 
+    <div className='content'>
       <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
         <option value="title" >Titel</option>
         <option value="avgscore">Score</option>
@@ -154,17 +145,17 @@ const TeacherLib =  () => {
           {locations.map(location => <option value={location}>{location}</option>)}
         </optgroup>
         <optgroup label='Niveau' id='readinglevel'>
-        {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
+          {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
         </optgroup>
       </select>
 
-      {showAll ? <div className='itemList'> { filterdBooks.map((book) => (
-      <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false); }} >
-        <img src={book.descr.cover} alt="" className='cover'/>
-        <h3 >{book.title}</h3>
-      </li>
-    ))}
-        
+      {showAll ? <div className='itemList'> {filterdBooks.map((book) => (
+        <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false); }} >
+          <img src={book.descr.cover} alt="" className='cover' />
+          <h3 >{book.title}</h3>
+        </li>
+      ))}
+
       </div>
 
         : <div>
