@@ -142,10 +142,6 @@ const ManageMaterials = () => {
         return 0;
       }));
     }
-
-
-    setFilterdBooks(sortedMaterials);
-
   };
 
 
