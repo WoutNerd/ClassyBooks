@@ -17,7 +17,7 @@ async function del(materialid) {
 
 const ManageMaterials = () => {
   Title('Beheer boeken')
-  
+
 
   const [books, setBooks] = useState(null);
   const [filterdBooks, setFilterdBooks] = useState(null)
@@ -41,19 +41,23 @@ const ManageMaterials = () => {
 
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
-        const response = await post("/allMaterials")
-        setBooks(response);
-        setFilterdBooks(response)
-
+        const response = await post("/allMaterials");
+        if (isMounted) {
+          setBooks(response);
+          setFilterdBooks(response);
+        }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     };
 
     fetchData();
+    return () => { isMounted = false }; // Cleanup functie
   }, []);
+
 
 
   function change(id) {
@@ -62,22 +66,12 @@ const ManageMaterials = () => {
 
   }
 
-//get locations
-// eslint-disable-next-line
-  books?.map(book => {
-    if (!locations.includes(book.place)) {
-      setLocations([...locations, book.place])
+  useEffect(() => {
+    if (books) {
+      setLocations([...new Set(books.map(book => book.place))]);
+      setReadinglevels([...new Set(books.map(book => book.descr.readinglevel))]);
     }
-  })
-
-  //get readinglevels
-  // eslint-disable-next-line
-  books?.map(book => {
-    if (!readinglevels.includes(book.descr.readinglevel)) {
-      setReadinglevels([...readinglevels, book.descr.readinglevel])
-    }
-  })
-
+  }, [books]);
 
 
   if (!books) {
@@ -140,18 +134,15 @@ const ManageMaterials = () => {
     const selectedDirection = event.target.value; // Get the newly selected sort direction
 
     setSortDirection(selectedDirection); // Update the sort direction
-// eslint-disable-next-line
-    const sortedMaterials = [...filterdBooks].sort((a, b) => {
-      if (selectedDirection === 'ascending') {
-        if (a[selectedSort] < b[selectedSort]) return -1;
-        if (a[selectedSort] > b[selectedSort]) return 1;
+    // eslint-disable-next-line
+    if (filterdBooks) {
+      setFilterdBooks([...filterdBooks].sort((a, b) => {
+        if (selectedDirection === 'ascending') return a[selectedSort] > b[selectedSort] ? 1 : -1;
+        if (selectedDirection === 'descending') return a[selectedSort] < b[selectedSort] ? 1 : -1;
         return 0;
-      } else if (selectedDirection === 'descending') {
-        if (a[selectedSort] > b[selectedSort]) return -1;
-        if (a[selectedSort] < b[selectedSort]) return 1;
-        return 0;
-      }
-    });
+      }));
+    }
+
 
     setFilterdBooks(sortedMaterials);
 
@@ -192,16 +183,13 @@ const ManageMaterials = () => {
                       if (e === 'ç') { return '9' } else
                         if (e === 'ç') { return '9' } else
                           if (e === 'à') { return '0' }
-                          else {return e }
+                          else { return e }
     }).join("")
 
     setSearchQuery(query);
 
 
-    console.log(query)
     const searchedBooks = books.filter(book =>
-
-      console.log(book?.descr)
       (book?.title?.toLowerCase().includes(query)) ||  // Check if title exists
       (book?.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
       (book?.isbn?.includes(query))  // Check if ISBN exists
@@ -214,7 +202,7 @@ const ManageMaterials = () => {
     <div>
       <div><TeacherNavbar /></div>
       <div className='content'>
-      <input
+        <input
           id='search'
           type="text"
           placeholder="Zoek op titel, auteur, of ISBN..."
