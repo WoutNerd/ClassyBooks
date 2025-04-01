@@ -29,9 +29,9 @@ export function Title(title) {
 export async function checkUser() {
   const url = window.location.href
   let privilege = 0
-  if(url.includes('beheer')){
+  if(url.includes('beheer/')){
     privilege = 2
-  }else if (url.includes('leerkracht')){
+  }else if (url.includes('leerkracht/')){
     privilege = 1
   }
   const sessionid = getCookie("sessionId");
