@@ -1,0 +1,13 @@
+node_modules
+.gitignore
+classybooks-testserver-session.sql
+serverlogin.txt
+server/init.sql
+.env
+client/node_modules
+client/README.md
+data
+art
+.vscode
+.github
+settings.json
