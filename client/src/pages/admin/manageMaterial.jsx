@@ -184,12 +184,14 @@ const ManageMaterials = () => {
 
     setSearchQuery(query);
 
+    const regex = new RegExp(query, 'i'); 
 
     const searchedBooks = books.filter(book =>
-      (book?.title?.toLowerCase().includes(query)) ||  // Check if title exists
-      (book?.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
-      (book?.isbn?.includes(query))  // Check if ISBN exists
-    ); 
+      regex.test(book?.title) ||  // Check if title exists
+      regex.test(book?.descr?.author) ||  // Check if descr and author exist
+      regex.test(book?.isbn)  // Check if ISBN exists
+    );
+
     setFilterdBooks(searchedBooks); 
   };
 
