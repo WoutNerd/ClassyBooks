@@ -38,8 +38,8 @@ const TeacherLib = () => {
 
   useEffect(() => {
     if (books) {
-      setLocations([...new Set(books.map(book => book.place))]);
-      setReadinglevels([...new Set(books.map(book => book.descr.readinglevel))]);
+      setLocations([...new Set(books.map(book => book.place?.toLowerCase().trim()))]);
+      setReadinglevels([...new Set(books.map(book => book.descr.readinglevel?.toLowerCase().trim()))]);
     }
   }, [books]);
 
@@ -59,11 +59,11 @@ const TeacherLib = () => {
 
     setFilter(selectedFilter)
     if (selectedFilterGroup === 'place') {
-      const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
+      const selectedFilterBooks = books.filter(book => book.place?.toLowerCase().trim().includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
     }
     if (selectedFilterGroup === 'readinglevel') {
-      const selectedFilterBooks = books.filter(book => book.descr.readinglevel.includes(selectedFilter))
+      const selectedFilterBooks = books.filter(book => book.descr.readinglevel?.toLowerCase().trim().includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
 
     }

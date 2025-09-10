@@ -68,8 +68,8 @@ const ManageMaterials = () => {
 
   useEffect(() => {
     if (books) {
-      setLocations([...new Set(books.map(book => book.place))]);
-      setReadinglevels([...new Set(books.map(book => book.descr.readinglevel))]);
+      setLocations([...new Set(books.map(book => book.place?.toLowerCase().trim()))]);
+      setReadinglevels([...new Set(books.map(book => book.descr?.readinglevel?.toLowerCase().trim()))]);
     }
   }, [books]);
 
@@ -89,11 +89,11 @@ const ManageMaterials = () => {
 
     setFilter(selectedFilter)
     if (selectedFilterGroup === 'place') {
-      const selectedFilterBooks = books.filter(book => book.place.includes(selectedFilter))
+      const selectedFilterBooks = books.filter(book => book.place?.toLowerCase().includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
     }
     if (selectedFilterGroup === 'readinglevel') {
-      const selectedFilterBooks = books.filter(book => book.descr.readinglevel.includes(selectedFilter))
+      const selectedFilterBooks = books.filter(book => book.descr?.readinglevel?.toLowerCase().includes(selectedFilter))
       setFilterdBooks(selectedFilterBooks)
 
     }
@@ -246,9 +246,9 @@ const ManageMaterials = () => {
           selectedBook && (
             <div>
               <h2>{selectedBook.title}</h2>
-              <h3>Auteur: {selectedBook.descr.author}</h3>
+              <h3>Auteur: {selectedBook.descr?.author?.trim()}</h3>
               <img src={selectedBook.descr.cover} alt="" />
-              <p>Locatie: {selectedBook.place}</p>
+              <p>Locatie: {selectedBook.place?.toLowerCase().trim()}</p>
               <p>Pagina's: {selectedBook.descr.pages}</p>
               <p>{lendTo ? `Is uitgeleend door: ` + lendTo.firstname + ' ' + lendTo.lastname : ''}</p>
               <button onClick={() => del(selectedBook.materialid)} className="button">Verwijder Boek</button>
