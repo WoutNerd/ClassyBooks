@@ -49,11 +49,11 @@ const StudentLib = () => {
 
   // Make sure to initialize 'locations' and 'readingLevels' with all available options from books
   books?.forEach(book => {
-    if (book.place && !locations.includes(book.place)) {
-      setLocations([...locations, book.place]);
+    if (book.place && !locations.includes(book.place?.toLowerCase().trim())) {
+      setLocations([...locations, book.place.toLowerCase().trim()]);
     }
-    if (book.descr?.readinglevel && !readingLevels.includes(book.descr.readinglevel)) {
-      setReadingLevels([...readingLevels, book.descr.readinglevel]);
+    if (book.descr?.readinglevel && !readingLevels.includes(book.descr.readinglevel?.toLowerCase().trim())) {
+      setReadingLevels([...readingLevels, book.descr.readinglevel?.toLowerCase().trim()]);
     }
   });
 
@@ -106,9 +106,9 @@ const StudentLib = () => {
     let selectedFilterBooks = books;
 
     if (selectedFilterGroup === 'place') {
-      selectedFilterBooks = books.filter(book => book.place?.includes(selectedFilter));
+      selectedFilterBooks = books.filter(book => book.place?.toLowerCase().trim().includes(selectedFilter));
     } else if (selectedFilterGroup === 'readinglevel') {
-      selectedFilterBooks = books.filter(book => book.descr?.readinglevel?.includes(selectedFilter));
+      selectedFilterBooks = books.filter(book => book.descr?.readinglevel?.toLowerCase().trim().includes(selectedFilter));
     } else if (selectedFilterGroup === 'available') {
       selectedFilterBooks = books.filter(book => book.available?.includes(selectedFilter));
     }

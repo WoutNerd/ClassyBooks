@@ -50,8 +50,8 @@ const ManageUsers = () => {
 
       let readinglevels = [];
       specifiedUsers?.forEach(user => {
-        if (!readinglevels.includes(user.readinglevel)) {
-          readinglevels = [...readinglevels, user.readinglevel];
+        if (!readinglevels.includes(user.readinglevel?.toLowerCase().trim())) {
+          readinglevels = [...readinglevels, user.readinglevel?.toLowerCase().trim()];
         }
       });
       readinglevels.sort();
@@ -63,8 +63,8 @@ const ManageUsers = () => {
 
       let allClss = [];
       specifiedUsers?.forEach(user => {
-        if (!allClss.includes(user.class)) {
-          allClss = [...allClss, user.class];
+        if (!allClss.includes(user.class?.toLowerCase().trim())) {
+          allClss = [...allClss, user.class?.toLowerCase().trim()];
         }
       });
       allClss.sort();
@@ -145,11 +145,11 @@ const ManageUsers = () => {
     let selectedFilterUsers = users;
 
     if (selectedFilterGroup === 'class') {
-      selectedFilterUsers = users.filter(user => user.class === selectedFilter);
+      selectedFilterUsers = users.filter(user => user.class?.toLowerCase().trim() === selectedFilter);
     }
 
     if (selectedFilterGroup === 'readinglevel') {
-      selectedFilterUsers = users.filter(user => user.readinglevel === selectedFilter);
+      selectedFilterUsers = users.filter(user => user.readinglevel?.toLowerCase().trim() === selectedFilter);
     }
 
     if (selectedFilterGroup === 'privilege') {

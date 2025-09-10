@@ -36,8 +36,8 @@ const Pupils = () => {
 
       let readinglevels = []
       specifiedUsers?.map(user => {
-        if (!readinglevels.includes(user.readinglevel)) {
-          readinglevels = [...readinglevels, user.readinglevel]
+        if (!readinglevels.includes(user.readinglevel?.toLowerCase().trim())) {
+          readinglevels = [...readinglevels, user.readinglevel?.toLowerCase().trim()]
         }
       })
       readinglevels.sort()
@@ -45,8 +45,8 @@ const Pupils = () => {
 
       let allClss = []
       specifiedUsers?.map(user => {
-        if (!allClss.includes(user.class)) {
-          allClss = [...allClss, user.class]
+        if (!allClss.includes(user.class?.toLowerCase().trim())) {
+          allClss = [...allClss, user.class?.toLowerCase().trim()]
         }
       })
       allClss.sort()
@@ -138,11 +138,11 @@ const Pupils = () => {
 
     setFilter(selectedFilter)
     if (selectedFilterGroup === 'class') {
-      const selectedFilterUsers = users.filter(user => user.class.includes(selectedFilter))
+      const selectedFilterUsers = users.filter(user => user.class?.toLowerCase().trim().includes(selectedFilter))
       setFilterdUsers(selectedFilterUsers)
     }
     if (selectedFilterGroup === 'readinglevel') {
-      const selectedFilterUsers = users.filter(user => user.readinglevel.includes(selectedFilter))
+      const selectedFilterUsers = users.filter(user => user.readinglevel?.toLowerCase().trim().includes(selectedFilter))
       setFilterdUsers(selectedFilterUsers)
 
     }
