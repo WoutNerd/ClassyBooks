@@ -6,8 +6,10 @@ import { checkUser, getCookie, post, Title, Toast } from '../../functions';
 
 
 const StudentLib = () => {
-  Title('Bibliotheek');
-  checkUser(0);
+  useEffect(() => {
+    Title('Bibliotheek');
+    checkUser(0);
+  }, []);
 
   // vars
   const [books, setBooks] = useState(null);
@@ -48,14 +50,12 @@ const StudentLib = () => {
   }, []);
 
   // Make sure to initialize 'locations' and 'readingLevels' with all available options from books
-  books?.forEach(book => {
-    if (book.place && !locations.includes(book.place?.toLowerCase().trim())) {
-      setLocations([...locations, book.place.toLowerCase().trim()]);
+  useEffect(() => {
+    if (books) {
+      setLocations([...new Set(books.map(book => book.place?.toLowerCase().trim()))]);
+      setReadingLevels([...new Set(books.map(book => book.descr.readinglevel?.toLowerCase().trim()))]);
     }
-    if (book.descr?.readinglevel && !readingLevels.includes(book.descr.readinglevel?.toLowerCase().trim())) {
-      setReadingLevels([...readingLevels, book.descr.readinglevel?.toLowerCase().trim()]);
-    }
-  });
+  }, [books]);
 
   if (!books) {
     return <div>Loading...</div>;
@@ -76,14 +76,14 @@ const StudentLib = () => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Maanden starten bij 0
         const year = date.getFullYear();
-        timeText = day+`/`+month+`/`+year
+        timeText = day + `/` + month + `/` + year
 
         setShowToast(true)
         setToastMessage(`Je hebt tot ${timeText} om het boek terug te brengen.`)
         setToastType(`succes`)
-        
+
       })
-      
+
 
     } else {
       setShowToast(true)
@@ -181,7 +181,7 @@ const StudentLib = () => {
 
     console.log(books)
     const searchedBooks = books.filter(book =>
-      
+
 
       (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
       (book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
