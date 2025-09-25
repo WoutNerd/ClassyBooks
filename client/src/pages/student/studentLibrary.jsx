@@ -35,9 +35,12 @@ const StudentLib = () => {
         const sessionid = getCookie('sessionId');
         const userid = getCookie('userId');
         const user = await post('/getUser', { sessionid, userid });
-        const materialid = user.materials[0];
-        const currentMaterial = await post('/getMaterial', { sessionid, materialid });
-        setCurrentBook(currentMaterial);
+        if (await user.materials.length >= 1) {
+          const materialid = user.materials[0];
+          const currentMaterial = await post('/getMaterial', { sessionid, materialid });
+          setCurrentBook(currentMaterial);
+        }
+        else { setCurrentBook(null) }
 
       } catch (error) {
         console.error(error);
@@ -74,14 +77,14 @@ const StudentLib = () => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Maanden starten bij 0
         const year = date.getFullYear();
-        timeText = day+`/`+month+`/`+year
+        timeText = day + `/` + month + `/` + year
 
         setShowToast(true)
         setToastMessage(`Je hebt tot ${timeText} om het boek terug te brengen.`)
         setToastType(`succes`)
-        
+
       })
-      
+
 
     } else {
       setShowToast(true)
@@ -179,7 +182,7 @@ const StudentLib = () => {
 
     console.log(books)
     const searchedBooks = books.filter(book =>
-      
+
 
       (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
       (book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
