@@ -257,7 +257,7 @@ const StudentLib = () => {
             <p>Paginas: {selectedBook.descr?.pages}</p>
             <p>{selectedBook.lendoutto ? `Is uitgeleend door: ${selectedBook.lendoutto}` : ''}</p>
             <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
-            <button onClick={() => lend(selectedBook.materialid)} className="button">Leen uit</button>
+            {selectedBook.available.includes('1') ? <button onClick={() => lend(selectedBook.materialid)} className="button big2">Leen {selectedBook.title} uit</button> : <div><p>Dit boek is momenteel niet beschikbaar.</p>  </div>}
           </div>
         }
       </div>
