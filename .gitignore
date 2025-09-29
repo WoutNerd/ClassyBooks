@@ -12,3 +12,4 @@ build
 .env
 server/settings.json
 server/uploads/img*
+.github/workflows
