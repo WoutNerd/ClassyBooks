@@ -20,7 +20,6 @@ const ChangeUserPass = () => {
 
   const handleSubmit = async () => {
 
-    const userId = userid
     const sessionId = sessionid
     const Newpass = document.getElementById('Newpass').value
     const NewpassCheck = document.getElementById('NewpassCheck').value
@@ -35,9 +34,9 @@ const ChangeUserPass = () => {
       
     }
     if (Newpass.value === NewpassCheck.value) {
-      var newSha256 = crypto.SHA256(user.firstname + user.lastname + Newpass.value).toString();
-      var newMd5 = crypto.MD5(user.firstname + user.lastname + Newpass.value + newSha256).toString();
-      const body = { sessionId, newSha256, newMd5, userId }
+      var newSha256 = crypto.SHA256(user.firstname + user.lastname + Newpass).toString();
+      var newMd5 = crypto.MD5(user.firstname + user.lastname + Newpass + newSha256).toString();
+      const body = { sessionId, newSha256, newMd5, userid }
       if (window.confirm('Bent u zeker dat u ' + user.firstname + ' ' + user.lastname + ' zijn/haar wachtwoord wilt veranderen in "' + Newpass + '"')) {
         const resp = await post('/changePassword', body)
         if (resp.status === 200) {
