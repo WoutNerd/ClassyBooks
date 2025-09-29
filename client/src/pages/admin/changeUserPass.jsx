@@ -31,12 +31,21 @@ const ChangeUserPass = () => {
       setToastType(`warning`)
 
 
-      
+
     }
     if (Newpass.value === NewpassCheck.value) {
-      var newSha256 = crypto.SHA256(user.firstname + user.lastname + Newpass).toString();
-      var newMd5 = crypto.MD5(user.firstname + user.lastname + Newpass + newSha256).toString();
-      const body = { sessionId, newSha256, newMd5, userid }
+      let body
+      if (user.privilege === 0) {
+        var newSha256 = crypto.SHA256(user.class + user.classnum + Newpass).toString();
+        var newMd5 = crypto.MD5(user.class + user.classnum + Newpass + newSha256).toString();
+        body = { sessionId, newSha256, newMd5, userid }
+      }
+      else {
+        var newSha256 = crypto.SHA256(user.firstname + user.lastname + Newpass).toString();
+        var newMd5 = crypto.MD5(user.firstname + user.lastname + Newpass + newSha256).toString();
+        body = { sessionId, newSha256, newMd5, userid }
+      }
+
       if (window.confirm('Bent u zeker dat u ' + user.firstname + ' ' + user.lastname + ' zijn/haar wachtwoord wilt veranderen in "' + Newpass + '"')) {
         const resp = await post('/changePassword', body)
         if (resp.status === 200) {
@@ -49,6 +58,7 @@ const ChangeUserPass = () => {
           setToastType(`error`)
         }
       }
+
     }
 
 
@@ -76,13 +86,13 @@ const ChangeUserPass = () => {
 
   return (<div>
     {showToast && (
-        <Toast
-          message={toastMessage}
-          type={toastType}
-          duration={3000}
-          onClose={() =>setShowToast(false)}
-        />
-      )}
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        duration={3000}
+        onClose={() => setShowToast(false)}
+      />
+    )}
     <nav><TeacherNavbar /></nav>
     <div>
       {user.firstname + ' ' + user.lastname}
