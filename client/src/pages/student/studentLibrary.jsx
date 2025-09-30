@@ -161,7 +161,7 @@ const StudentLib = () => {
     setFilteredBooks(sortedMaterials);
   };
 
-  const handleSearch = (event) => {
+   const handleSearch = (event) => {
     const query = event.target.value.toLowerCase().split("").map(e => {
       if (e === '&') { return '1' } else
         if (e === 'é') { return '2' } else
@@ -174,21 +174,20 @@ const StudentLib = () => {
                       if (e === 'ç') { return '9' } else
                         if (e === 'ç') { return '9' } else
                           if (e === 'à') { return '0' }
-                          else { console.log(e); return e }
+                          else { return e }
     }).join("")
 
     setSearchQuery(query);
 
+    const regex = new RegExp(query, 'i'); 
 
-    console.log(books)
     const searchedBooks = books.filter(book =>
-
-
-      (book.title?.toLowerCase().includes(query)) ||  // Check if title exists
-      (book.descr?.author?.toLowerCase().includes(query)) ||  // Check if descr and author exist
-      (book.isbn?.includes(query))  // Check if ISBN exists
+      regex.test(book?.title) ||  // Check if title exists
+      regex.test(book?.descr?.author) ||  // Check if descr and author exist
+      regex.test(book?.isbn)  // Check if ISBN exists
     );
-    setFilteredBooks(searchedBooks);
+
+    setFilteredBooks(searchedBooks); 
   };
 
 
