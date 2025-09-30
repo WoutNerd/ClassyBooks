@@ -294,7 +294,7 @@ const ManageMaterials = () => {
               <p>Pagina's: {selectedBook.descr.pages}</p>
               <p>{lendTo ? `Is uitgeleend door: ` + lendTo.firstname + ' ' + lendTo.lastname : ''}</p>
               <button onClick={() => del(selectedBook.materialid)} className="button">Verwijder Boek</button>
-              <button onClick={() => change(selectedBook.materialid)}>Verander boek</button>
+              <button onClick={() => change(selectedBook.materialid)} className='button'>Verander boek</button>
               <button onClick={() => setShowAll(true)} className="button">Toon alle boeken</button>
             </div>
           )
