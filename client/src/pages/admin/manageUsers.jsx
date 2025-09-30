@@ -1,16 +1,9 @@
 import { useState, useEffect } from 'react';
 import '../../App.css';
-import { getCookie, Title, post } from '../../functions';
+import { getCookie, Title, post, Toast } from '../../functions';
 import { useNavigate } from 'react-router';
 import TeacherNavbar from '../teacher/teacherNavbar';
 
-async function deleteUser(userId) {
-  const sessionId = getCookie('sessionId');
-  const body = { sessionId, userId };
-  if (window.confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?')) {
-    await post('/removeUser', body); // Added await for async call
-  }
-}
 
 const ManageUsers = () => {
   Title('Gebruikers beheren');
@@ -39,6 +32,48 @@ const ManageUsers = () => {
   const [selectedMaterials, setSelectedMaterials] = useState([]);
   const [selectedHistory, setSelectedHistory] = useState([]);
 
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
+
+
+  function reloadPage() {
+    setUsers(null)
+    setFilterdUsers(null)
+    setShowAll(true)
+    setSelectedUser(null)
+
+    const body = { sessionId: getCookie('sessionId') };
+
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        const response = await post('/allUsers', body, 'manage users');
+        if (isMounted) {
+          setUsers(response);
+          setFilterdUsers(response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+    return () => { isMounted = false };
+  }
+
+
+  async function deleteUser(userId) {
+    const sessionId = getCookie('sessionId');
+    const body = { sessionId, userId };
+    if (window.confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?')) {
+      await post('/removeUser', body);
+      reloadPage()
+
+      setShowToast(true)
+      setToastMessage(`Gebruiker succesvol verwijderd.`)
+      setToastType(`succes`)
+    }
+  }
 
   useEffect(() => {
     const body = { sessionId: getCookie('sessionId') };
@@ -94,7 +129,7 @@ const ManageUsers = () => {
     const selectedSort = event.target.value;
     const selectedDirection = sortDirection;
     setSort(selectedSort);
-// eslint-disable-next-line
+    // eslint-disable-next-line
     const sortedMaterials = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
@@ -115,7 +150,7 @@ const ManageUsers = () => {
     const selectedDirection = event.target.value; // Get the newly selected sort direction
 
     setSortDirection(selectedDirection); // Update the sort direction
-// eslint-disable-next-line
+    // eslint-disable-next-line
     const sortedMaterials = [...users].sort((a, b) => {
       if (selectedDirection === 'ascending') {
         if (a[selectedSort] < b[selectedSort]) return -1;
@@ -193,6 +228,14 @@ const ManageUsers = () => {
 
   return (
     <div>
+      {showToast && (
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <nav><TeacherNavbar /></nav>
       <div className='content'>
         <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>

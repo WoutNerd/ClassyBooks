@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "../teacher/teacherNavbar"
-import { post, Title, getCookie } from '../../functions'
+import { post, Title, getCookie, Toast } from '../../functions'
 import { useNavigate } from 'react-router-dom';
 
-async function del(materialid) {
-  const sessionId = getCookie('sessionId')
-  const body = { sessionId, materialid }
-  if (window.confirm('Weet u zeker dat u dit boek wilt verwijderen?')) {
-    await post('/removeMaterial', body)
-  }
-}
+
 
 
 
@@ -31,6 +25,10 @@ const ManageMaterials = () => {
   const [lendTo, setLendTo] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // New search state
 
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState(``)
+  const [toastType, setToastType] = useState(``)
+
   const navigate = useNavigate();
 
 
@@ -38,6 +36,42 @@ const ManageMaterials = () => {
     navigate(path); // Use navigate to go to the specified path
   };
 
+  function reloadPage() {
+    setBooks(null)
+    setFilterdBooks(null)
+    setShowAll(true)
+    setSelectedBook(null)
+    setLendTo(null)
+
+    let isMounted = true;
+    const fetchData = async () => {
+      try {
+        const response = await post("/allMaterials");
+        if (isMounted) {
+          setBooks(response);
+          setFilterdBooks(response);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+    return () => { isMounted = false };
+  }
+
+
+  async function del(materialid) {
+    const sessionId = getCookie('sessionId')
+    const body = { sessionId, materialid }
+    if (window.confirm('Weet u zeker dat u dit boek wilt verwijderen?')) {
+      await post('/removeMaterial', body)
+      reloadPage()
+
+      setShowToast(true)
+      setToastMessage(`Boek succesvol verwijderd.`)
+      setToastType(`succes`)
+    }
+  }
 
 
   useEffect(() => {
@@ -184,7 +218,7 @@ const ManageMaterials = () => {
 
     setSearchQuery(query);
 
-    const regex = new RegExp(query, 'i'); 
+    const regex = new RegExp(query, 'i');
 
     const searchedBooks = books.filter(book =>
       regex.test(book?.title) ||  // Check if title exists
@@ -192,12 +226,20 @@ const ManageMaterials = () => {
       regex.test(book?.isbn)  // Check if ISBN exists
     );
 
-    setFilterdBooks(searchedBooks); 
+    setFilterdBooks(searchedBooks);
   };
 
 
   return (
     <div>
+      {showToast && (
+            <Toast
+              message={toastMessage}
+              type={toastType}
+              duration={3000}
+              onClose={() => setShowToast(false)}
+            />
+          )}
       <div><TeacherNavbar /></div>
       <div className='content'>
         <input

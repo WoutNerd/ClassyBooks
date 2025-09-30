@@ -36,7 +36,6 @@ const ChangeUserPass = () => {
     if (Newpass.value === NewpassCheck.value) {
       let body
       if (user.privilege === 0) {
-        console.log(user.class + user.classnum + Newpass)
         var newSha256 = crypto.SHA256(user.class + user.classnum + Newpass).toString();
         var newMd5 = crypto.MD5(user.class + user.classnum + Newpass + newSha256).toString();
         body = { sessionId, newSha256, newMd5, userid }
