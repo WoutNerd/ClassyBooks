@@ -8,7 +8,8 @@ async function deleteUser(userId) {
   const sessionId = getCookie('sessionId');
   const body = { sessionId, userId };
   if (window.confirm('Weet u zeker dat u deze gebruiker wilt verwijderen?')) {
-    await post('/removeUser', body); // Added await for async call
+    await post('/removeUser', body); 
+    window.location.replace('/beheer/gebruikers-beheren');
   }
 }
 

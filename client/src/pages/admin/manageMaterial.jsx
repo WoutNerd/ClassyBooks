@@ -9,7 +9,9 @@ async function del(materialid) {
   const body = { sessionId, materialid }
   if (window.confirm('Weet u zeker dat u dit boek wilt verwijderen?')) {
     await post('/removeMaterial', body)
+    window.location.replace('/beheer/boeken-beheren')
   }
+
 }
 
 
