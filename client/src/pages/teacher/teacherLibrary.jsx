@@ -15,6 +15,8 @@ const TeacherLib = () => {
   const [filter, setFilter] = useState('none')
   const [locations, setLocations] = useState([])
   const [readinglevels, setReadinglevels] = useState([])
+    const [searchQuery, setSearchQuery] = useState(''); // New search state
+
 
 
   useEffect(() => {
@@ -117,13 +119,48 @@ const TeacherLib = () => {
   };
 
 
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase().split("").map(e => {
+      if (e === '&') { return '1' } else
+        if (e === 'é') { return '2' } else
+          if (e === '"') { return '3' } else
+            if (e === "'") { return '4' } else
+              if (e === '(') { return '5' } else
+                if (e === '§') { return '6' } else
+                  if (e === 'è') { return '7' } else
+                    if (e === '!') { return '8' } else
+                      if (e === 'ç') { return '9' } else
+                        if (e === 'ç') { return '9' } else
+                          if (e === 'à') { return '0' }
+                          else { return e }
+    }).join("")
 
+    setSearchQuery(query);
+
+    const regex = new RegExp(query, 'i');
+
+    const searchedBooks = books.filter(book =>
+      regex.test(book?.title) ||  // Check if title exists
+      regex.test(book?.descr?.author) ||  // Check if descr and author exist
+      regex.test(book?.isbn)  // Check if ISBN exists
+    );
+
+    setFilterdBooks(searchedBooks);
+  };
 
 
 
   return (<div>
     <div><TeacherNavbar></TeacherNavbar></div>
     <div className='content'>
+      <input
+        id='search'
+        type="text"
+        placeholder="Zoek op titel, auteur, of ISBN..."
+        value={searchQuery}
+        onChange={handleSearch}
+        className="search-bar"
+      />
       <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
         <option value="title" >Titel</option>
         <option value="avgscore">Score</option>
