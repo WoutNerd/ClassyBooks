@@ -26,7 +26,7 @@ const Navbar = () => {
     }
 
     function handleAbout() {
-        window.open('https://github.com/JasperDG828/classybooks', '_blank');
+        window.open('https://github.com/WoutNerd/ClassyBooks/blob/main/handleidingen.md', '_blank');
     }
 
     const priv = async () => {
