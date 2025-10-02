@@ -3,6 +3,7 @@ import "../../App.css"
 import TeacherNavbar from "../teacher/teacherNavbar"
 import { post, Title, getCookie, Toast } from '../../functions'
 import { useNavigate } from 'react-router-dom';
+import Toolbar from '../../components/Toolbar';
 
 
 
@@ -23,6 +24,7 @@ const ManageMaterials = () => {
   const [locations, setLocations] = useState([])
   const [readinglevels, setReadinglevels] = useState([])
   const [lendTo, setLendTo] = useState(null);
+
   const [searchQuery, setSearchQuery] = useState(''); // New search state
 
   const [showToast, setShowToast] = useState(false)
@@ -148,8 +150,8 @@ const ManageMaterials = () => {
 
     const sortedMaterials = [...filterdBooks].sort((a, b) => {
       if (selectedDirection === 'ascending') {
-        if (a[selectedSort] < b[selectedSort]) return -1;
         if (a[selectedSort] > b[selectedSort]) return 1;
+        if (a[selectedSort] < b[selectedSort]) return -1;
         return 0;
       } else if (selectedDirection === 'descending') {
         if (a[selectedSort] > b[selectedSort]) return -1;
@@ -233,47 +235,54 @@ const ManageMaterials = () => {
   return (
     <div>
       {showToast && (
-            <Toast
-              message={toastMessage}
-              type={toastType}
-              duration={3000}
-              onClose={() => setShowToast(false)}
-            />
-          )}
+        <Toast
+          message={toastMessage}
+          type={toastType}
+          duration={3000}
+          onClose={() => setShowToast(false)}
+        />
+      )}
       <div><TeacherNavbar /></div>
       <div className='content'>
-        <input
-          id='search'
-          type="text"
-          placeholder="Zoek op titel, auteur, of ISBN..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="search-bar"
+        <Toolbar
+          searchQuery={searchQuery}
+          onSearchChange={handleSearch}
+          searchLabel='Titel, auteur, ISBN...'
+          sortOptions={[
+            { value: 'title', label: 'Titel' },
+            { value: 'avgscore', label: 'Score' },
+            { value: 'lendcount', label: 'Uitgeleend' },
+            { value: 'available', label: 'Beschikbaar' },
+            { value: 'place', label: 'Locatie' },
+          ]}
+          sort={sort}
+          sortDirection={sortDirection}
+          filter={filter}
+          onSortChange={handleChangeSort}
+          onSortDirectionChange={handleChangeDirection}
+          onFilterChange={handleChangeFilter}
+          filterOptions={[
+            {
+              id: "available",
+              label: "Beschikbaarheid",
+              options: [
+                { value: "1", label: "Beschikbaar" },
+                { value: "0", label: "Onbeschikbaar" },
+              ],
+            },
+            {
+              id: "place",
+              label: "Locatie",
+              options: locations.map(loc => ({ value: loc, label: loc })),
+            },
+            {
+              id: "readinglevel",
+              label: "Niveau",
+              options: readinglevels.map(level => ({ value: level, label: level })),
+            },
+          ]}
         />
-        <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="title">Titel</option>
-          <option value="avgscore">Score</option>
-          <option value="lendcount">Aantal keer uitgeleend</option>
-          <option value="available">Beschikbaar</option>
-          <option value="place">Locatie</option>
-        </select>
-        <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-          <option value="ascending">Oplopen</option>
-          <option value="descending">Aflopend</option>
-        </select>
-        <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
-          <option value="none">Geen filter</option>
-          <optgroup label='Beschikbaarheid' id='available'>
-            <option value="1">Beschikbaar</option>
-            <option value="0">Onbeschikbaar</option>
-          </optgroup>
-          <optgroup label='Locatie' id='place'>
-            {locations.map(location => <option key={location} value={location}>{location}</option>)}
-          </optgroup>
-          <optgroup label='Niveau' id='readinglevel'>
-            {readinglevels.map(readinglevel => <option key={readinglevel} value={readinglevel}>{readinglevel}</option>)}
-          </optgroup>
-        </select>
+
 
         {showAll ? (
           <div className='itemList'>

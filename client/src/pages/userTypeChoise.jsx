@@ -1,6 +1,6 @@
-import './App.css'
+import '../App.css'
 import { useNavigate } from 'react-router';
-import { Title } from './functions';
+import { Title } from '../functions';
 
 
 

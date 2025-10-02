@@ -13,7 +13,7 @@ import TeacherLogin from './pages/teacher/teacherLogin';
 import Dashboard from './pages/teacher/teacherDashboard';
 import TeacherLib from './pages/teacher/teacherLibrary';
 import AddUser from './pages/admin/addUser';
-import UserTyperChoise from './userTypeChoise';
+import UserTyperChoise from './pages/userTypeChoise';
 import AddMaterial from './pages/admin/addMaterial';
 import StudentLib from './pages/student/studentLibrary';
 import ManageUsers from './pages/admin/manageUsers';

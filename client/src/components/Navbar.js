@@ -1,8 +1,8 @@
-import "./App.css";
+import "../App.css";
 import { useNavigate } from "react-router-dom";
-import { checkUser, getCookie, post } from './functions.js'
+import { checkUser, getCookie, post } from '../functions.js'
 import { useState } from "react";
-const logo_long = require('./art/logo_long.png')
+const logo_long = require('../art/logo_long.png')
 
 
 
