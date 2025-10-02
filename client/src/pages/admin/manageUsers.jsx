@@ -47,7 +47,7 @@ const ManageUsers = () => {
     const regex = new RegExp(query, 'i');
 
     const searchedUsers = users.filter(user =>
-      regex.test(user?.name) ||  
+      regex.test(user?.firstname) ||  
       regex.test(user?.class) ||  
       regex.test(user?.lastname)  
     );
