@@ -921,12 +921,16 @@ button.big {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  margin: 15px 0;
-  padding: 10px;
+  margin: 15px auto;   
+  padding: 15px;
   background: #ffffff;
   border: 2px solid var(--accent3);
   border-radius: 8px;
+
+  max-width: 650px;    
+  justify-content: center; 
 }
+
 
 /* Each group has a label + input */
 .toolbar-group {
