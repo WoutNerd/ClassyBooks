@@ -38,18 +38,18 @@ const AdminChangeUser = () => {
     let newName = document.getElementById('name').value
     let newSurname = document.getElementById('surname').value
     let newClss = document.getElementById('clss').value
-    let newNum = document.getElementsByTagName('clssNum').value
+    let newNum = document.getElementById('clssNum').value
     let newReadinglvl = document.getElementById('readinglvl').value
 
 
-    if (newName == null) newName = user.firstname
-    if (newSurname == null) newSurname = user.lastname
-    if (newClss == null) newClss = user.class
-    if (newNum == null) newNum = user.classnum
-    if (newReadinglvl == null) newReadinglvl = user.readinglevel
+    if (newName == null || newName == '') newName = user.firstname
+    if (newSurname == null || newSurname == '') newSurname = user.lastname
+    if (newClss == null || newClss == '') newClss = user.class
+    if (newNum == null || newNum == '') newNum = user.classnum
+    if (newReadinglvl == null || newReadinglvl == '') newReadinglvl = user.readinglevel
 
     const keys = ['firstname', 'lastname', 'class', 'classnum', 'readinglevel']
-    const values = [newName, newSurname, newClss, newNum, newReadinglvl]
+    const values = [newName, newSurname, newClss, parseInt(newNum), newReadinglvl]
 
     const body = { sessionid, userid, keys, values }
 
@@ -60,7 +60,7 @@ const AdminChangeUser = () => {
       setToastMessage(`Gebruiker succesvol aangepast.`)
       setToastType(`succes`)
       await timeout(1000);
-      redirectToPage('../')
+      redirectToPage('/beheer/gebruikers-beheren')
     } else {
       setShowToast(true)
       setToastMessage(`De gebruiker is niet succesvol aangepast. Probeer opnieuw.`)
