@@ -200,7 +200,7 @@ const Pupils = () => {
             options: [
               { value: "0", label: "Leerling" },
               { value: "1", label: "Leerkracht" },
-              { value: "1", label: "Beheerders" },
+              { value: "2", label: "Beheerders" },
             ],
           },
           {
