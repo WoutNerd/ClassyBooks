@@ -26,6 +26,7 @@ import Pupils from './pages/teacher/teacherPupils';
 import TeacherChangeUser from './pages/teacher/teacherChangeUsers';
 import JsonImport from './pages/admin/jsonimport';
 import ChangeMaterial from './pages/admin/changeBook';
+import AdminChangeUsers from './pages/admin/adminChangeUsers';
 
 
 
@@ -37,29 +38,38 @@ root.render(
                         <Route path="/" element={<App />}>
                                 <Route index element={<UserTyperChoise />} />
                                 <Route path='*' element={<NoPage />} />
-                                <Route path='leerling' element={<StudentLogin />} />
-                                <Route path='leerkracht-login' element={<TeacherLogin />} />
 
-                                <Route path='leerkracht/overzicht' element={<Dashboard />} />
-                                <Route path='leerkracht/bibliotheek' element={<TeacherLib />} />
-                                <Route path='leerkracht/verander-wachtwoord' element={<TeacherChangePassword />} />
-                                <Route path='leerkracht/leerlingen' element={<Pupils/>}/>
-                                <Route path='leerkracht/leerlingen/bewerken' element={<TeacherChangeUser/>}/>
+                                <Route path='leerkracht' element={<TeacherLogin />} >
+                                        <Route path='overzicht' element={<Dashboard />} />
+                                        <Route path='bibliotheek' element={<TeacherLib />} />
+                                        <Route path='verander-wachtwoord' element={<TeacherChangePassword />} />
+                                        <Route path='leerlingen' element={<Pupils />}>
+                                                <Route path='bewerken' element={<TeacherChangeUser />} />
+                                        </Route>
+                                </Route>
 
-                                <Route path='beheer/gebruiker-toevoegen' element={<AddUser />} />
-                                <Route path='beheer/gebruikers-beheren' element={<ManageUsers />} />
-                                <Route path='beheer/boek-toevoegen' element={<AddMaterial />} />
-                                <Route path='beheer/verander-gebruiker-wachtwoord' element={<ChangeUserPass />} />
-                                <Route path='beheer/boeken-beheren' element={<ManageMaterials />} />
-                                <Route path='beheer/json-upload' element={<JsonImport />} />
-                                <Route path='beheer/boeken-beheren/bewerken' element={<ChangeMaterial />} />
+                                <Route path='beheer'>
+                                        <Route path='gebruiker-toevoegen' element={<AddUser />} />
+                                        <Route path='gebruikers-beheren' element={<ManageUsers />}>
+                                                <Route path='bewerken' element={<AdminChangeUsers />} />
+                                        </Route>
+                                        <Route path='boek-toevoegen' element={<AddMaterial />} />
+                                        <Route path='verander-gebruiker-wachtwoord' element={<ChangeUserPass />} />
+                                        <Route path='boeken-beheren' element={<ManageMaterials />}>
+                                                <Route path='boeken-beheren/bewerken' element={<ChangeMaterial />} />
+                                        </Route>
+                                        <Route path='json-upload' element={<JsonImport />} />
+                                </Route>
 
-                                <Route path='leerling/bibliotheek' element={<StudentLib />} />
-                                <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />
-                                <Route path='leerling/lever-in' element={<ReturnBooks/>} />
 
+
+                                <Route path='leerling' element={<StudentLogin />}>
+                                        <Route path='bibliotheek' element={<StudentLib />} />
+                                        <Route path='verander-wachtwoord' element={<StudentChangePassword />} />
+                                        <Route path='lever-in' element={<ReturnBooks />} />
+                                </Route>
 
                         </Route>
                 </Routes>
-        </BrowserRouter>
+        </BrowserRouter >
 );
