@@ -66,33 +66,33 @@ const TeacherNavbar = () => {
     <div className="lkNavbarDiv">
       <ul className="">
         <li>
-          <Link className={dashboard} to="/leerkracht/overzicht">Dashboard</Link>
+          <Link className={dashboard} to="../leerkracht/overzicht">Dashboard</Link>
         </li>
 
         <li>
-          <Link className={pupils} to="/leerkracht/leerlingen">Leerlingen</Link>
+          <Link className={pupils} to="../leerkracht/leerlingen">Leerlingen</Link>
         </li>
 
         <li>
-          <Link className={library} to="/leerkracht/bibliotheek">Bibliotheek</Link>
+          <Link className={library} to="../leerkracht/bibliotheek">Bibliotheek</Link>
         </li>
 
         <li>
-          <Link className={pass} to='/leerkracht/verander-wachtwoord'>Verander wachtwoord</Link>
+          <Link className={pass} to='../leerkracht/verander-wachtwoord'>Verander wachtwoord</Link>
         </li>
         {admin ? <>
 
           <li>
-            <Link className={users} to='/beheer/gebruikers-beheren'>Gebruikers beheren</Link>
+            <Link className={users} to='../beheer/gebruikers-beheren'>Gebruikers beheren</Link>
           </li>
           <li>
-            <Link className={addUser} to='/beheer/gebruiker-toevoegen'>Gebruiker toevoegen</Link>
+            <Link className={addUser} to='../beheer/gebruiker-toevoegen'>Gebruiker toevoegen</Link>
           </li>
           <li>
-            <Link className={books} to='/beheer/boeken-beheren'>Boeken beheren</Link>
+            <Link className={books} to='../beheer/boeken-beheren'>Boeken beheren</Link>
           </li>
           <li>
-            <Link className={addBook} to='/beheer/boek-toevoegen'>Boek toevoegen</Link>
+            <Link className={addBook} to='../beheer/boek-toevoegen'>Boek toevoegen</Link>
           </li>
           <li>
             <Link className='lkNavbar' to='https://forms.gle/Rw9o34wPmgoFqLek7'>Geef feedback</Link>
