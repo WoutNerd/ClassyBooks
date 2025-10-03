@@ -37,19 +37,19 @@ const ManageUsers = () => {
   const [toastMessage, setToastMessage] = useState(``)
   const [toastType, setToastType] = useState(``)
 
-  const [searchQuery, setSearchQuery] = useState(''); 
+  const [searchQuery, setSearchQuery] = useState('');
 
-    const handleSearch = (event) => {
-      const query = event.target.value.toLowerCase()
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase()
 
     setSearchQuery(query);
 
     const regex = new RegExp(query, 'i');
 
     const searchedUsers = users.filter(user =>
-      regex.test(user?.firstname) ||  
-      regex.test(user?.class) ||  
-      regex.test(user?.lastname)  
+      regex.test(user?.firstname) ||
+      regex.test(user?.class) ||
+      regex.test(user?.lastname)
     );
 
     setFilterdUsers(searchedUsers);
@@ -243,6 +243,10 @@ const ManageUsers = () => {
     setSelectedMaterials(material)
   };
 
+    const handleChangeUser = () => {
+    document.cookie = 'changeUser=' + selectedUser.userid + ';path=/'
+    redirectToPage('bewerken')
+  }
 
 
   return (
@@ -314,6 +318,7 @@ const ManageUsers = () => {
               {selectedMaterials ? <div className='materials'>{selectedMaterials?.map(book => <p>{book}</p>)}</div> : <p>Geen boeken in bezit</p>}
               <button onClick={() => { handlePw(selectedUser.userid) }} className="button">Verander wachtwoord van {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
               <button onClick={() => { deleteUser(selectedUser.userid) }} className="button">Verwijder {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
+              <button className='button' onClick={() => handleChangeUser()}>Bewerk {selectedUser.firstname}</button>
               <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
             </div>
           }
