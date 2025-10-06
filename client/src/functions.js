@@ -29,9 +29,9 @@ export function Title(title) {
 export async function checkUser() {
   const url = window.location.href
   let privilege = 0
-  if(url.includes('beheer/')){
+  if (url.includes('beheer/')) {
     privilege = 2
-  }else if (url.includes('leerkracht/')){
+  } else if (url.includes('leerkracht/')) {
     privilege = 1
   }
   const sessionid = getCookie("sessionId");
@@ -48,33 +48,57 @@ export async function checkUser() {
 }
 
 
-//post to given url
+// post to given URL with cache
 export async function post(url, body, func) {
+  const ttl = 6 * 1000; // 6 seconds
+  const cached = sessionStorage.getItem(url);
+
+  // Check if cached response is still valid
+  if (cached) {
+    const { data, time } = JSON.parse(cached);
+    if (Date.now() - time < ttl) {
+      console.log("Returning cached response for", url);
+      return data;
+    }
+  }
+
+  // Otherwise, fetch from network
   try {
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: { 'Content-Type': 'application/json', 'Function': func },
+      headers: {
+        'Content-Type': 'application/json',
+        'Function': func,
+      },
     });
 
-    const respType = await response.headers.get('Content-Type')
-
-    let data
-
-    if (respType.includes('application/json')) {
-      data = response.json()
-      if (response.statusText !== "OK") {
-        throw new Error(response);
-      }
-    }
-    else if (respType.includes('text')) {
-      data = response
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
     }
 
-    return data
-  }
-  catch (error) {
-    console.error('Error:', error.message);
+    const contentType = response.headers.get('Content-Type') || '';
+    let data;
+
+    if (contentType.includes('application/json')) {
+      data = await response.json();
+    } else if (contentType.includes('text')) {
+      data = await response.text();
+    } else {
+      data = await response.blob(); // fallback for other content types
+    }
+
+    // Cache it with timestamp
+    sessionStorage.setItem(url, JSON.stringify({
+      data,
+      time: Date.now()
+    }));
+
+    console.log("Fetched and cached new response for", url);
+    return data;
+
+  } catch (error) {
+    console.error("Error in post():", error);
   }
 }
 
@@ -100,7 +124,7 @@ export async function getISBN(isbn) {
 
   try {
     const titelbankResp = await fetch(`/getTitelbank/${isbn}`)
-    if(titelbankResp.status === 200){
+    if (titelbankResp.status === 200) {
       let data = await titelbankResp.json()
       data[0].authors = [data[0].author]
       return data[0]
@@ -152,20 +176,20 @@ export async function getISBN(isbn) {
   }
 
   try {
-    const resp = await post('/getBibInfo', {isbn})
+    const resp = await post('/getBibInfo', { isbn })
     const htmlResp = await resp.text()
     const $ = cheerio.load(await htmlResp);
 
     // Extract the title
-    const title =  $('h3.catalog-item-title').text().trim();
+    const title = $('h3.catalog-item-title').text().trim();
 
     // Extract the authors
     const authors = [];
     $('div.catalog-item__authors a').each((i, el) => {
       authors.push($(el).text().trim());
     });
-    return {title, authors}
-  }catch (error) {
+    return { title, authors }
+  } catch (error) {
     console.error('Fout bij het ophalen van data uit bibliotheek vlaanderen:', error);
   }
 
