@@ -37,7 +37,7 @@ export async function checkUser() {
   const sessionid = getCookie("sessionId");
   const userid = getCookie("userId");
   const body = { sessionid, userid };
-  const response = await post("/getUser", body, "checkuser");
+  const response = await post("/getUser", body, "checkuser", true);
 
   if (response.privilege >= privilege) {
   } else if (response.privilege == null && privilege === 0) {
@@ -48,23 +48,32 @@ export async function checkUser() {
 }
 
 // post to given URL with cache
-export async function post(url, body, func, skipCache = false) {
-  let cacheKey = url;
-  if (func === "checkuser") {
-    cacheKey = "checkUser";
-  }
+export async function post(url, body, func, skipCache) {
   const ttl = 6 * 1000; // 6 seconds
-  const cached = sessionStorage.getItem(cacheKey);
+  const cached = sessionStorage.getItem(url);
+
+  let cacheKey = url;
 
   if (url.includes("create")) {
     skipCache = true;
   }
 
-  // Check if cached response is still valid
+  if (url === "/getUser") {
+    if (
+      body.userid === getCookie("userId") ||
+      body.userId === getCookie("userId")
+    ) {
+      cacheKey = "self";
+    } else {
+      skipCache = true;
+    }
+  }
+
+  // Check if cached respons e is still valid
   if (cached && !skipCache) {
     const { data, time } = JSON.parse(cached);
     if (Date.now() - time < ttl) {
-      console.log("Returning cached response for", cacheKey);
+      console.log("Returning cached response for", url);
       return data;
     }
   }
@@ -97,14 +106,14 @@ export async function post(url, body, func, skipCache = false) {
 
     // Cache it with timestamp
     sessionStorage.setItem(
-      cacheKey,
+      url,
       JSON.stringify({
         data,
         time: Date.now(),
       })
     );
 
-    console.log("Fetched and cached new response for", cacheKey);
+    console.log("Fetched and cached new response for", url);
     return data;
   } catch (error) {
     console.error("Error in post():", error);
