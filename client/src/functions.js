@@ -50,7 +50,7 @@ export async function checkUser() {
 // post to given URL with cache
 export async function post(url, body, func, skipCache = false) {
   let cacheKey = url;
-  if (url === "checkuser") {
+  if (func === "checkuser") {
     cacheKey = "checkUser";
   }
   const ttl = 6 * 1000; // 6 seconds
