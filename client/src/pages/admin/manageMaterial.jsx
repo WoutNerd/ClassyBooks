@@ -187,7 +187,7 @@ const ManageMaterials = () => {
     const sessionid = getCookie('sessionId');
 
     try {
-      const bookResponse = await post('/getMaterial', { materialid: bookid, sessionid }, 'manageMaterial');
+      const bookResponse = await post('/getMaterial', { materialid: bookid, sessionid }, 'manageMaterial', true);
       const book = bookResponse[0];
 
       const userId = book?.lendoutto;

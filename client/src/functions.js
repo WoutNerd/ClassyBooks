@@ -1,16 +1,16 @@
-import './App.css';
-import fetch from 'node-fetch'
-import { useEffect, useState } from 'react';
-const cheerio = require('cheerio');
+import "./App.css";
+import fetch from "node-fetch";
+import { useEffect, useState } from "react";
+const cheerio = require("cheerio");
 
 //extracs cookie zith given name
 export function getCookie(cookieName) {
-  var cookies = document.cookie.split(';');
+  var cookies = document.cookie.split(";");
 
   for (var i = 0; i < cookies.length; i++) {
     var cookie = cookies[i].trim();
 
-    if (cookie.startsWith(cookieName + '=')) {
+    if (cookie.startsWith(cookieName + "=")) {
       return cookie.substring(cookieName.length + 1, cookie.length);
     }
   }
@@ -18,46 +18,53 @@ export function getCookie(cookieName) {
   return null;
 }
 
-//changes title 
+//changes title
 export function Title(title) {
   useEffect(() => {
-    document.title = "Classy Books - " + title
-  })
+    document.title = "Classy Books - " + title;
+  });
 }
 
 //checks if user is privileged to the page
 export async function checkUser() {
-  const url = window.location.href
-  let privilege = 0
-  if (url.includes('beheer/')) {
-    privilege = 2
-  } else if (url.includes('leerkracht/')) {
-    privilege = 1
+  const url = window.location.href;
+  let privilege = 0;
+  if (url.includes("beheer/")) {
+    privilege = 2;
+  } else if (url.includes("leerkracht/")) {
+    privilege = 1;
   }
   const sessionid = getCookie("sessionId");
   const userid = getCookie("userId");
   const body = { sessionid, userid };
-  const response = await post('/getUser', body, 'checkuser')
+  const response = await post("/getUser", body, "checkuser");
 
-  if (response.privilege >= privilege) { }
-  else if (response.privilege == null && privilege === 0) { }
-  else {
-    alert('Je bent niet gemachtigd om deze pagina te bezoeken.')
-    window.location.replace('../#')
+  if (response.privilege >= privilege) {
+  } else if (response.privilege == null && privilege === 0) {
+  } else {
+    alert("Je bent niet gemachtigd om deze pagina te bezoeken.");
+    window.location.replace("../#");
   }
 }
 
-
 // post to given URL with cache
-export async function post(url, body, func) {
+export async function post(url, body, func, skipCache = false) {
+  let cacheKey = url;
+  if (url === "checkuser") {
+    cacheKey = "checkUser";
+  }
   const ttl = 6 * 1000; // 6 seconds
-  const cached = sessionStorage.getItem(url);
+  const cached = sessionStorage.getItem(cacheKey);
+
+  if (url.includes("create")) {
+    skipCache = true;
+  }
 
   // Check if cached response is still valid
-  if (cached) {
+  if (cached && !skipCache) {
     const { data, time } = JSON.parse(cached);
     if (Date.now() - time < ttl) {
-      console.log("Returning cached response for", url);
+      console.log("Returning cached response for", cacheKey);
       return data;
     }
   }
@@ -65,11 +72,11 @@ export async function post(url, body, func) {
   // Otherwise, fetch from network
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify(body),
       headers: {
-        'Content-Type': 'application/json',
-        'Function': func,
+        "Content-Type": "application/json",
+        Function: func,
       },
     });
 
@@ -77,26 +84,28 @@ export async function post(url, body, func) {
       throw new Error(`HTTP ${response.status} ${response.statusText}`);
     }
 
-    const contentType = response.headers.get('Content-Type') || '';
+    const contentType = response.headers.get("Content-Type") || "";
     let data;
 
-    if (contentType.includes('application/json')) {
+    if (contentType.includes("application/json")) {
       data = await response.json();
-    } else if (contentType.includes('text')) {
+    } else if (contentType.includes("text")) {
       data = await response.text();
     } else {
       data = await response.blob(); // fallback for other content types
     }
 
     // Cache it with timestamp
-    sessionStorage.setItem(url, JSON.stringify({
-      data,
-      time: Date.now()
-    }));
+    sessionStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        data,
+        time: Date.now(),
+      })
+    );
 
-    console.log("Fetched and cached new response for", url);
+    console.log("Fetched and cached new response for", cacheKey);
     return data;
-
   } catch (error) {
     console.error("Error in post():", error);
   }
@@ -104,33 +113,32 @@ export async function post(url, body, func) {
 
 //changes password of user
 export async function changePassword(sha256, md5, newSha256, newMd5) {
-  const sessionId = getCookie('sessionId')
-  const userid = getCookie('userId')
+  const sessionId = getCookie("sessionId");
+  const userid = getCookie("userId");
 
-  const body = { sessionId, userid, sha256, md5, newSha256, newMd5 }
-  const resp = await post('/changePassword', body)
+  const body = { sessionId, userid, sha256, md5, newSha256, newMd5 };
+  const resp = await post("/changePassword", body);
 
-  if (resp === 'Changed password') {
-    return true
-  } else return false
+  if (resp === "Changed password") {
+    return true;
+  } else return false;
 }
 
 export async function getISBN(isbn) {
-  if (!isbn || isbn === '') {
-    console.error('Lege ISBN');
+  if (!isbn || isbn === "") {
+    console.error("Lege ISBN");
     return null;
   }
 
-
   try {
-    const titelbankResp = await fetch(`/getTitelbank/${isbn}`)
+    const titelbankResp = await fetch(`/getTitelbank/${isbn}`);
     if (titelbankResp.status === 200) {
-      let data = await titelbankResp.json()
-      data[0].authors = [data[0].author]
-      return data[0]
+      let data = await titelbankResp.json();
+      data[0].authors = [data[0].author];
+      return data[0];
     }
   } catch (error) {
-    throw new Error(`titelbank error: ${error}`)
+    throw new Error(`titelbank error: ${error}`);
   }
 
   try {
@@ -147,10 +155,12 @@ export async function getISBN(isbn) {
     if (googleBooksData.totalItems > 0) {
       return googleBooksData.items[0].volumeInfo; // Retourneer het eerste resultaat
     } else {
-      console.warn('Geen boek gevonden in Google Books. Nu zoeken in OpenLibrary...');
+      console.warn(
+        "Geen boek gevonden in Google Books. Nu zoeken in OpenLibrary..."
+      );
     }
   } catch (error) {
-    console.error('Fout bij het ophalen van data uit Google Books:', error);
+    console.error("Fout bij het ophalen van data uit Google Books:", error);
   }
 
   try {
@@ -166,38 +176,45 @@ export async function getISBN(isbn) {
     const bookData = openLibraryData[`ISBN:${isbn}`];
 
     if (bookData) {
-      console.log('Boek gevonden in OpenLibrary:', bookData);
+      console.log("Boek gevonden in OpenLibrary:", bookData);
       return bookData; // Retourneer de OpenLibrary data
     } else {
-      console.warn('Geen boek gevonden in OpenLibrary.');
+      console.warn("Geen boek gevonden in OpenLibrary.");
     }
   } catch (error) {
-    console.error('Fout bij het ophalen van data uit OpenLibrary:', error);
+    console.error("Fout bij het ophalen van data uit OpenLibrary:", error);
   }
 
   try {
-    const resp = await post('/getBibInfo', { isbn })
-    const htmlResp = await resp.text()
+    const resp = await post("/getBibInfo", { isbn });
+    const htmlResp = await resp.text();
     const $ = cheerio.load(await htmlResp);
 
     // Extract the title
-    const title = $('h3.catalog-item-title').text().trim();
+    const title = $("h3.catalog-item-title").text().trim();
 
     // Extract the authors
     const authors = [];
-    $('div.catalog-item__authors a').each((i, el) => {
+    $("div.catalog-item__authors a").each((i, el) => {
       authors.push($(el).text().trim());
     });
-    return { title, authors }
+    return { title, authors };
   } catch (error) {
-    console.error('Fout bij het ophalen van data uit bibliotheek vlaanderen:', error);
+    console.error(
+      "Fout bij het ophalen van data uit bibliotheek vlaanderen:",
+      error
+    );
   }
 
   return null; // Retourneer null als geen enkel boek is gevonden
 }
 
-
-export const Toast = ({ message, type = 'info', duration = 30000, onClose }) => {
+export const Toast = ({
+  message,
+  type = "info",
+  duration = 30000,
+  onClose,
+}) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
@@ -221,4 +238,3 @@ export const Toast = ({ message, type = 'info', duration = 30000, onClose }) => 
     </div>
   );
 };
-

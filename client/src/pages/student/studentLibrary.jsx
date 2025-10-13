@@ -38,7 +38,7 @@ const StudentLib = () => {
         const user = await post('/getUser', { sessionid, userid });
         if (await user.materials.length >= 1) {
           const materialid = user.materials[0];
-          const currentMaterial = await post('/getMaterial', { sessionid, materialid });
+          const currentMaterial = await post('/getMaterial', { sessionid, materialid }, 'stuedent lib', true);
           setCurrentBook(currentMaterial);
         }
         else { setCurrentBook(null) }

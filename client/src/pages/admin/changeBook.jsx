@@ -17,7 +17,7 @@ const ChangeMaterial = () => {
   useEffect(() => {
     const fetchData = async () => {
       const body = { sessionid: getCookie('sessionId'), materialid: getCookie('changeMaterial') }
-      let changeMaterial = await post('/getMaterial', body, 'change material')
+      let changeMaterial = await post('/getMaterial', body, 'change material', true)
       setMaterial(await changeMaterial[0])
       setIsChecked(changeMaterial[0].available)
     }
