@@ -1,9 +1,10 @@
 //css
-import './App.css';
+import "./App.css";
 //react
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ReactDOM from "react-dom/client";
+//cache
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 //pages
 import App from './App';
@@ -65,3 +66,4 @@ root.render(
                 </Routes>
         </BrowserRouter>
 );
+

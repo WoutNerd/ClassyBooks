@@ -96,6 +96,44 @@ export async function post(url, body, func, skipCache) {
     const contentType = response.headers.get("Content-Type") || "";
     let data;
 
+    if (respType.includes('application/json')) {
+      data = response.json()
+      if (response.statusText !== "OK") {
+        throw new Error(response);
+      }
+    }
+    else if (respType.includes('text')) {
+      data = response
+    }
+
+    return data
+  }
+  catch (error) {
+    console.error('Error:', error.message);
+
+// post to given URL with cache
+export async function post(url, body, func) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(func ? { Function: func } : {}),
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get("Content-Type") ?? "";
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+  if (contentType.includes("text")) {
+    return response.text();
+  }
+  return response.blob();
     if (contentType.includes("application/json")) {
       data = await response.json();
     } else if (contentType.includes("text")) {
