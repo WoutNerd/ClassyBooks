@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import '../../App.css'
 import { Title, getCookie, post, Toast } from '../../functions';
-import TeacherNavbar from './teacherNavbar';
 import { useNavigate } from 'react-router-dom';
+import TeacherNavbar from '../teacher/teacherNavbar';
 
-const TeacherChangeUser = () => {
+const AdminChangeUser = () => {
   const [user, setUser] = useState([])
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState(``)
@@ -60,7 +60,7 @@ const TeacherChangeUser = () => {
       setToastMessage(`Gebruiker succesvol aangepast.`)
       setToastType(`succes`)
       await timeout(1000);
-      redirectToPage('/leerkracht/leerlingen')
+      redirectToPage('/beheer/gebruikers-beheren')
     } else {
       setShowToast(true)
       setToastMessage(`De gebruiker is niet succesvol aangepast. Probeer opnieuw.`)
@@ -116,4 +116,4 @@ const TeacherChangeUser = () => {
   );
 }
 
-export default TeacherChangeUser;
+export default AdminChangeUser

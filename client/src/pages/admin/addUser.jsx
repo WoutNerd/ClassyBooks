@@ -72,12 +72,7 @@ function AddUser() {
     //Prevent page reload
     event.preventDefault();
     var { name, surname, pass, clss, num, readinglevel } = document.forms[0];
-    let privileged = 0
-    if (isCheckedA === true) {
-      privileged = 2
-    } else if (isCheckedT === true) {
-      privileged = 1
-    }
+    let privileged = document.getElementById("userType").value;
 
     if (privileged === 0) {
       var sha256 = crypto.SHA256(clss.value + num.value + pass.value).toString();
@@ -108,25 +103,23 @@ function AddUser() {
           <input type="text" className="login" name="surname" required placeholder="Achternaam" />
         </div>
         <div className="input-container">
-          <input type="text" name="clss" required={!(isCheckedA || isCheckedT)} placeholder="Klas" className="login" />
+          <input type="text" name="clss" placeholder="Klas" className="login" />
         </div>
         <div className="input-container">
-          <input type="text" name="num" required={!(isCheckedA || isCheckedT)} placeholder="Nummer" className="login" />
+          <input type="text" name="num" placeholder="Nummer" className="login" />
         </div>
         <div className="input-container">
-          <input type="text" name="readinglevel" required={!(isCheckedA || isCheckedT)} placeholder="Leesniveau" className="login" />
+          <input type="text" name="readinglevel" placeholder="Leesniveau" className="login" />
         </div>
         <div className="input-container">
           <input type="text" name="pass" required placeholder="Wachtwoord" className="login" />
         </div>
-        <div className="input-container">
-          <label htmlFor="">Leerkracht</label>
-          <input type="checkbox" className="login" label="leerkracht" checked={isCheckedT} onChange={handleChangeT} />
-        </div>
-        <div className="input-container">
-          <label htmlFor="">Beheerder</label>
-          <input type="checkbox" className="login" label="beheerder" checked={isCheckedA} onChange={handleChangeA} />
-        </div>
+        <label>Gebruiker type: </label>
+        <select name="userType" id="userType" defaultValue={"0"}> 
+          <option value="0" selected>Student</option>
+          <option value="1">Leerkracht</option>
+          <option value="2">Beheerder</option>
+        </select>
         <div className="button-container">
           <input type="submit" value="Voeg gebruiker toe" className="button" />
         </div>

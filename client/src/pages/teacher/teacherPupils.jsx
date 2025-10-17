@@ -3,10 +3,11 @@ import '../../App.css'
 import { getCookie, Title, post } from '../../functions';
 import TeacherNavbar from '../teacher/teacherNavbar';
 import { useNavigate } from 'react-router-dom';
+import Toolbar from '../../components/Toolbar';
 
 const Pupils = () => {
   const navigate = useNavigate();
-  
+
 
   const redirectToPage = (path) => {
     navigate(path); // Use navigate to go to the specified path
@@ -23,6 +24,24 @@ const Pupils = () => {
   const [sortedReadingLvl, setSortedReadingLvl] = useState([])
   const [filterdUsers, setFilterdUsers] = useState([])
   const [users, setUsers] = useState([])
+
+    const [searchQuery, setSearchQuery] = useState(''); 
+
+    const handleSearch = (event) => {
+      const query = event.target.value.toLowerCase()
+
+    setSearchQuery(query);
+
+    const regex = new RegExp(query, 'i');
+
+    const searchedUsers = users.filter(user =>
+      regex.test(user?.firstname) ||  
+      regex.test(user?.class) ||  
+      regex.test(user?.lastname)  
+    );
+
+    setFilterdUsers(searchedUsers);
+  };
 
 
   useEffect(() => {
@@ -52,7 +71,8 @@ const Pupils = () => {
       allClss.sort()
       setSortedCllss(allClss)
     }
-  fetchData()}, [])
+    fetchData()
+  }, [])
 
 
 
@@ -61,20 +81,20 @@ const Pupils = () => {
 
 
   const HandleClick = () => {
-    
-      const fetchData = async () => {
-        try {
-          const sessionid = getCookie('sessionId')
-          const body = { 'materialid': selectedUser.Users, sessionid }
-          const resp = await post('/getMaterial', body)
-          setMaterial(resp)
-        } catch (error) {
-          console.error(error)
-        }
-      };
 
-      fetchData();
-    
+    const fetchData = async () => {
+      try {
+        const sessionid = getCookie('sessionId')
+        const body = { 'materialid': selectedUser.Users, sessionid }
+        const resp = await post('/getMaterial', body)
+        setMaterial(resp)
+      } catch (error) {
+        console.error(error)
+      }
+    };
+
+    fetchData();
+
   }
 
 
@@ -150,33 +170,51 @@ const Pupils = () => {
     if (selectedFilter === 'none') setFilterdUsers(users)
 
   }
- 
+
   const handleChangeUser = () => {
-    document.cookie = 'changeUser='+selectedUser.userid+';path=/'
+    document.cookie = 'changeUser=' + selectedUser.userid + ';path=/'
     redirectToPage('bewerken')
   }
   return (<div>
     <nav><TeacherNavbar /></nav>
     <div className='content'>
-      <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-        <option value="firstname">Voornaam</option>
-        <option value="lastname">Achternaam</option>
-        <option value="class">Klas</option>
-        <option value="privilege">Gebruikerstype</option>
-      </select>
-      <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-        <option value="ascending">Oplopen</option>
-        <option value="descending">Aflopend</option>
-      </select>
-      <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
-        <option value="none">Geen filter</option>
-        <optgroup label='Klas' id='class'>
-          {sortedClss.map(clss => <option value={clss}>{clss}</option>)}
-        </optgroup>
-        <optgroup label='Niveau' id='readinglevel'>
-          {sortedReadingLvl.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
-        </optgroup>
-      </select>
+      <Toolbar
+        searchQuery={searchQuery}
+        onSearchChange={handleSearch}
+        searchLabel='Naam of klas'
+        sort={sort}
+        sortDirection={sortDirection}
+        filter={filter}
+        onSortChange={handleChangeSort}
+        onSortDirectionChange={handleChangeDirection}
+        onFilterChange={handleChangeFilter}
+        sortOptions={[
+          { value: 'name', label: 'Naam' },
+          { value: 'class', label: 'Klas' },
+          { value: 'lastname', label: 'Achternaam' },
+        ]}
+        filterOptions={[
+          {
+            id: "privilege",
+            label: "Gebruikerstype",
+            options: [
+              { value: "0", label: "Leerling" },
+              { value: "1", label: "Leerkracht" },
+              { value: "2", label: "Beheerders" },
+            ],
+          },
+          {
+            id: "class",
+            label: "Klas",
+            options: sortedClss.map(cls => ({ value: cls, label: cls })),
+          },
+          {
+            id: "readinglevel",
+            label: "Niveau",
+            options: sortedReadingLvl.map(level => ({ value: level, label: level })),
+          },
+        ]}
+      />
       <div className='itemList'>
         {showAll ?
           filterdUsers.map((user) => (

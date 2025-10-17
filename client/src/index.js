@@ -13,7 +13,7 @@ import TeacherLogin from './pages/teacher/teacherLogin';
 import Dashboard from './pages/teacher/teacherDashboard';
 import TeacherLib from './pages/teacher/teacherLibrary';
 import AddUser from './pages/admin/addUser';
-import UserTyperChoise from './userTypeChoise';
+import UserTyperChoise from './pages/userTypeChoise';
 import AddMaterial from './pages/admin/addMaterial';
 import StudentLib from './pages/student/studentLibrary';
 import ManageUsers from './pages/admin/manageUsers';
@@ -26,6 +26,7 @@ import Pupils from './pages/teacher/teacherPupils';
 import TeacherChangeUser from './pages/teacher/teacherChangeUsers';
 import JsonImport from './pages/admin/jsonimport';
 import ChangeMaterial from './pages/admin/changeBook';
+import AdminChangeUser from './pages/admin/adminChangeUsers';
 
 
 
@@ -53,6 +54,7 @@ root.render(
                                 <Route path='beheer/boeken-beheren' element={<ManageMaterials />} />
                                 <Route path='beheer/json-upload' element={<JsonImport />} />
                                 <Route path='beheer/boeken-beheren/bewerken' element={<ChangeMaterial />} />
+                                <Route path='beheer/gebruikers-beheren/bewerken' element={<AdminChangeUser />} />
 
                                 <Route path='leerling/bibliotheek' element={<StudentLib />} />
                                 <Route path='leerling/verander-wachtwoord' element={<StudentChangePassword />} />

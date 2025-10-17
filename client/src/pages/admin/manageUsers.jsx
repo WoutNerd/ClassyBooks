@@ -3,6 +3,7 @@ import '../../App.css';
 import { getCookie, Title, post, Toast } from '../../functions';
 import { useNavigate } from 'react-router';
 import TeacherNavbar from '../teacher/teacherNavbar';
+import Toolbar from '../../components/Toolbar';
 
 
 const ManageUsers = () => {
@@ -35,6 +36,24 @@ const ManageUsers = () => {
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState(``)
   const [toastType, setToastType] = useState(``)
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase()
+
+    setSearchQuery(query);
+
+    const regex = new RegExp(query, 'i');
+
+    const searchedUsers = users.filter(user =>
+      regex.test(user?.firstname) ||
+      regex.test(user?.class) ||
+      regex.test(user?.lastname)
+    );
+
+    setFilterdUsers(searchedUsers);
+  };
 
 
   function reloadPage() {
@@ -224,6 +243,10 @@ const ManageUsers = () => {
     setSelectedMaterials(material)
   };
 
+    const handleChangeUser = () => {
+    document.cookie = 'changeUser=' + selectedUser.userid + ';path=/'
+    redirectToPage('bewerken')
+  }
 
 
   return (
@@ -238,28 +261,44 @@ const ManageUsers = () => {
       )}
       <nav><TeacherNavbar /></nav>
       <div className='content'>
-        <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-          <option value="firstname">Voornaam</option>
-          <option value="lastname">Achternaam</option>
-          <option value="class">Klas</option>
-          <option value="privilege">Gebruikerstype</option>
-        </select>
-        <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-          <option value="ascending">Oplopen</option>
-          <option value="descending">Aflopend</option>
-        </select>
-        <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
-          <option value="none">Geen filter</option>
-          <optgroup label='Klas' id='class'>
-            {sortedClss.map(clss => <option key={clss} value={clss}>{clss}</option>)}
-          </optgroup>
-          <optgroup label='Niveau' id='readinglevel'>
-            {sortedReadingLvl.map(readinglevel => <option key={readinglevel} value={readinglevel}>{readinglevel}</option>)}
-          </optgroup>
-          <optgroup label='Privilege' id='privilege'>
-            {sortedPrivs.map(priv => <option key={priv} value={priv}>{priv}</option>)}
-          </optgroup>
-        </select>
+        <Toolbar
+          searchQuery={searchQuery}
+          onSearchChange={handleSearch}
+          searchLabel='Naam of klas'
+          sort={sort}
+          sortDirection={sortDirection}
+          filter={filter}
+          onSortChange={handleChangeSort}
+          onSortDirectionChange={handleChangeDirection}
+          onFilterChange={handleChangeFilter}
+          sortOptions={[
+            { value: 'name', label: 'Naam' },
+            { value: 'class', label: 'Klas' },
+            { value: 'lastname', label: 'Achternaam' },
+          ]}
+          filterOptions={[
+            {
+              id: "privilege",
+              label: "Gebruikerstype",
+              options: [
+                { value: "0", label: "Leerling" },
+                { value: "1", label: "Leerkracht" },
+                { value: "2", label: "Beheerders" },
+              ],
+            },
+            {
+              id: "class",
+              label: "Klas",
+              options: sortedClss.map(cls => ({ value: cls, label: cls })),
+            },
+            {
+              id: "readinglevel",
+              label: "Niveau",
+              options: sortedReadingLvl.map(level => ({ value: level, label: level })),
+            },
+          ]}
+        />
+
         <div className=''>
           {showAll ?
             <div className="itemList">{
@@ -279,6 +318,7 @@ const ManageUsers = () => {
               {selectedMaterials ? <div className='materials'>{selectedMaterials?.map(book => <p>{book}</p>)}</div> : <p>Geen boeken in bezit</p>}
               <button onClick={() => { handlePw(selectedUser.userid) }} className="button">Verander wachtwoord van {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
               <button onClick={() => { deleteUser(selectedUser.userid) }} className="button">Verwijder {selectedUser.firstname + ' ' + selectedUser.lastname}</button>
+              <button className='button' onClick={() => handleChangeUser()}>Bewerk {selectedUser.firstname}</button>
               <button onClick={() => setShowAll(true)} className="button">Toon alle gebruikers</button>
             </div>
           }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import "../../App.css"
 import TeacherNavbar from "./teacherNavbar"
 import { post, Title } from '../../functions'
+import Toolbar from '../../components/Toolbar';
 
 
 const TeacherLib = () => {
@@ -15,6 +16,8 @@ const TeacherLib = () => {
   const [filter, setFilter] = useState('none')
   const [locations, setLocations] = useState([])
   const [readinglevels, setReadinglevels] = useState([])
+  const [searchQuery, setSearchQuery] = useState(''); // New search state
+
 
 
   useEffect(() => {
@@ -117,37 +120,78 @@ const TeacherLib = () => {
   };
 
 
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase().split("").map(e => {
+      if (e === '&') { return '1' } else
+        if (e === 'é') { return '2' } else
+          if (e === '"') { return '3' } else
+            if (e === "'") { return '4' } else
+              if (e === '(') { return '5' } else
+                if (e === '§') { return '6' } else
+                  if (e === 'è') { return '7' } else
+                    if (e === '!') { return '8' } else
+                      if (e === 'ç') { return '9' } else
+                        if (e === 'ç') { return '9' } else
+                          if (e === 'à') { return '0' }
+                          else { return e }
+    }).join("")
 
+    setSearchQuery(query);
+
+    const regex = new RegExp(query, 'i');
+
+    const searchedBooks = books.filter(book =>
+      regex.test(book?.title) ||  // Check if title exists
+      regex.test(book?.descr?.author) ||  // Check if descr and author exist
+      regex.test(book?.isbn)  // Check if ISBN exists
+    );
+
+    setFilterdBooks(searchedBooks);
+  };
 
 
 
   return (<div>
     <div><TeacherNavbar></TeacherNavbar></div>
     <div className='content'>
-      <select name="sort" id="sort" value={sort} onChange={handleChangeSort}>
-        <option value="title" >Titel</option>
-        <option value="avgscore">Score</option>
-        <option value="lendcount">Aantal keer uitgeleend</option>
-        <option value="available">Beschikbaar</option>
-        <option value="place">Locatie</option>
-      </select>
-      <select name="sortDirection" id="sortDirection" value={sortDirection} onChange={handleChangeDirection}>
-        <option value="ascending">Oplopen</option>
-        <option value="descending">Aflopend</option>
-      </select>
-      <select name='filter' id='filter' value={filter} onChange={handleChangeFilter}>
-        <option value="none">Geen filter</option>
-        <optgroup label='Beschikbaarheid' id='available'>
-          <option value="1">Beschikbaar</option>
-          <option value="0">Onbeschikbaar</option>
-        </optgroup>
-        <optgroup label='Locatie' id='place'>
-          {locations.map(location => <option value={location}>{location}</option>)}
-        </optgroup>
-        <optgroup label='Niveau' id='readinglevel'>
-          {readinglevels.map(readinglevel => <option value={readinglevel}>{readinglevel}</option>)}
-        </optgroup>
-      </select>
+      <Toolbar
+        searchQuery={searchQuery}
+        onSearchChange={handleSearch}
+        searchLabel='Titel, auteur, ISBN...'
+        sortOptions={[
+          { value: 'title', label: 'Titel' },
+          { value: 'avgscore', label: 'Score' },
+          { value: 'lendcount', label: 'Uitgeleend' },
+          { value: 'available', label: 'Beschikbaar' },
+          { value: 'place', label: 'Locatie' },
+        ]}
+        sort={sort}
+        sortDirection={sortDirection}
+        filter={filter}
+        onSortChange={handleChangeSort}
+        onSortDirectionChange={handleChangeDirection}
+        onFilterChange={handleChangeFilter}
+        filterOptions={[
+          {
+            id: "available",
+            label: "Beschikbaarheid",
+            options: [
+              { value: "1", label: "Beschikbaar" },
+              { value: "0", label: "Onbeschikbaar" },
+            ],
+          },
+          {
+            id: "place",
+            label: "Locatie",
+            options: locations.map(loc => ({ value: loc, label: loc })),
+          },
+          {
+            id: "readinglevel",
+            label: "Niveau",
+            options: readinglevels.map(level => ({ value: level, label: level })),
+          },
+        ]}
+      />
 
       {showAll ? <div className='itemList'> {filterdBooks.map((book) => (
         <li className='bookItem' onClick={() => { setSelectedBook(book); setShowAll(false); }} >

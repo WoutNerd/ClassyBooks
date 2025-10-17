@@ -19,19 +19,70 @@ const classes = ["1A", "1B", "2A", "2B", "3A", "3B", "4A", "4B", "5A", "5B", "6A
 app.use(express.static(__dirname + "/../client/build/"));
 
 //-------------------------------------------------------------------------------API-REQUESTS-------//
+app.get('/dbRework', async (req, res) => {
+  if (checkRequest(req)) {
+    const resp = reworkDb()
+    res.status(200).send("Rework finished: " + resp)
+  }
+})
+app.get("/getClasses", async (req, res) => {
+  if (checkRequest(req)) {
+    let classes = await classList()
+    let resp = []
+    for (let e of classes[0]) {
+      resp.push(e.class)
+    }
+    res.status(200).send(resp)
+  } else {
+    res.status(400).send("Invalid request")
+  }
+})
+
+app.get("/getPupilsReadinglvls", async (req, res) => {
+  if (checkRequest(req)) {
+    let readinglvls = await readingLvlListPupils()
+
+    let resp = []
+    for (let e of readinglvls) {
+      resp.push(e.readinglevel)
+    }
+    res.status(200).send(resp)
+  } else {
+    res.status(400).send("Invalid request")
+  }
+})
+
+app.get("/getMaterialssReadinglvls", async (req, res) => {
+  if (checkRequest(req)) {
+    let readinglvls = await readingLvlListMaterials()
+    //res.status(200).send(await readinglvls)
+    let resp = []
+    if (readinglvls.length == 0) {
+      for (let e of readinglvls) {
+        resp.push(e.readinglevel)
+      }
+      res.status(200).send(resp)
+    } else {
+      res.status(400).send("Invalid request")
+    }
+  } else {
+    res.status(400).send("Invalid request")
+  }
+})
+
 const storage = multer.diskStorage({
   destination: function (req, file, callback) {
 
-      callback(null, "./server/uploads")
+    callback(null, "./server/uploads")
   },
   filename: function (req, file, callback) {
-      let imgid = "img-" + uuidv4()
-      let extension = file.originalname.split(".").splice(-1)[0]
-      if (["png", "jpg", "jpeg", "gif", "bmp", "tif"].includes(extension.toLowerCase())) {
-          callback(null, `${imgid}.${extension}`)
-      } else {
-          callback(null, "badfile")
-      }
+    let imgid = "img-" + uuidv4()
+    let extension = file.originalname.split(".").splice(-1)[0]
+    if (["png", "jpg", "jpeg", "gif", "bmp", "tif"].includes(extension.toLowerCase())) {
+      callback(null, `${imgid}.${extension}`)
+    } else {
+      callback(null, "badfile")
+    }
 
   }
 })
@@ -39,56 +90,56 @@ var upload = multer({ storage: storage })
 
 app.post("/uploadimg", upload.single('uploaded_file'), (req, res) => {
   try {
-      console.log(req.file)
-      if (!req.file) {
-          res.status(400).send("No file uploaded");
-      }
-      else if (req.file["filename"] == "badfile") {
-          fs.unlink("./uploads/badfile", (err) => { console.log(err) })
-          res.status(400).send("Invalid file, use an image format")
-      } else {
-          res.status(200).send("/getimg/" + req.file.filename);
-      }
+    console.log(req.file)
+    if (!req.file) {
+      res.status(400).send("No file uploaded");
+    }
+    else if (req.file["filename"] == "badfile") {
+      fs.unlink("./uploads/badfile", (err) => { console.log(err) })
+      res.status(400).send("Invalid file, use an image format")
+    } else {
+      res.status(200).send("/getimg/" + req.file.filename);
+    }
   } catch (error) {
-      res.status(500).send("Internal server error");
+    res.status(500).send("Internal server error");
   }
 });
 
 app.get("/getimg/:imgid", (req, res) => {
   if (checkRequest(req)) {
     res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
-      // if (fs.existsSync("./uploads/" + req.params.imgid)) {
-      //     res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
-      // } else { res.status(404).send("File not found: "+__dirname + "/uploads/" + req.params.imgid)
-      //   console.log(fs.existsSync("./uploads/" + req.params.imgid))
-      //  }
+    // if (fs.existsSync("./uploads/" + req.params.imgid)) {
+    //     res.status(200).sendFile(__dirname + "/uploads/" + req.params.imgid)
+    // } else { res.status(404).send("File not found: "+__dirname + "/uploads/" + req.params.imgid)
+    //   console.log(fs.existsSync("./uploads/" + req.params.imgid))
+    //  }
   }
   else { res.status(400).send("Invalid request") }
 })
 
 app.post('/getBibInfo', async (req, res) => {
-  
+
   try {
-      const apiUrl = 'https://bibliotheek.be/catalogus?q=isbn%3A%22'+req['body']['isbn']+'%22';
-      const response = await fetch(apiUrl);
-      const data = await response.text();
-      res.set('Content-Type', 'text/html'); // Ensure proper content-type if HTML
-      res.send(data);
+    const apiUrl = 'https://bibliotheek.be/catalogus?q=isbn%3A%22' + req['body']['isbn'] + '%22';
+    const response = await fetch(apiUrl);
+    const data = await response.text();
+    res.set('Content-Type', 'text/html'); // Ensure proper content-type if HTML
+    res.send(data);
   } catch (error) {
-      res.status(500).send({ error: 'Error fetching data' });
+    res.status(500).send({ error: 'Error fetching data' });
   }
 });
 app.get('/getTitelbank/:isbn', async (req, res) => {
-  
+
   try {
-      const apiUrl = 'http://classybooks.woutvdb.uk/api/getIsbn.php?isbn='+req['params']['isbn'];
-      console.log(apiUrl)
-      const response = await fetch(apiUrl);
-      const data = await response.json()
-      console.log(data)
-      res.send(data);
+    const apiUrl = 'http://classybooks.woutvdb.uk/api/getIsbn.php?isbn=' + req['params']['isbn'];
+    console.log(apiUrl)
+    const response = await fetch(apiUrl);
+    const data = await response.json()
+    console.log(data)
+    res.send(data);
   } catch (error) {
-      res.status(500).send({ error: 'Error fetching data: '+error });
+    res.status(500).send({ error: 'Error fetching data: ' + error });
   }
 });
 app.post("/loginTeacher", (req, res) => {
@@ -170,7 +221,7 @@ app.post("/createUser", (req, res) => {
           }
           // Create pupil
           else {
-            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], 0, req["body"]["sha256"], req["body"]["md5"],[], [], req["body"]["readinglevel"])
+            await addPupilWithHash(req["body"]["name"], req["body"]["surname"], req["body"]["classNum"], req["body"]["cls"], 0, req["body"]["sha256"], req["body"]["md5"], [], [], req["body"]["readinglevel"])
             res.setHeader('content-type', 'text/plain'); res.status(200).send("Successfully added user")
           }
 
@@ -426,15 +477,15 @@ app.post("/changeMaterial", (req, res) => {
         sess = await getSession(req["body"]["sessionid"])
         let i = 0
         if (sess != null) {
-          
+
           while (i < req["body"]["keys"].length) {
             succ = await changeMaterial(req["body"]["keys"][i], req["body"]["values"][i], req["body"]["materialid"], sess["privilege"])
             i += 1
-            
+
           }
         }
         if (succ) { res.status(200).send("Statement executed correctly") }
-        else { res.status(400).send("Invalid request"+succ) }
+        else { res.status(400).send("Invalid request" + succ) }
 
       }
       else { res.status(400).send("Invalid request") }
@@ -448,9 +499,9 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/build/index.html"));
 });
 
-  app.listen(PORT, () => {
-    console.log(`Server listening on ${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`Server listening on ${PORT}`);
+});
 //------------------------------------------------------------------------------------SQL-----------//
 //Initialise SQL-Client
 settings = { "url": process.env.DBURL };
@@ -464,7 +515,7 @@ async function request(request) {
   try {
     const now = new Date
     process.stdout.write(`${now.getDate()}-${now.getMonth() + 1}-${now.getFullYear()} ` +
-                      `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()} | `)
+      `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()} | `)
     const [results, metadata] = await sequelize.query(request);
     return [results, metadata];
   } catch (err) {
@@ -572,6 +623,44 @@ async function addPupilWithPass(name, surname, password, clsNum, clss, privilege
   await addPupilWithHash(name, surname, clsNum, clss, privilege, hashes[0], hashes[1], materials, history, readinglevel)
 }
 //----------------------------------------------------------------------------DATABASE-FUNCTIONS----//
+async function reworkDb(){
+  let materials = await request("SELECT * FROM MATERIALS")
+  let state = true
+  console.log(materials[0])
+  for (let m of materials[0]){
+    const resp = await request('UPDATE materials SET author="'+m[descr][author]+'", readinglevel="'+m[descr][readinglevel]+'",cover="'+m[descr]['cover']+'",pages='+m[descr][pages]+' WHERE materialid='+m[materialid]+';')
+    if (requestSucceeded(resp)){
+      console.log("Updated "+m[materialid])
+    } else {
+      console.log("Failed to update "+m[materialid])
+      state = false
+    }
+  }
+  return state
+}
+
+async function classList() {
+  let classes = await request('SELECT DISTINCT CLASS FROM USERS WHERE CLASS IS NOT NULL ORDER BY CLASS;')
+  if (hasData(classes)) {
+    return requestSucceeded(classes)
+  } else return false
+}
+
+async function readingLvlListPupils() {
+  let readingLvls = await request('SELECT DISTINCT READINGLEVEL FROM USERS WHERE READINGLEVEL IS NOT NULL ORDER BY READINGLEVEL;')
+  console
+  if (hasData(readingLvls)) {
+    return requestSucceeded(readingLvls)
+  } else return false
+}
+
+async function readingLvlListMaterials() {
+  let readingLvls = await request('SELECT DISTINCT READINGLEVEL FROM MATERIALS WHERE READINGLEVEL IS NOT NULL ORDER BY READINGLEVEL;') // will not work, db rework needed
+  if (hasData(readingLvls)) {
+    return requestSucceeded(readingLvls)
+  } else return false
+}
+
 async function changeUser(key, value, userid, privilege) {
   if (["readinglevel", "firstname", "lastname", "class", "classnum"].includes(key.toLowerCase())) {
     userPriv = await getUserPriv(userid)
@@ -585,16 +674,17 @@ async function changeUser(key, value, userid, privilege) {
 }
 
 async function changeMaterial(key, value, materialid) {
-  console.log([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase()))
-  if ([ "title", "place", "descr", "available", `isbn`].includes(key.toLowerCase())) {
+  console.log(["title", "place", "descr", "available", `isbn`].includes(key.toLowerCase()))
+  if (["title", "place", "descr", "available", `isbn`].includes(key.toLowerCase())) {
     let resp
-    if (key === "descr"){
+    if (key === "descr") {
       resp = await request(`UPDATE MATERIALS SET ${key}='${JSON.stringify(value)}' WHERE MATERIALID='${materialid}'`)
-    }else {
-      resp = await request(`UPDATE MATERIALS SET ${key}='${value}' WHERE MATERIALID='${materialid}'`)}
+    } else {
+      resp = await request(`UPDATE MATERIALS SET ${key}='${value}' WHERE MATERIALID='${materialid}'`)
+    }
 
-      return requestSucceeded(resp)
-    
+    return requestSucceeded(resp)
+
   }
   else return false
 }

@@ -916,3 +916,51 @@ button.big {
   }
 }
 
+/* Toolbar container */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 15px auto;   
+  padding: 15px;
+  background: #ffffff;
+  border: 2px solid var(--accent3);
+  border-radius: 8px;
+
+  max-width: 650px;    
+  justify-content: center; 
+}
+
+
+/* Each group has a label + input */
+.toolbar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 160px;
+}
+
+/* Different styling for search vs sort vs filter */
+#search {
+  border: 2px solid var(--accent3);
+  border-radius: 6px;
+  padding: 6px;
+  background-color: #f9f9f9;
+}
+
+#sort, #sortDirection {
+  border: 2px solid var(--accent2);
+  background-color: #eef7ff;
+}
+
+#filter {
+  border: 2px solid var(--master);
+  background-color: #fff6e5;
+}
+
+/* Labels */
+.toolbar-group label {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--accent2);
+}

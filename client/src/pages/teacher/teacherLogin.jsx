@@ -1,15 +1,15 @@
 import "../../App.css";
 import crypto from "crypto-js";
 import { post, Title, Toast } from "../../functions";
-import { useNavigate } from 'react-router'
+import { useNavigate } from "react-router";
 import { useState } from "react";
 
 function TeacherLogin() {
-  Title("Leerkracht login")
+  Title("Leerkracht login");
 
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState(``)
-  const [toastType, setToastType] = useState(``)
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState(``);
+  const [toastType, setToastType] = useState(``);
 
   const navigate = useNavigate();
 
@@ -18,26 +18,27 @@ function TeacherLogin() {
   };
 
   const request = async (name, surname, sha256, md5) => {
-
     const body = { name, surname, sha256, md5 };
-    const response = await post('/loginTeacher', body)
+    const response = await post("/loginTeacher", body, "teacher login", true);
 
     document.cookie = "sessionId=" + response.sessionid + ";path=/";
-    document.cookie = "userId=" + response.userid + ";path=/"
+    document.cookie = "userId=" + response.userid + ";path=/";
 
     if (response.status === 400) {
-      setShowToast(true)
-      setToastMessage(`Ongeldige login gegevens. Controleer ze en probeer opnieuw.`)
+      setShowToast(true);
+      setToastMessage(
+        `Ongeldige login gegevens. Controleer ze en probeer opnieuw.`
+      );
       setToastType(`error`);
     }
 
     if (response.privilege === 1) {
-      redirectToPage("../leerkracht/overzicht")
+      redirectToPage("../leerkracht/overzicht");
     }
     if (response.privilege === 2) {
-      redirectToPage("../beheer/gebruikers-beheren")
+      redirectToPage("../beheer/gebruikers-beheren");
     }
-  }
+  };
 
   const handleSubmit = (event) => {
     //Prevent page reload
@@ -45,25 +46,46 @@ function TeacherLogin() {
 
     var { name, surname, pass } = document.forms[0];
 
-    var sha256 = crypto.SHA256(name.value + surname.value + pass.value).toString();
-    var md5 = crypto.MD5(name.value + surname.value + pass.value + sha256).toString();
+    var sha256 = crypto
+      .SHA256(name.value + surname.value + pass.value)
+      .toString();
+    var md5 = crypto
+      .MD5(name.value + surname.value + pass.value + sha256)
+      .toString();
     request(name.value, surname.value, sha256, md5);
-
   };
-
 
   // JSX code for login form
   const renderForm = (
     <div className="form">
       <form onSubmit={handleSubmit}>
         <div className="input-container">
-          <input type="text" name="name" required placeholder="Voornaam" className="login" autoFocus />
+          <input
+            type="text"
+            name="name"
+            required
+            placeholder="Voornaam"
+            className="login"
+            autoFocus
+          />
         </div>
         <div className="input-container">
-          <input type="text" className="login" name="surname" required placeholder="Achternaam" />
+          <input
+            type="text"
+            className="login"
+            name="surname"
+            required
+            placeholder="Achternaam"
+          />
         </div>
         <div className="input-container">
-          <input type="password" name="pass" required placeholder="Wachtwoord" className="login" />
+          <input
+            type="password"
+            name="pass"
+            required
+            placeholder="Wachtwoord"
+            className="login"
+          />
         </div>
         <div className="button-container">
           <input type="submit" value={"Login"} className="login-button" />
@@ -71,9 +93,6 @@ function TeacherLogin() {
       </form>
     </div>
   );
-
-
-
 
   return (
     <div className="app">
@@ -92,6 +111,5 @@ function TeacherLogin() {
     </div>
   );
 }
-
 
 export default TeacherLogin;
