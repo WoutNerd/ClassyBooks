@@ -47,38 +47,8 @@ export async function checkUser() {
   }
 }
 
-// post to given URL with cache
-export async function post(url, body, func, skipCache) {
-  const ttl = 6 * 1000; // 6 seconds
-  const cached = sessionStorage.getItem(url);
-
-  let cacheKey = url;
-
-  if (url.includes("create")) {
-    skipCache = true;
-  }
-
-  if (url === "/getUser") {
-    if (
-      body.userid === getCookie("userId") ||
-      body.userId === getCookie("userId")
-    ) {
-      cacheKey = "self";
-    } else {
-      skipCache = true;
-    }
-  }
-
-  // Check if cached respons e is still valid
-  if (cached && !skipCache) {
-    const { data, time } = JSON.parse(cached);
-    if (Date.now() - time < ttl) {
-      console.log("Returning cached response for", url);
-      return data;
-    }
-  }
-
-  // Otherwise, fetch from network
+//post to given url
+export async function post(url, body, func) {
   try {
     const response = await fetch(url, {
       method: "POST",
@@ -89,34 +59,22 @@ export async function post(url, body, func, skipCache) {
       },
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
-    }
+    const respType = await response.headers.get("Content-Type");
 
-    const contentType = response.headers.get("Content-Type") || "";
     let data;
 
-    if (contentType.includes("application/json")) {
-      data = await response.json();
-    } else if (contentType.includes("text")) {
-      data = await response.text();
-    } else {
-      data = await response.blob(); // fallback for other content types
+    if (respType.includes("application/json")) {
+      data = response.json();
+      if (response.statusText !== "OK") {
+        throw new Error(response);
+      }
+    } else if (respType.includes("text")) {
+      data = response;
     }
 
-    // Cache it with timestamp
-    sessionStorage.setItem(
-      url,
-      JSON.stringify({
-        data,
-        time: Date.now(),
-      })
-    );
-
-    console.log("Fetched and cached new response for", url);
     return data;
   } catch (error) {
-    console.error("Error in post():", error);
+    console.error("Error:", error.message);
   }
 }
 
